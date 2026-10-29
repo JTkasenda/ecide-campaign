@@ -87,9 +87,7 @@ export default async function PartiPage({ params }: PageParams) {
           ...(hasProjet ? [{ href: "#projet", label: t("Notre projet de société") }] : []),
           { href: "#organisation", label: t("Organigramme") },
         ]}
-      >
-        <Link href={localePath(locale, "/cadres")}><i className="fa-solid fa-people-group" aria-hidden="true"></i><span>{t("Annuaire des cadres")}</span></Link>
-      </PageSubnav>
+      />
 
       {/* VISION */}
       {hasVision && (
