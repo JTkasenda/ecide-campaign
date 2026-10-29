@@ -1,0 +1,1048 @@
+@import "tailwindcss";
+@source "../lib/tw-safelist.ts";
+
+/* ==========================================================================
+   ECiDé — site « campagne » : palette du parti, mise en page façon labour.org.uk
+   (Poppins, titres capitales très gras, boutons pilules, cartes arrondies)
+   ========================================================================== */
+@theme {
+  --color-ecideBlue: #003399;
+  --color-ecideBlue-50: #f1f4fb;
+  --color-ecideBlue-100: #dfe6f6;
+  --color-ecideBlue-200: #bfcdee;
+  --color-ecideBlue-600: #1d3f9e;
+  --color-ecideDarkBlue: #001b52;
+  --color-ecideGreen: #1f7a3e;
+  --color-ecideGreen-50: #eef7f0;
+  --color-ecideGreen-100: #d5ecd9;
+  --color-ecideGreen-200: #a9d8b3;
+  --color-ecideGreen-700: #155a2c;
+  --color-ecideYellow: #ffcc00;
+  --color-ecideYellow-50: #fffae6;
+  --color-ecideYellow-100: #fff3bf;
+  --color-ecideYellow-200: #ffe680;
+  --color-ecideYellow-700: #9a7400;
+  --color-ecideYellow-800: #7a5c00;
+
+  --font-sans: "Poppins", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Poppins", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Poppins", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+  --color-ink: #212121;
+  --color-paper: #f4f4f4;
+
+  --shadow-soft: 0 1px 2px rgba(0, 27, 82, 0.03);
+  --shadow-card: 0 1px 3px rgba(0, 27, 82, 0.06);
+
+  --container-8xl: 88rem;
+}
+
+:root {
+  --ecide-blue: #003399;
+  --ecide-dark: #001b52;
+  --ecide-yellow: #ffcc00;
+  --ecide-green: #1f7a3e;
+  --ecide-ink: #212121;
+  --ecide-paper: #f4f4f4;
+  --radius-card: 1rem;
+  /* Hauteur de l'en-tête (une rangée sur mobile, logo + menu sur grand écran) */
+  --header-h: 4rem;
+}
+@media (min-width: 1280px) {
+  :root {
+    --header-h: 7rem;
+  }
+}
+
+/* ==========================================================================
+   Tailles des textes réglables dans l'administration
+   --------------------------------------------------------------------------
+   Trois niveaux, qui se multiplient :
+   - --ecide-text-scale (générale) et --ts-* (par famille : titres, paragraphes, menu…) sont posés
+     sur <html> par le gabarit, depuis Paramètres › Typographie ;
+   - --ts-role est attribué ci-dessous à chaque famille d'éléments ;
+   - --ts-el est posé élément par élément par les pages (textStyle), depuis les cartes
+     « Tailles des textes » de l'administration.
+   Les utilitaires text-xs … text-9xl de Tailwind v4 lisent leurs tailles dans les variables
+   --text-* : chaque élément recalcule les siennes avec son facteur --ts-all, d'où des textes
+   agrandis ou réduits sans toucher aux espacements (les interlignes sont des ratios).
+   ========================================================================== */
+:root {
+  --ecide-text-scale: 1;
+}
+* {
+  --ts-all: calc(var(--ecide-text-scale) * var(--ts-role, 1) * var(--ts-el, 1));
+  --text-xs: calc(0.75rem * var(--ts-all));
+  --text-sm: calc(0.875rem * var(--ts-all));
+  --text-base: calc(1rem * var(--ts-all));
+  --text-lg: calc(1.125rem * var(--ts-all));
+  --text-xl: calc(1.25rem * var(--ts-all));
+  --text-2xl: calc(1.5rem * var(--ts-all));
+  --text-3xl: calc(1.875rem * var(--ts-all));
+  --text-4xl: calc(2.25rem * var(--ts-all));
+  --text-5xl: calc(3rem * var(--ts-all));
+  --text-6xl: calc(3.75rem * var(--ts-all));
+  --text-7xl: calc(4.5rem * var(--ts-all));
+  --text-8xl: calc(6rem * var(--ts-all));
+  --text-9xl: calc(8rem * var(--ts-all));
+}
+header {
+  --ts-role: var(--ts-entete, 1);
+}
+footer {
+  --ts-role: var(--ts-pied, 1);
+}
+.chyron {
+  --ts-role: var(--ts-fil, 1);
+}
+main h1,
+main h2 {
+  --ts-role: var(--ts-titres, 1);
+}
+main h3 {
+  --ts-role: var(--ts-sous-titres, 1);
+}
+main p {
+  --ts-role: var(--ts-paragraphes, 1);
+}
+main span.text-ecideGreen.tracking-widest {
+  --ts-role: var(--ts-surtitres, 1);
+}
+main a.py-3,
+main button.py-3 {
+  --ts-role: var(--ts-boutons, 1);
+}
+/* Textes sans classe de taille (menu, liens, formulaires) : héritent d'une taille déjà réglée.
+   Dans la couche base pour que les utilitaires text-* l'emportent. */
+@layer base {
+  body,
+  header,
+  footer,
+  .chyron,
+  main p,
+  main h2,
+  main h3,
+  main a.py-3,
+  main button.py-3 {
+    font-size: calc(1rem * var(--ts-all));
+  }
+}
+
+/* Tailwind v4 : les bordures n'ont plus de couleur par défaut ; on rétablit le gris de la v3 */
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: #e5e7eb;
+  }
+  button,
+  [role="button"] {
+    cursor: pointer;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Mise en page à l'épreuve des traductions : les textes viennent de l'API et leur longueur
+   varie d'une langue à l'autre. Aucun défilement horizontal (clip ne crée pas de zone de
+   défilement, contrairement à hidden, et laisse donc fonctionner les éléments collants),
+   un mot plus large que sa colonne est coupé (break-word : sans réduire la largeur minimale
+   des blocs, pour qu'une rangée flexible n'écrase pas un court libellé à côté d'un long texte),
+   les médias restent dans leur cadre. */
+html,
+body {
+  overflow-x: clip;
+}
+body {
+  overflow-wrap: break-word;
+}
+iframe,
+video,
+embed,
+object,
+svg,
+select {
+  max-width: 100%;
+}
+
+/* Rangée défilante (sommaire, onglets) : défile dans son cadre, sans barre visible */
+.scroll-x {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+.scroll-x::-webkit-scrollbar {
+  display: none;
+}
+
+/* Typographie : tout en Poppins ; grands titres en capitales très grasses et resserrées,
+   sous-titres gras en bas de casse. Dans la couche base pour que les utilitaires Tailwind
+   (text-7xl, normal-case…) l'emportent. */
+@layer base {
+  h1,
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.015em;
+    line-height: 1.02;
+  }
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  p,
+  blockquote,
+  .prose,
+  address {
+    font-family: var(--font-sans);
+  }
+  p {
+    font-weight: 400;
+  }
+  header p,
+  form p,
+  .chyron p,
+  .toast p {
+    font-family: inherit;
+  }
+}
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #c5cbd6;
+  border-radius: 5px;
+}
+
+/* Lien d'évitement */
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 100;
+  padding: 0.75rem 1.25rem;
+  background: var(--ecide-yellow);
+  color: var(--ecide-dark);
+  font-weight: 800;
+  transition: top 0.2s ease;
+}
+.skip-link:focus {
+  top: 1rem;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--ecide-yellow);
+  outline-offset: 2px;
+}
+.lang-switch:focus-within {
+  outline: 3px solid var(--ecide-yellow);
+  outline-offset: 2px;
+}
+
+/* Navigation : rangée de liens sous le logo, lien courant en bleu avec un trait jaune */
+.nav-link {
+  display: inline-block;
+  padding: 0.9rem 0;
+  border-bottom: 3px solid transparent;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.nav-link:hover {
+  color: var(--ecide-blue);
+}
+.nav-link[aria-current="page"] {
+  color: var(--ecide-blue);
+  border-bottom-color: var(--ecide-yellow);
+}
+.mobile-link[aria-current="page"] {
+  color: var(--ecide-blue);
+  padding-left: 0.75rem;
+  border-left: 3px solid var(--ecide-yellow);
+}
+
+/* Boutons pilules (style campagne) : tout lien ou bouton coloré du site est arrondi */
+.btn,
+main :is(a, button)[class*="bg-ecide"][class*="font-bold"],
+main :is(a, button)[class*="bg-ecide"][class*="font-black"],
+main :is(a, button)[class*="border-2"][class*="font-bold"],
+main :is(a, button)[class*="bg-gray-900"][class*="font-bold"],
+main :is(a, button)[class*="bg-[#1877f2]"][class*="font-bold"],
+footer :is(a, button)[class*="bg-ecide"][class*="font-bold"],
+footer :is(a, button)[class*="bg-ecide"][class*="font-black"] {
+  border-radius: 9999px;
+}
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.8rem 1.6rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+    max-width: 100%;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  }
+  .btn:hover {
+    transform: translateY(-1px);
+  }
+  .btn--primary {
+    background: var(--ecide-blue);
+    color: #fff;
+  }
+  .btn--primary:hover {
+    background: var(--ecide-dark);
+  }
+  .btn--dark {
+    background: var(--ecide-dark);
+    color: #fff;
+  }
+  .btn--dark:hover {
+    background: var(--ecide-blue);
+  }
+  .btn--yellow {
+    background: var(--ecide-yellow);
+    color: var(--ecide-dark);
+  }
+  .btn--yellow:hover {
+    background: #ffd633;
+  }
+  .btn--green {
+    background: var(--ecide-green);
+    color: #fff;
+  }
+  .btn--green:hover {
+    background: #155a2c;
+  }
+  .btn--white {
+    background: #fff;
+    color: var(--ecide-dark);
+  }
+  .btn--white:hover {
+    background: var(--ecide-yellow);
+  }
+  .btn--outline {
+    border: 2px solid currentColor;
+    background: transparent;
+  }
+  .btn--outline-white {
+    border: 2px solid #fff;
+    color: #fff;
+  }
+  .btn--outline-white:hover {
+    background: #fff;
+    color: var(--ecide-dark);
+  }
+  .btn--sm {
+    padding: 0.5rem 1.1rem;
+    font-size: calc(0.875rem * var(--ts-all));
+  }
+  .btn--lg {
+    padding: 1rem 2rem;
+    font-size: calc(1.125rem * var(--ts-all));
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+  }
+  .card--paper {
+    background: var(--ecide-paper);
+    border-color: transparent;
+  }
+  /* Tuile d'icône carrée (plan en trois points de labour.org.uk) */
+  .icon-tile {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.5rem;
+    background: var(--ecide-blue);
+    color: #fff;
+    font-size: 1.25rem;
+  }
+  .icon-tile--yellow {
+    background: var(--ecide-yellow);
+    color: var(--ecide-dark);
+  }
+  .icon-tile--green {
+    background: var(--ecide-green);
+  }
+  .icon-tile--dark {
+    background: var(--ecide-dark);
+  }
+  /* Étiquette pilule (surtitres de sections, « À la une ») */
+  .pill {
+    display: inline-block;
+    padding: 0.3rem 0.85rem;
+    border-radius: 9999px;
+    background: var(--ecide-blue);
+    color: #fff;
+    font-size: calc(0.8125rem * var(--ts-all));
+    font-weight: 600;
+    line-height: 1.3;
+    white-space: nowrap;
+  }
+  .pill--yellow {
+    background: var(--ecide-yellow);
+    color: var(--ecide-dark);
+  }
+  .pill--green {
+    background: var(--ecide-green);
+  }
+  .pill--white {
+    background: #fff;
+    color: var(--ecide-blue);
+  }
+  .pill--soft {
+    background: var(--ecide-paper);
+    color: var(--ecide-ink);
+  }
+  .pill--red {
+    background: #dc2626;
+  }
+
+  /* Bande tricolore */
+  .brand-stripe {
+    height: 4px;
+    background: linear-gradient(90deg, var(--ecide-blue) 0 62%, var(--ecide-yellow) 62% 86%, var(--ecide-green) 86% 100%);
+  }
+
+  /* Hero avec photo : la photo reste lisible, un voile sombre monte du bas pour le titre */
+  .hero-photo {
+    background: #001b52;
+  }
+  .hero-overlay {
+    background:
+      linear-gradient(180deg, rgba(0, 27, 82, 0.1) 0%, rgba(0, 27, 82, 0) 35%, rgba(0, 27, 82, 0.78) 100%),
+      linear-gradient(90deg, rgba(0, 27, 82, 0.55) 0%, rgba(0, 27, 82, 0.15) 55%, rgba(0, 27, 82, 0) 100%);
+  }
+  /* Blocs de couleur arrondis (adhésion, don) : dégradés à partir des couleurs du parti */
+  .block-gradient {
+    background: linear-gradient(100deg, var(--ecide-dark) 0%, var(--ecide-blue) 100%);
+  }
+  .block-gradient--green {
+    background: linear-gradient(100deg, #0f3d1f 0%, var(--ecide-green) 100%);
+  }
+  .block-gradient--yellow {
+    background: linear-gradient(100deg, #e6b800 0%, var(--ecide-yellow) 100%);
+  }
+  .photo-overlay {
+    background: linear-gradient(90deg, rgba(0, 27, 82, 0.88) 0%, rgba(0, 27, 82, 0.6) 45%, rgba(0, 27, 82, 0.15) 100%);
+  }
+  @media (max-width: 767px) {
+    .photo-overlay {
+      background: linear-gradient(180deg, rgba(0, 27, 82, 0.35) 0%, rgba(0, 27, 82, 0.9) 60%);
+    }
+  }
+
+  /* Bandeau de la page d'accueil : tailles d'origine (text-5xl/6xl…, text-lg/xl, text-3xl/5xl…)
+     multipliées par le facteur de l'élément (--ts-all : général × famille × réglage propre). */
+  .hero-titre {
+    font-size: calc(2.5rem * var(--ts-all));
+    letter-spacing: -0.02em;
+  }
+  .hero-texte {
+    font-size: calc(1.125rem * var(--ts-all));
+  }
+  .hero-chiffre {
+    font-size: calc(1.875rem * var(--ts-all));
+  }
+  @media (min-width: 640px) {
+    .hero-titre {
+      font-size: calc(3.5rem * var(--ts-all));
+    }
+    .hero-chiffre {
+      font-size: calc(3rem * var(--ts-all));
+    }
+  }
+  @media (min-width: 768px) {
+    .hero-titre {
+      font-size: clamp(calc(3.5rem * var(--ts-all)), calc(6vw * var(--ts-all)), calc(5.5rem * var(--ts-all)));
+    }
+    .hero-texte {
+      font-size: calc(1.25rem * var(--ts-all));
+    }
+    .hero-chiffre {
+      font-size: clamp(calc(2.25rem * var(--ts-all)), calc(6.5vh * var(--ts-all)), calc(3.75rem * var(--ts-all)));
+    }
+  }
+
+  /* Fil d'actualité (chyron) */
+  .chyron-viewport {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 1.5rem, #000 calc(100% - 3rem), transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 1.5rem, #000 calc(100% - 3rem), transparent);
+  }
+  .chyron-track {
+    display: flex;
+    width: max-content;
+    animation: chyron 70s linear infinite;
+  }
+  .chyron-viewport:hover .chyron-track,
+  .chyron-viewport:focus-within .chyron-track {
+    animation-play-state: paused;
+  }
+  .chyron-list {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0 1rem;
+    list-style: none;
+    white-space: nowrap;
+  }
+  .chyron-list > li {
+    display: flex;
+    align-items: center;
+  }
+  .chyron-list > li + li::before {
+    content: "";
+    width: 1px;
+    height: 1rem;
+    background: #d1d5db;
+    margin: 0 1.75rem;
+    flex: 0 0 auto;
+  }
+  .chyron-item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    font-size: calc(0.875rem * var(--ts-all));
+    font-weight: 500;
+    color: #1f2937;
+    transition: color 0.15s ease;
+  }
+  .chyron-item:hover {
+    color: var(--ecide-blue);
+  }
+  .chyron-tag {
+    padding: 0.15rem 0.6rem;
+    border-radius: 9999px;
+    background: var(--ecide-blue);
+    color: #fff;
+    font-size: calc(0.6875rem * var(--ts-all));
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .chyron-tag--green {
+    background: var(--ecide-green);
+  }
+  .chyron-tag--yellow {
+    background: var(--ecide-yellow);
+    color: var(--ecide-dark);
+  }
+  .chyron-date {
+    font-size: calc(0.75rem * var(--ts-all));
+    color: #9ca3af;
+  }
+  .chyron-date::before {
+    content: "· ";
+  }
+  @keyframes chyron {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* Apparition au défilement */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .chyron-track {
+      animation: none;
+    }
+    .chyron-viewport {
+      overflow-x: auto;
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  /* Boutons de filtre / montant / paiement */
+  .chip {
+    border: 2px solid #e5e7eb;
+    color: #374151;
+    font-weight: 600;
+    border-radius: 9999px;
+    transition: all 0.2s ease;
+  }
+  .chip:hover {
+    border-color: var(--ecide-blue);
+    color: var(--ecide-blue);
+  }
+  .chip.is-active {
+    background: var(--ecide-blue);
+    border-color: var(--ecide-blue);
+    color: #fff;
+  }
+}
+
+/* Cartes et blocs arrondis */
+main :is(article, details, .org-card, .shadow-soft, .shadow-card, .card),
+main figure > img,
+main figure > a,
+main .bg-white.border,
+main .bg-white.p-6,
+main .bg-white.p-7,
+main .bg-white.p-8,
+main .bg-white.p-10,
+main .bg-ecideBlue-50.p-8,
+main .bg-ecideYellow-50.p-6,
+main .bg-ecideYellow-50.p-5,
+main .bg-ecideYellow-50.border,
+main .bg-ecideGreen-50.p-6,
+main .bg-gray-50.p-6,
+main .bg-gray-50.border {
+  border-radius: var(--radius-card);
+}
+main :is(article, details, .org-card, .shadow-soft, .shadow-card, .card) {
+  overflow: hidden;
+}
+main .shadow-soft,
+main .shadow-card {
+  box-shadow: none;
+  border: 1px solid #e5e7eb;
+}
+/* Champs de formulaire arrondis */
+main :is(input, select, textarea):not([type="checkbox"]):not([type="radio"]),
+footer :is(input, select) {
+  border-radius: 0.5rem;
+}
+/* Titres de cartes (petites tailles) : gras en bas de casse, comme sur labour.org.uk */
+main :is(h1, h2)[class*="text-base"],
+main :is(h1, h2)[class*="text-lg"],
+main :is(h1, h2)[class*="text-xl"]:not([class*="text-2xl"]):not([class*="text-3xl"]):not([class*="text-4xl"]):not([class*="text-5xl"]):not([class*="text-6xl"]):not([class*="text-7xl"]) {
+  text-transform: none;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+/* Touches éditoriales : les surtitres de sections deviennent des pilules bleues */
+main span[class*="text-ecideGreen"][class*="tracking-widest"] {
+  display: inline-block;
+  padding: 0.3rem 0.85rem;
+  border-radius: 9999px;
+  background: var(--ecide-blue);
+  color: #fff;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 600;
+  line-height: 1.3;
+}
+main :is(.bg-ecideBlue, .bg-ecideDarkBlue, .block-gradient) span[class*="text-ecideGreen"][class*="tracking-widest"] {
+  background: #fff;
+  color: var(--ecide-blue);
+}
+.card-index {
+  position: absolute;
+  top: 0.75rem;
+  right: 1.25rem;
+  font-family: var(--font-display);
+  font-size: 3.5rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: rgba(0, 51, 153, 0.08);
+  pointer-events: none;
+}
+article.shadow-soft,
+a.shadow-soft {
+  transition: transform 0.25s ease, border-color 0.25s ease;
+}
+article.shadow-soft:hover,
+a.shadow-soft:hover {
+  transform: translateY(-3px);
+}
+article.border-ecideBlue-200:hover,
+a.border-ecideBlue-200:hover {
+  border-color: var(--ecide-blue);
+}
+article.border-ecideYellow-200:hover,
+a.border-ecideYellow-200:hover {
+  border-color: var(--ecide-yellow);
+}
+article.border-ecideGreen-200:hover,
+a.border-ecideGreen-200:hover {
+  border-color: var(--ecide-green);
+}
+.watermark-icon {
+  position: absolute;
+  right: -1.5rem;
+  bottom: -1.75rem;
+  font-size: 9rem;
+  line-height: 1;
+  opacity: 0.07;
+  pointer-events: none;
+  user-select: none;
+}
+.watermark-icon--xl {
+  right: -4rem;
+  top: -3rem;
+  bottom: auto;
+  font-size: 18rem;
+  opacity: 0.045;
+}
+blockquote {
+  position: relative;
+  padding-top: 2.5rem;
+}
+blockquote::before {
+  content: "«";
+  position: absolute;
+  left: 1.25rem;
+  top: -0.5rem;
+  font-family: var(--font-display);
+  font-size: 4.5rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #ffe680;
+}
+@media (prefers-reduced-motion: reduce) {
+  article.shadow-soft:hover,
+  a.shadow-soft:hover {
+    transform: none;
+  }
+}
+
+/* Fils de réseaux sociaux */
+.social-embed {
+  position: relative;
+  min-height: 600px;
+  background: #fff;
+}
+.social-embed iframe {
+  position: relative;
+  z-index: 1;
+  display: block;
+}
+.social-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  text-align: center;
+  color: #374151;
+  font-weight: 600;
+  text-decoration: none;
+}
+.social-fallback--behind {
+  z-index: 0;
+}
+.twitter-timeline {
+  display: block;
+  min-height: 600px;
+}
+
+/* Accordéon FAQ */
+details > summary {
+  list-style: none;
+  cursor: pointer;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+details[open] .faq-icon {
+  transform: rotate(45deg);
+}
+.faq-icon {
+  transition: transform 0.2s ease;
+}
+
+/* Notification */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 1.5rem;
+  max-width: min(28rem, calc(100vw - 2rem));
+  transform: translate(-50%, 1rem);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 100;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.toast.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* Bouton retour en haut */
+.back-to-top {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  transform: translateY(0.5rem);
+}
+.back-to-top.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+
+/* Sommaire de page */
+.subnav-link {
+  display: inline-block;
+  margin: 0.6rem 0;
+  padding: 0.45rem 1rem;
+  border-radius: 9999px;
+  font-size: calc(0.875rem * var(--ts-all));
+  font-weight: 600;
+  color: #4b5563;
+  white-space: nowrap;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+.subnav-link:hover {
+  color: var(--ecide-blue);
+  background: var(--ecide-paper);
+}
+.subnav-link.is-active {
+  color: #fff;
+  background: var(--ecide-blue);
+}
+
+/* Organigramme */
+.orgchart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.org-level {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-top: 2rem;
+}
+.org-level::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 2rem;
+  background: #bfcdee;
+}
+.org-level:first-child {
+  padding-top: 0;
+}
+.org-level:first-child::before {
+  display: none;
+}
+.org-card {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 34rem;
+  background: var(--ecide-paper);
+  border: 1px solid transparent;
+  padding: 1.25rem 1.5rem;
+}
+.org-card > i {
+  width: 2.75rem;
+  height: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.15rem;
+  border-radius: 0.5rem;
+}
+.org-card--blue > i {
+  background: var(--ecide-blue);
+  color: #fff;
+}
+.org-card--yellow > i {
+  background: var(--ecide-yellow);
+  color: var(--ecide-dark);
+}
+.org-card--green > i {
+  background: var(--ecide-green);
+  color: #fff;
+}
+.org-level--split {
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.org-level--split .org-card {
+  flex: 1 1 16rem;
+  max-width: none;
+}
+@media (min-width: 768px) {
+  .org-level--split::after {
+    content: "";
+    position: absolute;
+    top: 1rem;
+    left: 25%;
+    right: 25%;
+    height: 2px;
+    background: #bfcdee;
+  }
+  .org-level--split .org-card {
+    position: relative;
+  }
+  .org-level--split .org-card::before {
+    content: "";
+    position: absolute;
+    top: -1rem;
+    left: 50%;
+    width: 2px;
+    height: 1rem;
+    background: #bfcdee;
+  }
+}
+
+/* Page Actualités */
+.news-tab {
+  margin: 0.75rem 0;
+  padding: 0.5rem 1.1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 9999px;
+  font-size: calc(0.875rem * var(--ts-all));
+  font-weight: 600;
+  color: #4b5563;
+  white-space: nowrap;
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+.news-tab:hover {
+  color: var(--ecide-blue);
+  border-color: var(--ecide-blue);
+}
+.news-tab.is-active {
+  color: #fff;
+  background: var(--ecide-blue);
+  border-color: var(--ecide-blue);
+}
+.news-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  padding: 1.75rem 0;
+}
+@media (min-width: 640px) {
+  .news-row {
+    grid-template-columns: 11rem 1fr;
+  }
+  /* Vidéo en lecture : le lecteur prend toute la largeur, le texte passe dessous */
+  .news-row.is-playing {
+    grid-template-columns: 1fr;
+  }
+}
+.news-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 7.5rem;
+  overflow: hidden;
+  border-radius: 0.75rem;
+}
+@media (min-width: 1024px) {
+  .news-aside {
+    position: sticky;
+    top: 5rem;
+    align-self: start;
+  }
+}
+
+/* Corps d'article (HTML saisi dans l'administration) */
+.prose-lg p + p {
+  margin-top: 1.5rem;
+}
+.prose-lg h2,
+.prose-lg h3 {
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  color: var(--ecide-dark);
+}
+.prose-lg ul,
+.prose-lg ol {
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+}
+.prose-lg ul {
+  list-style: disc;
+}
+.prose-lg ol {
+  list-style: decimal;
+}
+.prose-lg a {
+  color: var(--ecide-blue);
+  font-weight: 700;
+}
+.prose-lg blockquote {
+  border-left: 4px solid var(--ecide-yellow);
+  background: #fffae6;
+  padding: 2.5rem 2rem 1.75rem;
+  margin: 2rem 0;
+  font-style: italic;
+}
+/* Médias et tableaux saisis dans l'éditeur : jamais plus larges que la colonne de lecture */
+.prose-lg img {
+  max-width: 100%;
+  height: auto;
+}
+.prose-lg iframe,
+.prose-lg video {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+}
+.prose-lg table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+.prose-lg pre {
+  overflow-x: auto;
+}

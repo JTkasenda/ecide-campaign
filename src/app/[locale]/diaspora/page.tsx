@@ -1,0 +1,56 @@
+import type { Metadata } from "next";
+import { getDiaspora } from "@/lib/api";
+import { pageLocale, type PageParams } from "@/lib/page";
+import { getT, pageMetadata } from "@/lib/server";
+import DiasporaDirectory from "@/components/DiasporaDirectory";
+import FederationForm from "@/components/FederationForm";
+
+export async function generateMetadata({ params }: PageParams): Promise<Metadata> {
+  const locale = await pageLocale(params);
+  const [t, data] = await Promise.all([getT(locale), getDiaspora(locale)]);
+  return pageMetadata(locale, "/diaspora", { title: t("Diaspora"), description: (data.page.texte as string) || "" });
+}
+
+export default async function DiasporaPage({ params }: PageParams) {
+  const locale = await pageLocale(params);
+  const [data, t] = await Promise.all([getDiaspora(locale), getT(locale)]);
+  const dp = data.page;
+  const s = (k: string) => (typeof dp[k] === "string" ? (dp[k] as string) : "");
+
+  return (
+    <main id="main" className="flex-grow">
+      <h1 className="sr-only">{t("Diaspora")}</h1>
+      <section className="py-14 lg:py-16 px-6 max-w-7xl mx-auto space-y-8 relative overflow-hidden">
+        <i className="fa-solid fa-earth-africa watermark-icon watermark-icon--xl text-ecideBlue" aria-hidden="true"></i>
+        <DiasporaDirectory data={data.data} locale={locale}>
+          <div className="space-y-2 max-w-2xl">
+            <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{s("surtitre") || t("Réseau mondial")}</span>
+            <h2 className="text-4xl font-black text-ecideDarkBlue">{s("titre")}</h2>
+            <p className="text-gray-600">{s("texte")}</p>
+          </div>
+        </DiasporaDirectory>
+        <p className="text-center text-sm text-gray-500 italic relative">{t("Les noms et profils publics des responsables sont publiés après validation par la Coordination de la Diaspora ; leurs numéros personnels ne sont jamais affichés : utilisez les coordonnées de la fédération ou de la section. « À confirmer » signale un poste dont le titulaire n'est pas encore renseigné.")}</p>
+      </section>
+
+      <section id="rejoindre" className="scroll-mt-24 py-24 px-6 bg-gray-50">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+          <div className="space-y-6 reveal">
+            <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{s("rejoindreSurtitre") || t("Mobilisation")}</span>
+            <h2 className="text-4xl font-black text-ecideDarkBlue">{s("rejoindreTitre")}</h2>
+            <p className="text-lg text-gray-600 leading-relaxed">{s("rejoindreTexte")}</p>
+            <ul className="space-y-3 text-gray-700">
+              {dp.avantages.map((a, i) => (
+                <li key={i} className="flex items-start gap-3"><i className="fa-solid fa-circle-check text-ecideYellow mt-1" aria-hidden="true"></i> {a}</li>
+              ))}
+            </ul>
+          </div>
+          <FederationForm
+            choix={dp.choix}
+            confirmation={dp.confirmation}
+            labels={{ name: t("Nom & Prénom"), country: t("Pays de résidence"), countryExample: t("Ex : France"), city: t("Ville"), contact: t("WhatsApp ou e-mail"), wish: t("Je souhaite"), submit: t("Envoyer ma demande") }}
+          />
+        </div>
+      </section>
+    </main>
+  );
+}
