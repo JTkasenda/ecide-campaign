@@ -80,7 +80,7 @@ test("le menu (hamburger) est présent sur toutes les pages et à toutes les lar
       }
     }
     await page.goto(url("fr", "/"));
-    const cards = await page.evaluate(`document.querySelectorAll('main section[aria-labelledby=explorer] a').length`);
+    const cards = await page.evaluate(`document.querySelectorAll('main .hero-links a').length`);
     assert(cards >= 4, "les pages du site doivent être présentées sur l'accueil : " + cards);
   } finally {
     await page.close();

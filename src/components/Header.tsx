@@ -22,7 +22,7 @@ export default function Header({ site, locale }: { site: Site; locale: Locale })
   const menuRef = useRef<HTMLDivElement>(null);
   const p = site.params;
   // Menu minimaliste : les pages principales seulement ; les sous-pages (organigramme, charte, projet,
-  // biographie) restent accessibles depuis leur page parente, le pied de page et les cartes de l'accueil
+  // biographie) restent accessibles depuis leur page parente et le pied de page
   const nav = siteNav(site, t).filter((n) => n.key !== "home" && !n.sub);
   const donUrl = p.don || `${localePath(locale, "/adherer")}#don`;
   const donExternal = /^https?:/i.test(donUrl);
