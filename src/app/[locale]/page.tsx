@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
 }
 
 /** Icône de chaque page du site dans la section « Explorer le site » (la page d'accueil n'a pas de menu). */
-const PAGE_ICONS: Record<string, string> = { parti: "fa-landmark", organigramme: "fa-sitemap", "charte-valeurs": "fa-scroll", "projet-societe": "fa-book-open", president: "fa-user-tie", cadres: "fa-people-group", diaspora: "fa-earth-africa", actualites: "fa-newspaper", contact: "fa-envelope", adherer: "fa-id-card" };
+const PAGE_ICONS: Record<string, string> = { parti: "fa-landmark", organigramme: "fa-sitemap", "charte-valeurs": "fa-scroll", "projet-societe": "fa-book-open", biographie: "fa-book", president: "fa-user-tie", cadres: "fa-people-group", diaspora: "fa-earth-africa", actualites: "fa-newspaper", contact: "fa-envelope", adherer: "fa-id-card" };
 
 /**
  * Page d'accueil façon warnockforgeorgia.com : photo plein écran avec le titre en serif et le

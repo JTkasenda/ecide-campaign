@@ -17,6 +17,9 @@ complètent la page Le Parti et sont insérées dans le menu après elle par `si
 (`/organigramme`), la charte des valeurs (`/charte-valeurs`) et le projet de société (`/projet-societe`).
 Les deux dernières présentent le PDF téléversé dans l'administration (écran Le Parti, onglets « Charte des
 valeurs » et « Projet de société ») : aperçu dans la page et téléchargement (`src/components/PdfDocument.tsx`).
+La biographie du Président a aussi sa page (`/president/biographie`, sous « Président » dans le menu) : PDF de la
+biographie officielle (écran Président, onglet « Biographie & parcours »), texte et repères, résumé de l'article
+Wikipédia en français (`src/lib/wikipedia.ts`, rafraîchi chaque jour, simple lien si Wikipédia ne répond pas) et parcours.
 Les fichiers téléversés (`/uploads/…`) sont relayés depuis Laravel par `next.config.ts`, comme `/assets/…`.
 
 ## Démarrer

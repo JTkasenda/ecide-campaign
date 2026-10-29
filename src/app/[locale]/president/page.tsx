@@ -85,7 +85,7 @@ export default async function PresidentPage({ params }: PageParams) {
               </blockquote>
             )}
             <div className="flex flex-wrap gap-x-6 gap-y-2 pt-2">
-              <a href="#presse" className="inline-flex items-center gap-2 text-ecideBlue font-semibold hover:text-ecideDarkBlue">{t("Biographie officielle (PDF)")} <i className="fa-solid fa-arrow-right text-sm" aria-hidden="true"></i></a>
+              <Link href={localePath(locale, "/president/biographie")} className="inline-flex items-center gap-2 text-ecideBlue font-semibold hover:text-ecideDarkBlue">{t("Lire la biographie")} <i className="fa-solid fa-arrow-right text-sm" aria-hidden="true"></i></Link>
               <Link href={localePath(locale, "/parti")} className="inline-flex items-center gap-2 text-ecideBlue font-semibold hover:text-ecideDarkBlue">{t("Le parti qu'il a fondé")} <i className="fa-solid fa-arrow-right text-sm" aria-hidden="true"></i></Link>
             </div>
           </div>

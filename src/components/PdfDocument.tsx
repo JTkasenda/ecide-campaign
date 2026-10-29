@@ -1,10 +1,11 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { safeUrl } from "@/lib/format";
 import type { T } from "@/lib/t";
 import type { PartyDocument } from "@/lib/types";
 
-/** Boutons du bandeau d'une page-document : téléchargement du PDF et retour vers la page Le Parti. */
-export function DocumentButtons({ doc, t, back }: { doc: PartyDocument | null; t: T; back: { href: string; label: string } }) {
+/** Boutons du bandeau d'une page-document : téléchargement du PDF, boutons libres, retour vers la page parente. */
+export function DocumentButtons({ doc, t, back, children }: { doc: PartyDocument | null; t: T; back: { href: string; label: string }; children?: ReactNode }) {
   return (
     <div className="flex flex-wrap gap-3 shrink-0">
       {doc?.url && (
@@ -13,6 +14,7 @@ export function DocumentButtons({ doc, t, back }: { doc: PartyDocument | null; t
           {t("Télécharger le PDF")}
         </a>
       )}
+      {children}
       <Link href={back.href} className="btn btn--outline-white">{back.label}</Link>
     </div>
   );

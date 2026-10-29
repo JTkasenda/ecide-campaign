@@ -17,9 +17,9 @@ const THRESHOLD = Number(process.env.VISUAL_THRESHOLD || 0.005);
 
 /** Scènes : page, langue, taille d'écran. Les tiers (X, Facebook, carte) sont bloqués et les animations figées. */
 const SCENES = [
-  ...["/", "/parti", "/organigramme", "/charte-valeurs", "/projet-societe", "/president", "/actualites", "/cadres", "/diaspora", "/contact", "/adherer"].flatMap((path) => [
-    { name: `${path === "/" ? "accueil" : path.slice(1)}-fr-desktop`, path, locale: "fr", width: 1440, height: 900 },
-    { name: `${path === "/" ? "accueil" : path.slice(1)}-fr-mobile`, path, locale: "fr", width: 390, height: 844 },
+  ...["/", "/parti", "/organigramme", "/charte-valeurs", "/projet-societe", "/president", "/president/biographie", "/actualites", "/cadres", "/diaspora", "/contact", "/adherer"].flatMap((path) => [
+    { name: `${path === "/" ? "accueil" : path.slice(1).replace("/", "-")}-fr-desktop`, path, locale: "fr", width: 1440, height: 900 },
+    { name: `${path === "/" ? "accueil" : path.slice(1).replace("/", "-")}-fr-mobile`, path, locale: "fr", width: 390, height: 844 },
   ]),
   { name: "cadres-federation-fr-desktop", path: "/cadres#niveau=provincial&province=Kinshasa%20%E2%80%93%20Funa", locale: "fr", width: 1440, height: 1400 },
   { name: "cadres-federation-fr-mobile", path: "/cadres#niveau=provincial&province=Kinshasa%20%E2%80%93%20Funa", locale: "fr", width: 390, height: 1600 },

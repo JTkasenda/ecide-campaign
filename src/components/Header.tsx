@@ -29,7 +29,10 @@ export default function Header({ site, locale }: { site: Site; locale: Locale })
   const parts = pathname.split("/").filter(Boolean);
   if (isLocale(parts[0])) parts.shift();
   const current = parts[0] || "home";
-  const isActive = (key: string) => key === current;
+  const path = "/" + parts.join("/");
+  // Une sous-page (ex. /president/biographie) marque sa propre entrée, pas celle de sa page parente
+  const exact = nav.find((n) => n.url === path);
+  const isActive = (n: { key: string; url: string }) => (exact ? n === exact : n.key === current);
 
   // Fermeture du panneau : touche Échap, clic en dehors, changement de page
   useEffect(() => {
@@ -110,7 +113,7 @@ export default function Header({ site, locale }: { site: Site; locale: Locale })
           {t("Accueil")}
         </Link>
         {nav.map((n, i) => (
-          <Link key={n.id || n.url} href={localePath(locale, n.url)} onClick={() => setOpen(false)} className={`mobile-link block py-3 text-gray-700 ${n.sub ? "mobile-link--sub " : ""}${i === nav.length - 1 ? "" : "border-b"}`} aria-current={isActive(n.key) ? "page" : undefined}>
+          <Link key={n.id || n.url} href={localePath(locale, n.url)} onClick={() => setOpen(false)} className={`mobile-link block py-3 text-gray-700 ${n.sub ? "mobile-link--sub " : ""}${i === nav.length - 1 ? "" : "border-b"}`} aria-current={isActive(n) ? "page" : undefined}>
             {n.libelle}
           </Link>
         ))}

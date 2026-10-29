@@ -199,6 +199,8 @@ export interface PartiPage {
 
 export interface PresidentPage {
   president: Record<string, string> & { afficherFils: boolean };
+  /** Biographie officielle (PDF téléversé dans l'administration), null sans fichier. */
+  biographie: PartyDocument | null;
   enBref: { label: string; valeur: string }[];
   parcours: { repere: string; titre: string; texte: string }[];
   videos: Video[];
