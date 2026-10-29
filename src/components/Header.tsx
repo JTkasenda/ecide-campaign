@@ -21,7 +21,7 @@ export default function Header({ site, locale }: { site: Site; locale: Locale })
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const p = site.params;
-  const nav = siteNav(site).filter((n) => n.key !== "home");
+  const nav = siteNav(site, t("Organigramme")).filter((n) => n.key !== "home");
   const donUrl = p.don || `${localePath(locale, "/adherer")}#don`;
   const donExternal = /^https?:/i.test(donUrl);
 

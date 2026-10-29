@@ -26,7 +26,7 @@ const nextConfig: NextConfig = {
       { source: "/fr", destination: "/", permanent: true },
       { source: "/fr/:path*", destination: "/:path*", permanent: true },
       { source: "/index.html", destination: "/", permanent: true },
-      { source: "/:page(parti|president|cadres|diaspora|actualites|contact|adherer).html", destination: "/:page", permanent: true },
+      { source: "/:page(parti|organigramme|president|cadres|diaspora|actualites|contact|adherer).html", destination: "/:page", permanent: true },
       // Le direct (diffusion depuis le site) est retiré tant que l'infrastructure n'est pas disponible
       { source: "/direct/:path*", destination: "/actualites", permanent: false },
       { source: "/:locale(en|ln|sw|tsh|kik)/direct/:path*", destination: "/:locale/actualites", permanent: false },

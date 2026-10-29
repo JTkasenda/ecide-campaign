@@ -13,7 +13,7 @@ import NewsletterForm from "./NewsletterForm";
 export default async function Footer({ site, locale }: { site: Site; locale: Locale }) {
   const t = await getT(locale);
   const p = site.params;
-  const navLinks = siteNav(site).filter((n) => n.key !== "home");
+  const navLinks = siteNav(site, t("Organigramme")).filter((n) => n.key !== "home");
 
   return (
     <footer className="bg-ecideDarkBlue text-white text-sm diag">

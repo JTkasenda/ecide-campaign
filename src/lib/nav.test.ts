@@ -16,4 +16,11 @@ describe("siteNav", () => {
   it("retire les entrées du direct, retiré du site, sans toucher aux autres", () => {
     expect(siteNav(site).map((n) => n.url)).toEqual(["/", "/actualites", "/directives"]);
   });
+  it("insère la page Organigramme après Le Parti, ou en fin de menu, sans doublon", () => {
+    const withParti = { nav: [site.nav[0], { id: "6", libelle: "Le Parti", url: "/parti", key: "parti" }, site.nav[3]] } as unknown as Site;
+    expect(siteNav(withParti, "Organigramme").map((n) => n.url)).toEqual(["/", "/parti", "/organigramme", "/actualites"]);
+    expect(siteNav(site, "Organigramme").map((n) => n.url)).toEqual(["/", "/actualites", "/directives", "/organigramme"]);
+    const listed = { nav: [{ id: "7", libelle: "Orga", url: "/organigramme", key: "organigramme" }] } as unknown as Site;
+    expect(siteNav(listed, "Organigramme")).toHaveLength(1);
+  });
 });
