@@ -1567,33 +1567,30 @@ main .bg-ecideDarkBlue .panel--white p[class*="text-gray"] {
     letter-spacing: 0.08em;
   }
 
-  /* Index jaune */
+  /* Index blanc, centré, sous le bandeau */
   .subnav-index {
-    background: var(--ecide-yellow);
+    background: #fff;
     color: var(--ecide-dark);
-    padding: 0.75rem 0;
-  }
-  .subnav-title {
-    font-family: var(--font-display);
-    font-size: calc(0.8rem * var(--ts-all));
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    margin-right: 0.5rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e5e7eb;
   }
   .subnav-index-list {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 0.25rem 0;
     margin: 0;
     padding: 0;
     list-style: none;
   }
   .subnav-index .subnav-link {
-    padding: 0.45rem 0.75rem;
+    padding: 0.55rem 0.9rem;
     color: var(--ecide-dark);
   }
-  .subnav-index .subnav-link:hover,
+  .subnav-index .subnav-link:hover {
+    color: var(--ecide-blue);
+    background: var(--color-ecideBlue-50);
+  }
   .subnav-index .subnav-link.is-active {
     background: var(--ecide-dark);
     color: #fff;
@@ -1601,7 +1598,6 @@ main .bg-ecideDarkBlue .panel--white p[class*="text-gray"] {
   .subnav-index .subnav-num {
     color: var(--ecide-blue);
   }
-  .subnav-index .subnav-link:hover .subnav-num,
   .subnav-index .subnav-link.is-active .subnav-num {
     color: var(--ecide-yellow);
   }
@@ -1612,17 +1608,17 @@ main .bg-ecideDarkBlue .panel--white p[class*="text-gray"] {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.45rem 0.9rem;
+    padding: 0.55rem 0.9rem;
     font-family: var(--font-display);
     font-size: calc(1.05rem * var(--ts-all));
     font-weight: 600;
     line-height: 1;
     white-space: nowrap;
-    background: var(--ecide-dark);
-    color: #fff;
+    background: var(--ecide-yellow);
+    color: var(--ecide-dark);
   }
   .subnav-extra > a:hover {
-    background: var(--ecide-blue);
+    background: #ffd633;
   }
 
   /* Barre collante sous l'en-tête */

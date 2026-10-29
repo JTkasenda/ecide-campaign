@@ -5,7 +5,7 @@ import { pad2 } from "@/lib/format";
 
 /**
  * Sommaire de page, en trois présentations complémentaires :
- * - un index jaune sous le bandeau, visible dès l'arrivée, qui liste toutes les sections numérotées ;
+ * - un index blanc sous le bandeau, visible dès l'arrivée, qui liste au centre toutes les sections numérotées ;
  * - sur très grand écran (≥ 1360 px), une fois l'index passé, un rail fixe à droite : une pastille par section,
  *   la section visible est en jaune et porte son libellé, les autres se déplient au survol ;
  * - en dessous, une barre fixée sous l'en-tête dès que l'index est passé : la section courante et
@@ -68,8 +68,7 @@ export default function PageSubnav({ links, label, children }: { links: { href: 
     <nav className="page-subnav" aria-label={label}>
       {/* Index visible à l'arrivée */}
       <div className="subnav-index" ref={indexRef}>
-        <div className="max-w-7xl mx-auto px-6 flex flex-wrap items-center gap-x-2 gap-y-1">
-          <span className="subnav-title">{label}</span>
+        <div className="max-w-7xl mx-auto px-6 flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
           <ol className="subnav-index-list">
             {links.map((l, i) => (
               <li key={l.href}>{item(l, i)}</li>
