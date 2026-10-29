@@ -17,13 +17,13 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
 /**
  * Page du Président : une mise en page volontairement sobre, en trois temps.
  * 1. Portrait et présentation (nom, sous-titre, introduction, deux boutons).
- * 2. Biographie : le texte, puis « En bref » et les grandes étapes dans une colonne calme.
+ * 2. Biographie : une amorce et le bouton vers la page Biographie (texte complet, PDF, Wikipédia, parcours).
  * 3. Discours & vidéos, puis le dossier de presse ; les réseaux sociaux tiennent en une ligne.
  */
 export default async function PresidentPage({ params }: PageParams) {
   const locale = await pageLocale(params);
   const [data, t] = await Promise.all([getPresident(locale), getT(locale)]);
-  const { president: pres, enBref, parcours, videos, presse } = data;
+  const { president: pres, videos, presse } = data;
   const nom = (pres.nom || "").trim().split(/ (.+)/);
   const main = videos[0];
   const pastille = (pres.pastille || t("Président Élu")).split("·");
@@ -70,55 +70,16 @@ export default async function PresidentPage({ params }: PageParams) {
 
       <PageSubnav label={t("Sommaire de la page")} links={subnav} />
 
-      {/* BIOGRAPHIE : le texte, puis une colonne calme avec « En bref » et les grandes étapes */}
+      {/* BIOGRAPHIE : une amorce seulement, la biographie complète a sa propre page */}
       <section id="biographie" className="bg-white py-16 lg:py-24 px-6 scroll-mt-32">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-          <div className="lg:col-span-7 space-y-6 reveal">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+          <div className="lg:col-span-8 space-y-6 reveal">
             <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue leading-none">{pres.bioTitre || t("Biographie")}</h2>
             {pres.bioTexte && <p className="text-xl text-gray-800 leading-relaxed">{pres.bioTexte}</p>}
-            {pres.bio2 && <p className="text-lg text-gray-600 leading-relaxed">{pres.bio2}</p>}
-            {pres.bio3 && <p className="text-lg text-gray-600 leading-relaxed">{pres.bio3}</p>}
-            {pres.citation && (
-              <blockquote className="pt-10 pl-6 border-l-4 border-ecideYellow">
-                <p className="text-2xl font-semibold leading-snug text-ecideDarkBlue">{pres.citation}</p>
-                <footer className="mt-3 text-sm font-semibold text-gray-500">{pres.nom}</footer>
-              </blockquote>
-            )}
-            <div className="flex flex-wrap gap-x-6 gap-y-2 pt-2">
-              <Link href={localePath(locale, "/president/biographie")} className="inline-flex items-center gap-2 text-ecideBlue font-semibold hover:text-ecideDarkBlue">{t("Lire la biographie")} <i className="fa-solid fa-arrow-right text-sm" aria-hidden="true"></i></Link>
-              <Link href={localePath(locale, "/parti")} className="inline-flex items-center gap-2 text-ecideBlue font-semibold hover:text-ecideDarkBlue">{t("Le parti qu'il a fondé")} <i className="fa-solid fa-arrow-right text-sm" aria-hidden="true"></i></Link>
-            </div>
           </div>
-          <div className="lg:col-span-5 space-y-6">
-            {enBref.length > 0 && (
-              <aside className="panel p-7 reveal">
-                <h3 className="text-xl text-ecideDarkBlue mb-3">{t("En bref")}</h3>
-                <dl className="divide-y divide-gray-200">
-                  {enBref.map((b, i) => (
-                    <div key={i} className="py-3 grid grid-cols-1 sm:grid-cols-[8rem_minmax(0,1fr)] gap-1 sm:gap-3">
-                      <dt className="text-xs font-semibold uppercase tracking-wider text-gray-500 pt-0.5">{b.label}</dt>
-                      <dd className="font-semibold text-gray-900">{b.valeur}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </aside>
-            )}
-            {parcours.length > 0 && (
-              <section id="parcours" className="panel panel--white border border-gray-200 p-7 reveal scroll-mt-32" aria-labelledby="parcours-titre">
-                <h3 id="parcours-titre" className="text-xl text-ecideDarkBlue mb-4">{t("Les grandes étapes")}</h3>
-                <ol className="space-y-4">
-                  {parcours.map((e, i) => (
-                    <li key={i} className="grid grid-cols-[7rem_minmax(0,1fr)] gap-3">
-                      <span className="font-display text-ecideBlue uppercase text-sm leading-snug pt-0.5">{e.repere}</span>
-                      <div>
-                        <p className="font-semibold text-gray-900 leading-snug">{e.titre}</p>
-                        <p className="text-sm text-gray-600">{e.texte}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-              </section>
-            )}
+          <div className="lg:col-span-4 flex flex-wrap lg:flex-col lg:items-end gap-3 reveal">
+            <Link href={localePath(locale, "/president/biographie")} className="btn btn--dark"><i className="fa-solid fa-book-open text-sm" aria-hidden="true"></i>{t("Lire la biographie")}</Link>
+            <Link href={localePath(locale, "/parti")} className="arrow-link">{t("Le parti qu'il a fondé")}</Link>
           </div>
         </div>
       </section>

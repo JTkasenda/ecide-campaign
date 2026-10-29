@@ -14,9 +14,9 @@ export function wikipediaSummaryUrl(pageUrl: string | undefined | null): string 
 }
 
 /**
- * Résumé de l'article Wikipédia (titre, description courte, premier paragraphe), rafraîchi une
- * fois par jour ; null si l'adresse n'est pas un article ou si Wikipédia ne répond pas, la page
- * garde alors le simple lien. Le texte de Wikipédia est sous licence CC BY-SA : la page le dit.
+ * Carte de l'article Wikipédia (titre, description courte, premier paragraphe disponible), rafraîchie
+ * une fois par jour ; null si l'adresse n'est pas un article ou si Wikipédia ne répond pas, la
+ * page garde alors le simple lien.
  */
 export const getWikipediaSummary = cache(async (pageUrl: string | undefined | null): Promise<WikiSummary | null> => {
   const api = wikipediaSummaryUrl(pageUrl);

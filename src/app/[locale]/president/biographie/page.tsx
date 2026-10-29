@@ -17,9 +17,10 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
 }
 
 /**
- * Biographie du Président : la biographie officielle (PDF téléversé dans l'administration, aperçu
- * dans la page et téléchargement), le texte et les repères de l'administration, le résumé de
- * l'article Wikipédia en français avec le lien vers l'article, puis les grandes étapes du parcours.
+ * Biographie du Président, en un seul endroit (la page Président n'en garde qu'une amorce) : la
+ * biographie officielle (PDF téléversé dans l'administration, aperçu et téléchargement), le texte
+ * et les repères de l'administration, la carte de l'article Wikipédia en français (titre,
+ * description courte, lien), puis les grandes étapes du parcours.
  */
 export default async function BiographiePage({ params }: PageParams) {
   const locale = await pageLocale(params);
@@ -38,21 +39,20 @@ export default async function BiographiePage({ params }: PageParams) {
 
   return (
     <main id="main" className="flex-grow">
-      <PageBanner eyebrow={t("Biographie officielle")} title={nom} text={pres.bioTexte || pres.intro || ""}>
-        <DocumentButtons doc={biographie} t={t} back={{ href: localePath(locale, "/president"), label: t("Président Élu") }}>
-          {wikiButton("btn btn--outline-white")}
-        </DocumentButtons>
+      <PageBanner eyebrow={t("Biographie")} title={nom} text={pres.sousTitre || pres.pastille || ""}>
+        <DocumentButtons doc={biographie} t={t} back={{ href: localePath(locale, "/president"), label: t("Président Élu") }} />
       </PageBanner>
 
-      <PdfDocument doc={biographie} title={`${t("Biographie officielle")} · ${nom}`} t={t} />
+      <PdfDocument doc={biographie} title={t("Biographie officielle")} t={t} />
 
       {/* LE TEXTE DE LA BIOGRAPHIE */}
-      {(pres.bio2 || pres.bio3 || pres.citation || enBref.length > 0) && (
+      {(pres.bioTexte || pres.bio2 || pres.bio3 || pres.citation || enBref.length > 0) && (
         <section id="parcours" className="bg-ecideBlue-50 py-16 lg:py-24 px-6 scroll-mt-32">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
             <div className="lg:col-span-7 space-y-6 reveal">
               <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue leading-none">{pres.bioTitre || t("Biographie")}</h2>
-              {pres.bio2 && <p className="text-xl text-gray-800 leading-relaxed">{pres.bio2}</p>}
+              {pres.bioTexte && <p className="text-xl text-gray-800 leading-relaxed">{pres.bioTexte}</p>}
+              {pres.bio2 && <p className="text-lg text-gray-600 leading-relaxed">{pres.bio2}</p>}
               {pres.bio3 && <p className="text-lg text-gray-600 leading-relaxed">{pres.bio3}</p>}
               {pres.citation && (
                 <blockquote className="pt-6 pl-6 border-l-4 border-ecideYellow">
@@ -88,27 +88,20 @@ export default async function BiographiePage({ params }: PageParams) {
         </section>
       )}
 
-      {/* WIKIPÉDIA : résumé de l'article en français et lien vers l'encyclopédie */}
+      {/* WIKIPÉDIA : la carte de l'article en français (titre, description courte) et le lien, sans reprendre le récit */}
       {wikiUrl && (
-        <section id="wikipedia" className="bg-white py-16 lg:py-24 px-6 scroll-mt-32">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
-            <div className="lg:col-span-4 space-y-5 reveal">
-              <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Sur Wikipédia")}</span>
-              <h2 className="text-4xl text-ecideDarkBlue">{wiki?.title || nom}</h2>
-              {wiki?.description && <p className="text-lg text-gray-600 font-serif">{wiki.description}</p>}
-              {wikiButton("btn btn--dark")}
+        <section id="wikipedia" className="bg-white py-12 lg:py-16 px-6 scroll-mt-32">
+          <div className="max-w-7xl mx-auto panel p-6 lg:p-8 flex flex-col md:flex-row md:items-center gap-6 reveal">
+            <span className="icon-tile icon-tile--dark shrink-0"><i className="fa-brands fa-wikipedia-w" aria-hidden="true"></i></span>
+            <div className="flex-1 min-w-0 space-y-1">
+              <span className="text-ecideGreen font-bold uppercase tracking-widest text-xs">{t("Sur Wikipédia")}</span>
+              <h2 className="text-2xl text-ecideDarkBlue no-bar leading-tight">
+                {wiki?.title || nom}
+                {wiki?.description && <span className="font-serif font-normal text-lg text-gray-600"> — {wiki.description}</span>}
+              </h2>
+              <p className="text-sm text-gray-500 font-sans">{t("Article de l'encyclopédie libre Wikipédia, en français.")}</p>
             </div>
-            <div className="lg:col-span-8 panel p-8 lg:p-10 space-y-5 reveal">
-              <div className="flex items-center gap-4">
-                <span className="icon-tile icon-tile--dark shrink-0"><i className="fa-brands fa-wikipedia-w" aria-hidden="true"></i></span>
-                <p className="eyebrow text-[11px] text-gray-500">{t("Résumé de l'article de l'encyclopédie libre Wikipédia, en français (texte sous licence CC BY-SA).")}</p>
-              </div>
-              {wiki ? (
-                <p className="text-lg text-gray-800 leading-relaxed">{wiki.extract}</p>
-              ) : (
-                <p className="text-gray-600">{t("Lire l'article sur Wikipédia (en français)")} : <a href={wikiUrl} target="_blank" rel="noopener" className="text-ecideBlue font-semibold break-all">{wikiUrl}</a></p>
-              )}
-            </div>
+            {wikiButton("btn btn--dark md:shrink-0")}
           </div>
         </section>
       )}
