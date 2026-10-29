@@ -43,7 +43,8 @@ export async function pageMetadata(locale: Locale, path: string, opts: { title?:
   const image = shareImage(opts.image) || shareImage(site.assets.social) || `${SITE_URL}/assets/img/hero-militants.jpg`;
   const shortTitle = opts.title || `${name} - ${longName}`;
   return {
-    title,
+    // Titre complet : le gabarit « %s | nom » du layout ne s'applique pas une seconde fois
+    title: { absolute: title },
     description,
     metadataBase: new URL(SITE_URL),
     authors: [SITE_AUTHOR],

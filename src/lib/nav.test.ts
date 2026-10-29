@@ -16,11 +16,14 @@ describe("siteNav", () => {
   it("retire les entrées du direct, retiré du site, sans toucher aux autres", () => {
     expect(siteNav(site).map((n) => n.url)).toEqual(["/", "/actualites", "/directives"]);
   });
-  it("insère la page Organigramme après Le Parti, ou en fin de menu, sans doublon", () => {
+  it("insère les pages propres au site après Le Parti, ou en fin de menu, sans doublon", () => {
+    const t = (s: string) => `[${s}]`;
     const withParti = { nav: [site.nav[0], { id: "6", libelle: "Le Parti", url: "/parti", key: "parti" }, site.nav[3]] } as unknown as Site;
-    expect(siteNav(withParti, "Organigramme").map((n) => n.url)).toEqual(["/", "/parti", "/organigramme", "/actualites"]);
-    expect(siteNav(site, "Organigramme").map((n) => n.url)).toEqual(["/", "/actualites", "/directives", "/organigramme"]);
+    expect(siteNav(withParti, t).map((n) => n.url)).toEqual(["/", "/parti", "/organigramme", "/charte-valeurs", "/projet-societe", "/actualites"]);
+    expect(siteNav(withParti, t)[2]).toMatchObject({ key: "organigramme", libelle: "[Organigramme]", sub: true });
+    expect(siteNav(site, t).map((n) => n.url)).toEqual(["/", "/actualites", "/directives", "/organigramme", "/charte-valeurs", "/projet-societe"]);
     const listed = { nav: [{ id: "7", libelle: "Orga", url: "/organigramme", key: "organigramme" }] } as unknown as Site;
-    expect(siteNav(listed, "Organigramme")).toHaveLength(1);
+    expect(siteNav(listed, t).map((n) => n.url)).toEqual(["/organigramme", "/charte-valeurs", "/projet-societe"]);
+    expect(siteNav(listed, t)[0].sub).toBeUndefined();
   });
 });

@@ -21,7 +21,7 @@ export default function Header({ site, locale }: { site: Site; locale: Locale })
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const p = site.params;
-  const nav = siteNav(site, t("Organigramme")).filter((n) => n.key !== "home");
+  const nav = siteNav(site, t).filter((n) => n.key !== "home");
   const donUrl = p.don || `${localePath(locale, "/adherer")}#don`;
   const donExternal = /^https?:/i.test(donUrl);
 
@@ -110,7 +110,7 @@ export default function Header({ site, locale }: { site: Site; locale: Locale })
           {t("Accueil")}
         </Link>
         {nav.map((n, i) => (
-          <Link key={n.id || n.url} href={localePath(locale, n.url)} onClick={() => setOpen(false)} className={`mobile-link block py-3 text-gray-700 ${i === nav.length - 1 ? "" : "border-b"}`} aria-current={isActive(n.key) ? "page" : undefined}>
+          <Link key={n.id || n.url} href={localePath(locale, n.url)} onClick={() => setOpen(false)} className={`mobile-link block py-3 text-gray-700 ${n.sub ? "mobile-link--sub " : ""}${i === nav.length - 1 ? "" : "border-b"}`} aria-current={isActive(n.key) ? "page" : undefined}>
             {n.libelle}
           </Link>
         ))}

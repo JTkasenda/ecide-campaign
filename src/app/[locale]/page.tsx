@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
 }
 
 /** Icône de chaque page du site dans la section « Explorer le site » (la page d'accueil n'a pas de menu). */
-const PAGE_ICONS: Record<string, string> = { parti: "fa-landmark", organigramme: "fa-sitemap", president: "fa-user-tie", cadres: "fa-people-group", diaspora: "fa-earth-africa", actualites: "fa-newspaper", contact: "fa-envelope", adherer: "fa-id-card" };
+const PAGE_ICONS: Record<string, string> = { parti: "fa-landmark", organigramme: "fa-sitemap", "charte-valeurs": "fa-scroll", "projet-societe": "fa-book-open", president: "fa-user-tie", cadres: "fa-people-group", diaspora: "fa-earth-africa", actualites: "fa-newspaper", contact: "fa-envelope", adherer: "fa-id-card" };
 
 /**
  * Page d'accueil façon warnockforgeorgia.com : photo plein écran avec le titre en serif et le
@@ -37,7 +37,7 @@ export default async function HomePage({ params }: PageParams) {
   const featured = news.featured;
   const donUrl = site.params.don || `${localePath(locale, "/adherer")}#don`;
   const donExternal = /^https?:/i.test(donUrl);
-  const pages = siteNav(site, t("Organigramme")).filter((n) => n.key !== "home");
+  const pages = siteNav(site, t).filter((n) => n.key !== "home");
   const paiement = adherer?.paiement;
   const devise = paiement ? (paiement.deviseDefaut === "usd" ? "USD" : "FC") : "";
   const montants = paiement ? (paiement.deviseDefaut === "usd" ? paiement.usd.amounts : paiement.cdf.amounts).slice(0, 4) : [];
@@ -82,7 +82,7 @@ export default async function HomePage({ params }: PageParams) {
           <section className="bg-white py-8 px-6 border-b border-gray-200" aria-labelledby="explorer">
             <div className="max-w-7xl mx-auto">
               <h2 id="explorer" className="sr-only">{t("Explorer le site")}</h2>
-              <ul className={`grid grid-cols-2 md:grid-cols-3 ${pages.length >= 7 ? "xl:grid-cols-7" : pages.length === 6 ? "xl:grid-cols-6" : pages.length === 5 ? "xl:grid-cols-5" : "xl:grid-cols-4"} gap-3`}>
+              <ul className={`grid grid-cols-2 md:grid-cols-3 ${pages.length >= 9 ? "xl:grid-cols-5" : pages.length >= 7 ? "xl:grid-cols-7" : pages.length === 6 ? "xl:grid-cols-6" : pages.length === 5 ? "xl:grid-cols-5" : "xl:grid-cols-4"} gap-3`}>
                 {pages.map((n) => (
                   <li key={n.id || n.url}>
                     <Link href={localePath(locale, n.url)} className="card card--paper flex items-center gap-3 p-4 h-full hover:bg-ecideDarkBlue hover:text-white transition group">

@@ -40,10 +40,13 @@ export function telHref(value: string): string {
   return "tel:" + value.replace(/\s+/g, "");
 }
 
-/** Adresse externe saisie dans l'administration : http(s), mailto ou tel, sinon « # » (jamais javascript:). */
+/**
+ * Adresse venue de l'administration : http(s), mailto, tel ou chemin du site (/assets/…, /uploads/…),
+ * sinon « # » (jamais javascript: ni adresse relative au protocole).
+ */
 export function safeUrl(url: string | undefined | null): string {
   const u = (url || "").trim();
-  return /^(https?:|mailto:|tel:)/i.test(u) ? u : "#";
+  return /^(https?:|mailto:|tel:)/i.test(u) || /^\/(?!\/)/.test(u) ? u : "#";
 }
 
 /** Plus petite taille de texte acceptée (en %), comme dans l'API ; aucune limite haute. */

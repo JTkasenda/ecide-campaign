@@ -24,7 +24,6 @@ export default async function PartiPage({ params }: PageParams) {
   const hasVision = !!(parti.vision || parti.visionCitation);
   const hasMission = !!(parti.mission || missions.length);
   const hasProjet = !!(parti.projetIntro || projetAxes.length);
-  const programme = documents.find((d) => d.url && /programme/i.test(d.nom));
   return (
     <main id="main" className="flex-grow">
       <h1 className="sr-only">{t("Le Parti")}</h1>
@@ -127,10 +126,13 @@ export default async function PartiPage({ params }: PageParams) {
         <span id="statuts" className="block scroll-mt-32" aria-hidden="true"></span>
         <span id="textes" className="block scroll-mt-32" aria-hidden="true"></span>
         <div className="max-w-6xl mx-auto space-y-14">
-          <div className="space-y-4 reveal">
-            <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Textes fondateurs")}</span>
-            <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue">{t("Charte et valeurs")}</h2>
-            <p className="text-lg text-gray-600 max-w-2xl">{valeurs.length === 13 ? t("Les 13 valeurs de l'ECiDé") : t("Nos valeurs")}</p>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 reveal">
+            <div className="space-y-4">
+              <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Textes fondateurs")}</span>
+              <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue">{t("Charte et valeurs")}</h2>
+              <p className="text-lg text-gray-600 max-w-2xl">{valeurs.length === 13 ? t("Les 13 valeurs de l'ECiDé") : t("Nos valeurs")}</p>
+            </div>
+            <Link href={localePath(locale, "/charte-valeurs")} className="btn btn--dark shrink-0"><i className="fa-regular fa-file-pdf" aria-hidden="true"></i>{t("Lire la charte des valeurs")}</Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {valeurs.map((v, i) => {
@@ -219,7 +221,7 @@ export default async function PartiPage({ params }: PageParams) {
                 <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue">{t("Notre projet de société")}</h2>
                 {parti.projetIntro && <p className="text-lg text-gray-600 leading-relaxed">{parti.projetIntro}</p>}
               </div>
-              {programme && <a href={safeUrl(programme.url)} target="_blank" rel="noopener" className="btn btn--dark shrink-0"><i className="fa-regular fa-file-pdf" aria-hidden="true"></i>{t("Lire le programme")}</a>}
+              <Link href={localePath(locale, "/projet-societe")} className="btn btn--dark shrink-0"><i className="fa-regular fa-file-pdf" aria-hidden="true"></i>{t("Lire le projet de société")}</Link>
             </div>
             {projetAxes.length > 0 && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

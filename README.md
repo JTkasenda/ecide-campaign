@@ -12,8 +12,12 @@ formulaires passent par l'API ; l'administration est commune aux deux sites.
 Le site tourne sur le port 3002 (`-p 3002` dans `package.json`) pour cohabiter avec
 `ecide-next` sur le port 3000. Les styles propres à cette version sont regroupés dans
 `src/app/globals.css` (`.btn`, `.pill`, `.eyebrow`, `.panel`, `.rule-title`, `.arrow-link`, `.icon-tile`, `.diag`), et chaque page intérieure
-commence par le bandeau bleu nuit de `src/components/PageBanner.tsx`. L'organigramme a sa propre page
-(`/organigramme`, données de la page Le Parti), insérée dans le menu après « Le Parti » par `siteNav()`.
+commence par le bandeau bleu nuit de `src/components/PageBanner.tsx`. Trois pages propres à ce site
+complètent la page Le Parti et sont insérées dans le menu après elle par `siteNav()` : l'organigramme
+(`/organigramme`), la charte des valeurs (`/charte-valeurs`) et le projet de société (`/projet-societe`).
+Les deux dernières présentent le PDF téléversé dans l'administration (écran Le Parti, onglets « Charte des
+valeurs » et « Projet de société ») : aperçu dans la page et téléchargement (`src/components/PdfDocument.tsx`).
+Les fichiers téléversés (`/uploads/…`) sont relayés depuis Laravel par `next.config.ts`, comme `/assets/…`.
 
 ## Démarrer
 

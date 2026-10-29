@@ -5,7 +5,7 @@ import type { NextConfig } from "next";
  * sous préfixe (/en/parti). Les pages vivent sous app/[locale]/… ; les
  * adresses sans préfixe sont réécrites vers /fr/… et /fr/… redirige vers la racine.
  */
-const RESERVED = "en|ln|sw|tsh|kik|fr|api|_next|assets|favicon\\.ico|robots\\.txt|sitemap\\.xml|icon\\.png";
+const RESERVED = "en|ln|sw|tsh|kik|fr|api|_next|assets|uploads|favicon\\.ico|robots\\.txt|sitemap\\.xml|icon\\.png";
 const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "");
 
 const nextConfig: NextConfig = {
@@ -16,8 +16,12 @@ const nextConfig: NextConfig = {
         { source: `/:path((?!(?:${RESERVED})(?:/|$)).*)`, destination: "/fr/:path" },
       ],
       // Images et documents : ceux du dossier public/ sont servis directement ; les autres
-      // (fichiers gérés dans l'administration) sont relayés depuis le serveur Laravel.
-      afterFiles: [{ source: "/assets/:path*", destination: `${API_URL}/assets/:path*` }],
+      // (fichiers gérés dans l'administration, dont les PDF téléversés sous /uploads) sont relayés
+      // depuis le serveur Laravel : même origine, donc aperçu dans la page et téléchargement direct.
+      afterFiles: [
+        { source: "/assets/:path*", destination: `${API_URL}/assets/:path*` },
+        { source: "/uploads/:path*", destination: `${API_URL}/uploads/:path*` },
+      ],
       fallback: [],
     };
   },
@@ -26,7 +30,7 @@ const nextConfig: NextConfig = {
       { source: "/fr", destination: "/", permanent: true },
       { source: "/fr/:path*", destination: "/:path*", permanent: true },
       { source: "/index.html", destination: "/", permanent: true },
-      { source: "/:page(parti|organigramme|president|cadres|diaspora|actualites|contact|adherer).html", destination: "/:page", permanent: true },
+      { source: "/:page(parti|organigramme|charte-valeurs|projet-societe|president|cadres|diaspora|actualites|contact|adherer).html", destination: "/:page", permanent: true },
       // Le direct (diffusion depuis le site) est retiré tant que l'infrastructure n'est pas disponible
       { source: "/direct/:path*", destination: "/actualites", permanent: false },
       { source: "/:locale(en|ln|sw|tsh|kik)/direct/:path*", destination: "/:locale/actualites", permanent: false },

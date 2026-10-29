@@ -17,7 +17,7 @@ const THRESHOLD = Number(process.env.VISUAL_THRESHOLD || 0.005);
 
 /** Scènes : page, langue, taille d'écran. Les tiers (X, Facebook, carte) sont bloqués et les animations figées. */
 const SCENES = [
-  ...["/", "/parti", "/organigramme", "/president", "/actualites", "/cadres", "/diaspora", "/contact", "/adherer"].flatMap((path) => [
+  ...["/", "/parti", "/organigramme", "/charte-valeurs", "/projet-societe", "/president", "/actualites", "/cadres", "/diaspora", "/contact", "/adherer"].flatMap((path) => [
     { name: `${path === "/" ? "accueil" : path.slice(1)}-fr-desktop`, path, locale: "fr", width: 1440, height: 900 },
     { name: `${path === "/" ? "accueil" : path.slice(1)}-fr-mobile`, path, locale: "fr", width: 390, height: 844 },
   ]),
@@ -29,7 +29,7 @@ const SCENES = [
 
 const FREEZE = `(() => {
   const s = document.createElement("style");
-  s.textContent = "*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important} .reveal{opacity:1!important;transform:none!important} .chyron-track{transform:none!important} .social-embed iframe,.twitter-timeline{visibility:hidden!important}";
+  s.textContent = "*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important} .reveal{opacity:1!important;transform:none!important} .chyron-track{transform:none!important} .social-embed iframe,.twitter-timeline{visibility:hidden!important} object[type='application/pdf']{visibility:hidden!important}";
   document.head.appendChild(s);
   window.scrollTo(0, 0);
   return true;

@@ -14,6 +14,8 @@ export interface NavItem {
   libelle: string;
   url: string;
   key: string;
+  /** Page secondaire (sous « Le Parti ») : organigramme, charte des valeurs, projet de société. */
+  sub?: boolean;
 }
 
 export interface Social {
@@ -171,6 +173,14 @@ export interface HomePage {
   jsonld: Record<string, unknown>;
 }
 
+/** Document PDF publié dans l'administration (charte des valeurs, projet de société, textes fondateurs). */
+export interface PartyDocument {
+  url: string;
+  taille: string;
+  date: string;
+  dateLabel: string;
+}
+
 export interface PartiPage {
   parti: Record<string, string>;
   page: Record<string, string>;
@@ -182,7 +192,9 @@ export interface PartiPage {
   etapes: { repere: string; titre: string; texte: string }[];
   organes: { titre: string; texte: string; icone: string }[];
   membres: { titre: string; texte: string; icone: string; couleur: Couleur }[];
-  documents: { nom: string; taille: string; date: string; dateLabel: string; url: string }[];
+  documents: ({ nom: string } & PartyDocument)[];
+  charte: PartyDocument | null;
+  projet: PartyDocument | null;
 }
 
 export interface PresidentPage {

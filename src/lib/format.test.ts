@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest";
 import { TINT, formatNumber, pad2, safeUrl, siteTextVars, telHref, textScale, textStyle, tint, waLink } from "./format";
 
 describe("format", () => {
-  it("safeUrl n'accepte que http(s), mailto et tel", () => {
+  it("safeUrl n'accepte que http(s), mailto, tel et les chemins du site", () => {
+    expect(safeUrl("/uploads/docs/charte-ab12cd34.pdf")).toBe("/uploads/docs/charte-ab12cd34.pdf");
+    expect(safeUrl("/assets/docs/statuts.pdf")).toBe("/assets/docs/statuts.pdf");
+    expect(safeUrl("//evil.example/x")).toBe("#");
     expect(safeUrl("https://x.com/ecide")).toBe("https://x.com/ecide");
     expect(safeUrl("http://example.org")).toBe("http://example.org");
     expect(safeUrl("mailto:a@b.c")).toBe("mailto:a@b.c");
