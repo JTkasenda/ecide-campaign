@@ -15,6 +15,8 @@ const DESKTOP = 1280;
  * En-tête façon site de campagne : une première rangée avec le logo et les boutons
  * « Adhérer » / « Faire un don », une seconde avec les pages du site. Sur mobile (et quand les
  * libellés traduits ne tiennent pas sur une ligne), un bouton ouvre le menu.
+ * La page d'accueil n'a pas de rangée de liens : elle présente elle-même les pages du site
+ * (section « Explorer le site ») et le bouton de menu reste disponible à toutes les largeurs.
  */
 export default function Header({ site, locale }: { site: Site; locale: Locale }) {
   const { t } = useI18n();
@@ -33,6 +35,7 @@ export default function Header({ site, locale }: { site: Site; locale: Locale })
   const parts = pathname.split("/").filter(Boolean);
   if (isLocale(parts[0])) parts.shift();
   const current = parts[0] || "home";
+  const isHome = current === "home";
   const isActive = (key: string) => key === current;
 
   useEffect(() => {
@@ -83,8 +86,9 @@ export default function Header({ site, locale }: { site: Site; locale: Locale })
     </select>
   );
 
-  const desktop = collapsed ? "hidden" : "hidden xl:flex";
-  const mobile = collapsed ? "" : "xl:hidden";
+  const showRow = !isHome && !collapsed;
+  const desktop = showRow ? "hidden xl:flex" : "hidden";
+  const mobile = showRow ? "xl:hidden" : "";
   const donLink = (className: string) =>
     donExternal ? (
       <a href={donUrl} target="_blank" rel="noopener" className={className} onClick={() => setOpen(false)}>
@@ -127,7 +131,7 @@ export default function Header({ site, locale }: { site: Site; locale: Locale })
         </div>
 
         {/* Rangée 2 : pages du site (grand écran) */}
-        <div ref={rowRef} className={`${collapsed ? "hidden" : "hidden xl:block"} border-t border-gray-100`}>
+        <div ref={rowRef} className={`${showRow ? "hidden xl:block" : "hidden"} border-t border-gray-100`}>
           <ul ref={listRef} className={`${desktop} max-w-7xl mx-auto px-6 items-center gap-8 font-semibold text-gray-700 text-[15px] whitespace-nowrap h-10`}>
             {nav.map((n) => (
               <li key={n.id || n.url}>
@@ -140,7 +144,7 @@ export default function Header({ site, locale }: { site: Site; locale: Locale })
         </div>
       </nav>
 
-      <div id="mobileMenu" className={`${open ? "" : "hidden"} ${mobile} bg-white border-t border-gray-100 px-6 py-4 text-lg font-semibold shadow-card absolute w-full max-h-[calc(100vh-4rem)] overflow-y-auto`}>
+      <div id="mobileMenu" className={`${open ? "" : "hidden"} ${mobile} bg-white border-t border-gray-100 px-6 py-4 text-lg font-semibold shadow-card absolute w-full max-h-[calc(100vh-4rem)] overflow-y-auto ${showRow ? "" : "xl:w-96 xl:right-6 xl:left-auto xl:rounded-2xl xl:border xl:border-gray-200 xl:shadow-2xl"}`}>
         <Link href={localePath(locale, "/")} onClick={() => setOpen(false)} className="mobile-link block py-3 text-gray-700 border-b" aria-current={current === "home" ? "page" : undefined}>
           {t("Accueil")}
         </Link>

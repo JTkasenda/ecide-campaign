@@ -62,14 +62,21 @@ for (const locale of LOCALES) {
   });
 }
 
-test("le menu de bureau tient sur une ligne dans toutes les langues à 1280 px", async () => {
+test("le menu de bureau tient sur une ligne dans toutes les langues à 1280 px, et l'accueil n'en affiche pas", async () => {
   const page = await launch({ width: 1280, height: 900 });
   try {
     for (const locale of LOCALES) {
-      await page.goto(url(locale, "/"));
+      await page.goto(url(locale, "/parti"));
       const m = await page.evaluate(OVERFLOW);
       assert(m.navShown && !m.navClipped, `${locale} : menu ${m.navShown ? "tronqué" : "replié"}`);
     }
+    await page.goto(url("fr", "/"));
+    const home = await page.evaluate(OVERFLOW);
+    assert(!home.navShown, "l'accueil ne devrait pas afficher la rangée de liens");
+    const btn = await page.evaluate(`(() => { const b = document.querySelector('header button[aria-controls=mobileMenu]'); return b ? getComputedStyle(b).display !== "none" : false; })()`);
+    assert(btn, "le bouton de menu doit rester disponible sur l'accueil");
+    const cards = await page.evaluate(`document.querySelectorAll('main section[aria-labelledby=explorer] a').length`);
+    assert(cards >= 4, "les pages du site doivent être présentées sur l'accueil : " + cards);
   } finally {
     await page.close();
   }

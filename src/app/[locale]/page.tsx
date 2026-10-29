@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getHome, getSite } from "@/lib/api";
 import { safeUrl, textStyle } from "@/lib/format";
 import { localePath } from "@/lib/locales";
+import { siteNav } from "@/lib/nav";
 import { pageLocale, type PageParams } from "@/lib/page";
 import { getT, pageMetadata } from "@/lib/server";
 import Chyron from "@/components/Chyron";
@@ -22,6 +23,8 @@ const TILE = { bleu: "icon-tile", jaune: "icon-tile icon-tile--yellow", vert: "i
 const BLOCK = { bleu: "block-gradient text-white", jaune: "block-gradient--yellow text-ecideDarkBlue", vert: "block-gradient--green text-white" } as const;
 const BLOCK_BTN = { bleu: "btn btn--white", jaune: "btn btn--dark", vert: "btn btn--white" } as const;
 const BAR = { bleu: "bg-ecideBlue", jaune: "bg-ecideYellow", vert: "bg-ecideGreen" } as const;
+/** Icône de chaque page du site dans la section « Explorer le site » (la page d'accueil n'a pas de menu). */
+const PAGE_ICONS: Record<string, string> = { parti: "fa-landmark", president: "fa-user-tie", cadres: "fa-people-group", diaspora: "fa-earth-africa", actualites: "fa-newspaper", contact: "fa-envelope", adherer: "fa-id-card" };
 
 /**
  * Page d'accueil façon site de campagne : photo plein écran avec le slogan, bloc bleu avec le
@@ -37,6 +40,7 @@ export default async function HomePage({ params }: PageParams) {
   const featured = news.featured;
   const donUrl = site.params.don || `${localePath(locale, "/adherer")}#don`;
   const donExternal = /^https?:/i.test(donUrl);
+  const pages = siteNav(site).filter((n) => n.key !== "home");
 
   return (
     <>
@@ -64,6 +68,25 @@ export default async function HomePage({ params }: PageParams) {
           </div>
         </section>
         <Chyron site={site} locale={locale} label={t("Fil d'actualité")} />
+
+        {/* EXPLORER LE SITE : les pages du site, en cartes (la page d'accueil n'a pas de barre de menu) */}
+        {pages.length > 0 && (
+          <section className="bg-white py-10 px-6 border-b border-gray-200" aria-labelledby="explorer">
+            <div className="max-w-7xl mx-auto">
+              <h2 id="explorer" className="sr-only">{t("Explorer le site")}</h2>
+              <ul className={`grid grid-cols-2 md:grid-cols-3 ${pages.length >= 6 ? "xl:grid-cols-6" : pages.length === 5 ? "xl:grid-cols-5" : "xl:grid-cols-4"} gap-3`}>
+                {pages.map((n) => (
+                  <li key={n.id || n.url}>
+                    <Link href={localePath(locale, n.url)} className="card card--paper flex items-center gap-3 p-4 h-full hover:bg-ecideBlue hover:text-white transition group">
+                      <span className="icon-tile w-10 h-10 text-base shrink-0 group-hover:bg-white group-hover:text-ecideBlue" aria-hidden="true"><i className={`fa-solid ${PAGE_ICONS[n.key] || "fa-arrow-right"}`}></i></span>
+                      <span className="font-semibold leading-tight">{n.libelle}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        )}
 
         {/* MANIFESTE : bloc bleu, texte à gauche, vidéo ou article à la une à droite, chiffres clés dessous */}
         <section className="bg-ecideBlue text-white py-16 lg:py-20 px-6">
