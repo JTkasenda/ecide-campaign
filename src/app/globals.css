@@ -3,7 +3,7 @@
 
 /* ==========================================================================
    ECiDé — site « campagne » : palette du parti, mise en page façon labour.org.uk
-   (Poppins, titres capitales très gras, boutons pilules, cartes arrondies)
+   (Figtree, équivalent libre de la Proxima Nova de conservatives.com ; titres capitales gras, boutons pilules, cartes arrondies)
    ========================================================================== */
 @theme {
   --color-ecideBlue: #003399;
@@ -24,9 +24,9 @@
   --color-ecideYellow-700: #9a7400;
   --color-ecideYellow-800: #7a5c00;
 
-  --font-sans: "Poppins", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
-  --font-serif: "Poppins", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
-  --font-display: "Poppins", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "Figtree", "Proxima Nova", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Figtree", "Proxima Nova", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Figtree", "Proxima Nova", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
   --color-ink: #212121;
   --color-paper: #f4f4f4;
 
@@ -181,22 +181,22 @@ select {
   display: none;
 }
 
-/* Typographie : tout en Poppins ; grands titres en capitales très grasses et resserrées,
-   sous-titres gras en bas de casse. Dans la couche base pour que les utilitaires Tailwind
+/* Typographie : tout en Figtree (proche de la Proxima Nova de conservatives.com) ; grands titres
+   en capitales grasses, sous-titres gras en bas de casse. Dans la couche base pour que les utilitaires Tailwind
    (text-7xl, normal-case…) l'emportent. */
 @layer base {
   h1,
   h2 {
     font-family: var(--font-display);
-    font-weight: 900;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: -0.015em;
+    letter-spacing: 0;
     line-height: 1.02;
   }
   h3 {
     font-family: var(--font-display);
     font-weight: 700;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
     line-height: 1.2;
   }
   p,
@@ -217,8 +217,8 @@ select {
 }
 .font-display {
   font-family: var(--font-display);
-  font-weight: 900;
-  letter-spacing: -0.02em;
+  font-weight: 800;
+  letter-spacing: -0.01em;
   line-height: 1;
 }
 
@@ -425,200 +425,200 @@ footer :is(a, button)[class*="bg-ecide"][class*="font-black"] {
   .pill--red {
     background: #dc2626;
   }
+}
 
-  /* Bande tricolore */
-  .brand-stripe {
-    height: 4px;
-    background: linear-gradient(90deg, var(--ecide-blue) 0 62%, var(--ecide-yellow) 62% 86%, var(--ecide-green) 86% 100%);
-  }
+/* Bande tricolore */
+.brand-stripe {
+  height: 4px;
+  background: linear-gradient(90deg, var(--ecide-blue) 0 62%, var(--ecide-yellow) 62% 86%, var(--ecide-green) 86% 100%);
+}
 
-  /* Hero avec photo : la photo reste lisible, un voile sombre monte du bas pour le titre */
-  .hero-photo {
-    background: #001b52;
-  }
-  .hero-overlay {
-    background:
-      linear-gradient(180deg, rgba(0, 27, 82, 0.1) 0%, rgba(0, 27, 82, 0) 35%, rgba(0, 27, 82, 0.78) 100%),
-      linear-gradient(90deg, rgba(0, 27, 82, 0.55) 0%, rgba(0, 27, 82, 0.15) 55%, rgba(0, 27, 82, 0) 100%);
-  }
-  /* Blocs de couleur arrondis (adhésion, don) : dégradés à partir des couleurs du parti */
-  .block-gradient {
-    background: linear-gradient(100deg, var(--ecide-dark) 0%, var(--ecide-blue) 100%);
-  }
-  .block-gradient--green {
-    background: linear-gradient(100deg, #0f3d1f 0%, var(--ecide-green) 100%);
-  }
-  .block-gradient--yellow {
-    background: linear-gradient(100deg, #e6b800 0%, var(--ecide-yellow) 100%);
-  }
+/* Hero avec photo : la photo reste lisible, un voile sombre monte du bas pour le titre */
+.hero-photo {
+  background: #001b52;
+}
+.hero-overlay {
+  background:
+    linear-gradient(180deg, rgba(0, 27, 82, 0.1) 0%, rgba(0, 27, 82, 0) 35%, rgba(0, 27, 82, 0.78) 100%),
+    linear-gradient(90deg, rgba(0, 27, 82, 0.55) 0%, rgba(0, 27, 82, 0.15) 55%, rgba(0, 27, 82, 0) 100%);
+}
+/* Blocs de couleur arrondis (adhésion, don) : dégradés à partir des couleurs du parti */
+.block-gradient {
+  background: linear-gradient(100deg, var(--ecide-dark) 0%, var(--ecide-blue) 100%);
+}
+.block-gradient--green {
+  background: linear-gradient(100deg, #0f3d1f 0%, var(--ecide-green) 100%);
+}
+.block-gradient--yellow {
+  background: linear-gradient(100deg, #e6b800 0%, var(--ecide-yellow) 100%);
+}
+.photo-overlay {
+  background: linear-gradient(90deg, rgba(0, 27, 82, 0.88) 0%, rgba(0, 27, 82, 0.6) 45%, rgba(0, 27, 82, 0.15) 100%);
+}
+@media (max-width: 767px) {
   .photo-overlay {
-    background: linear-gradient(90deg, rgba(0, 27, 82, 0.88) 0%, rgba(0, 27, 82, 0.6) 45%, rgba(0, 27, 82, 0.15) 100%);
+    background: linear-gradient(180deg, rgba(0, 27, 82, 0.35) 0%, rgba(0, 27, 82, 0.9) 60%);
   }
-  @media (max-width: 767px) {
-    .photo-overlay {
-      background: linear-gradient(180deg, rgba(0, 27, 82, 0.35) 0%, rgba(0, 27, 82, 0.9) 60%);
-    }
-  }
+}
 
-  /* Bandeau de la page d'accueil : tailles d'origine (text-5xl/6xl…, text-lg/xl, text-3xl/5xl…)
-     multipliées par le facteur de l'élément (--ts-all : général × famille × réglage propre). */
+/* Bandeau de la page d'accueil : tailles d'origine (text-5xl/6xl…, text-lg/xl, text-3xl/5xl…)
+   multipliées par le facteur de l'élément (--ts-all : général × famille × réglage propre). */
+.hero-titre {
+  font-size: calc(2.5rem * var(--ts-all));
+  letter-spacing: 0;
+}
+.hero-texte {
+  font-size: calc(1.125rem * var(--ts-all));
+}
+.hero-chiffre {
+  font-size: calc(1.875rem * var(--ts-all));
+}
+@media (min-width: 640px) {
   .hero-titre {
-    font-size: calc(2.5rem * var(--ts-all));
-    letter-spacing: -0.02em;
-  }
-  .hero-texte {
-    font-size: calc(1.125rem * var(--ts-all));
+    font-size: calc(3.5rem * var(--ts-all));
   }
   .hero-chiffre {
-    font-size: calc(1.875rem * var(--ts-all));
+    font-size: calc(3rem * var(--ts-all));
   }
-  @media (min-width: 640px) {
-    .hero-titre {
-      font-size: calc(3.5rem * var(--ts-all));
-    }
-    .hero-chiffre {
-      font-size: calc(3rem * var(--ts-all));
-    }
+}
+@media (min-width: 768px) {
+  .hero-titre {
+    font-size: clamp(calc(3.5rem * var(--ts-all)), calc(6vw * var(--ts-all)), calc(5.5rem * var(--ts-all)));
   }
-  @media (min-width: 768px) {
-    .hero-titre {
-      font-size: clamp(calc(3.5rem * var(--ts-all)), calc(6vw * var(--ts-all)), calc(5.5rem * var(--ts-all)));
-    }
-    .hero-texte {
-      font-size: calc(1.25rem * var(--ts-all));
-    }
-    .hero-chiffre {
-      font-size: clamp(calc(2.25rem * var(--ts-all)), calc(6.5vh * var(--ts-all)), calc(3.75rem * var(--ts-all)));
-    }
+  .hero-texte {
+    font-size: calc(1.25rem * var(--ts-all));
   }
+  .hero-chiffre {
+    font-size: clamp(calc(2.25rem * var(--ts-all)), calc(6.5vh * var(--ts-all)), calc(3.75rem * var(--ts-all)));
+  }
+}
 
-  /* Fil d'actualité (chyron) */
-  .chyron-viewport {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 1.5rem, #000 calc(100% - 3rem), transparent);
-    mask-image: linear-gradient(90deg, transparent, #000 1.5rem, #000 calc(100% - 3rem), transparent);
+/* Fil d'actualité (chyron) */
+.chyron-viewport {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 1.5rem, #000 calc(100% - 3rem), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 1.5rem, #000 calc(100% - 3rem), transparent);
+}
+.chyron-track {
+  display: flex;
+  width: max-content;
+  animation: chyron 70s linear infinite;
+}
+.chyron-viewport:hover .chyron-track,
+.chyron-viewport:focus-within .chyron-track {
+  animation-play-state: paused;
+}
+.chyron-list {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0 1rem;
+  list-style: none;
+  white-space: nowrap;
+}
+.chyron-list > li {
+  display: flex;
+  align-items: center;
+}
+.chyron-list > li + li::before {
+  content: "";
+  width: 1px;
+  height: 1rem;
+  background: #d1d5db;
+  margin: 0 1.75rem;
+  flex: 0 0 auto;
+}
+.chyron-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  font-size: calc(0.875rem * var(--ts-all));
+  font-weight: 500;
+  color: #1f2937;
+  transition: color 0.15s ease;
+}
+.chyron-item:hover {
+  color: var(--ecide-blue);
+}
+.chyron-tag {
+  padding: 0.15rem 0.6rem;
+  border-radius: 9999px;
+  background: var(--ecide-blue);
+  color: #fff;
+  font-size: calc(0.6875rem * var(--ts-all));
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.chyron-tag--green {
+  background: var(--ecide-green);
+}
+.chyron-tag--yellow {
+  background: var(--ecide-yellow);
+  color: var(--ecide-dark);
+}
+.chyron-date {
+  font-size: calc(0.75rem * var(--ts-all));
+  color: #9ca3af;
+}
+.chyron-date::before {
+  content: "· ";
+}
+@keyframes chyron {
+  from {
+    transform: translateX(0);
   }
-  .chyron-track {
-    display: flex;
-    width: max-content;
-    animation: chyron 70s linear infinite;
+  to {
+    transform: translateX(-50%);
   }
-  .chyron-viewport:hover .chyron-track,
-  .chyron-viewport:focus-within .chyron-track {
-    animation-play-state: paused;
-  }
-  .chyron-list {
-    display: flex;
-    align-items: center;
-    margin: 0;
-    padding: 0 1rem;
-    list-style: none;
-    white-space: nowrap;
-  }
-  .chyron-list > li {
-    display: flex;
-    align-items: center;
-  }
-  .chyron-list > li + li::before {
-    content: "";
-    width: 1px;
-    height: 1rem;
-    background: #d1d5db;
-    margin: 0 1.75rem;
-    flex: 0 0 auto;
-  }
-  .chyron-item {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 0.6rem;
-    font-size: calc(0.875rem * var(--ts-all));
-    font-weight: 500;
-    color: #1f2937;
-    transition: color 0.15s ease;
-  }
-  .chyron-item:hover {
-    color: var(--ecide-blue);
-  }
-  .chyron-tag {
-    padding: 0.15rem 0.6rem;
-    border-radius: 9999px;
-    background: var(--ecide-blue);
-    color: #fff;
-    font-size: calc(0.6875rem * var(--ts-all));
-    font-weight: 600;
-    letter-spacing: 0.02em;
-  }
-  .chyron-tag--green {
-    background: var(--ecide-green);
-  }
-  .chyron-tag--yellow {
-    background: var(--ecide-yellow);
-    color: var(--ecide-dark);
-  }
-  .chyron-date {
-    font-size: calc(0.75rem * var(--ts-all));
-    color: #9ca3af;
-  }
-  .chyron-date::before {
-    content: "· ";
-  }
-  @keyframes chyron {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(-50%);
-    }
-  }
+}
 
-  /* Apparition au défilement */
+/* Apparition au défilement */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
   .reveal {
-    opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-  }
-  .reveal.is-visible {
     opacity: 1;
     transform: none;
+    transition: none;
   }
-  @media (prefers-reduced-motion: reduce) {
-    .reveal {
-      opacity: 1;
-      transform: none;
-      transition: none;
-    }
-    .chyron-track {
-      animation: none;
-    }
-    .chyron-viewport {
-      overflow-x: auto;
-      -webkit-mask-image: none;
-      mask-image: none;
-    }
-    html {
-      scroll-behavior: auto;
-    }
+  .chyron-track {
+    animation: none;
   }
+  .chyron-viewport {
+    overflow-x: auto;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
 
-  /* Boutons de filtre / montant / paiement */
-  .chip {
-    border: 2px solid #e5e7eb;
-    color: #374151;
-    font-weight: 600;
-    border-radius: 9999px;
-    transition: all 0.2s ease;
-  }
-  .chip:hover {
-    border-color: var(--ecide-blue);
-    color: var(--ecide-blue);
-  }
-  .chip.is-active {
-    background: var(--ecide-blue);
-    border-color: var(--ecide-blue);
-    color: #fff;
-  }
+/* Boutons de filtre / montant / paiement */
+.chip {
+  border: 2px solid #e5e7eb;
+  color: #374151;
+  font-weight: 600;
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+}
+.chip:hover {
+  border-color: var(--ecide-blue);
+  color: var(--ecide-blue);
+}
+.chip.is-active {
+  background: var(--ecide-blue);
+  border-color: var(--ecide-blue);
+  color: #fff;
 }
 
 /* Cartes et blocs arrondis */
@@ -684,8 +684,8 @@ main :is(.bg-ecideBlue, .bg-ecideDarkBlue, .block-gradient) span[class*="text-ec
   right: 1.25rem;
   font-family: var(--font-display);
   font-size: 3.5rem;
-  font-weight: 900;
-  letter-spacing: -0.04em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   line-height: 1;
   color: rgba(0, 51, 153, 0.08);
   pointer-events: none;

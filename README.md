@@ -2,7 +2,7 @@
 
 Seconde version du site public du parti, rendue à partir de la même API Laravel
 (`../ecide-laravel`) que `../ecide-next` : même contenu, mêmes couleurs, mais une mise en
-page façon site de campagne (inspirée de labour.org.uk) : police Poppins, grands titres en
+page façon site de campagne (inspirée de labour.org.uk) : police Figtree (équivalent libre de la Proxima Nova de conservatives.com), grands titres en
 capitales, boutons pilules, cartes et blocs de couleur arrondis, en-tête à deux rangées avec
 les boutons « Adhérer » et « Faire un don », pied de page clair. Le contenu, les
 traductions et les formulaires passent par l'API ; l'administration est commune aux deux sites.
