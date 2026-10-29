@@ -44,7 +44,7 @@ export default async function PresidentPage({ params }: PageParams) {
         </figure>
         <div className="flex items-center px-6 py-12 lg:py-16 lg:pl-[max(1.5rem,calc((100vw-80rem)/2))] lg:pr-16 lg:order-1">
           <div className="space-y-6 max-w-xl">
-            <span className="pill pill--yellow inline-flex items-center gap-2">
+            <span className="pill pill--yellow inline-flex flex-wrap items-center gap-2 whitespace-normal max-w-full">
               {pastille[0].trim()}
               {pastille[1] && (
                 <>
@@ -108,7 +108,7 @@ export default async function PresidentPage({ params }: PageParams) {
                 <h3 id="parcours-titre" className="text-xl text-ecideDarkBlue mb-4">{t("Les grandes étapes")}</h3>
                 <ol className="space-y-4">
                   {parcours.map((e, i) => (
-                    <li key={i} className="grid grid-cols-[6rem_minmax(0,1fr)] gap-3">
+                    <li key={i} className="grid grid-cols-[7rem_minmax(0,1fr)] gap-3">
                       <span className="font-display text-ecideBlue uppercase text-sm leading-snug pt-0.5">{e.repere}</span>
                       <div>
                         <p className="font-semibold text-gray-900 leading-snug">{e.titre}</p>

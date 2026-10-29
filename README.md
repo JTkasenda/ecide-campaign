@@ -2,14 +2,16 @@
 
 Seconde version du site public du parti, rendue à partir de la même API Laravel
 (`../ecide-laravel`) que `../ecide-next` : même contenu, mêmes couleurs, mais une mise en
-page façon site de campagne (inspirée de labour.org.uk) : police Figtree (équivalent libre de la Proxima Nova de conservatives.com), grands titres en
-capitales, boutons pilules, cartes et blocs de couleur arrondis, en-tête à deux rangées avec
-les boutons « Adhérer » et « Faire un don », pied de page clair. Le contenu, les
-traductions et les formulaires passent par l'API ; l'administration est commune aux deux sites.
+page façon site de campagne : structure inspirée de warnockforgeorgia.com (angles droits,
+en-tête et sections bleu nuit, panneaux blancs, bandeau d'appel au don jaune avec les montants,
+photo plein écran avec le formulaire d'inscription sur l'accueil) et typographie inspirée
+d'obama.org (titres, menu et boutons en condensé gras — Barlow Condensed —, texte courant en
+serif — Source Serif 4 —, filets épais au-dessus des titres, liens fléchés). Le contenu, les traductions et les
+formulaires passent par l'API ; l'administration est commune aux deux sites.
 
 Le site tourne sur le port 3002 (`-p 3002` dans `package.json`) pour cohabiter avec
 `ecide-next` sur le port 3000. Les styles propres à cette version sont regroupés dans
-`src/app/globals.css` (`.btn`, `.pill`, `.card`, `.icon-tile`, `.block-gradient`).
+`src/app/globals.css` (`.btn`, `.pill`, `.eyebrow`, `.bar-title`, `.card`, `.icon-tile`, `.diag`).
 
 ## Démarrer
 

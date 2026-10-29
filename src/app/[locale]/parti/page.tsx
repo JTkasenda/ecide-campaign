@@ -49,26 +49,26 @@ export default async function PartiPage({ params }: PageParams) {
     <main id="main" className="flex-grow">
       <h1 className="sr-only">{t("Le Parti")}</h1>
       {/* IDENTITÉ DU PARTI */}
-      <section className="bg-ecideBlue text-white relative overflow-hidden flex items-center lg:min-h-[32rem]">
+      <section className="bg-ecideDarkBlue text-white relative overflow-hidden flex items-center lg:min-h-[32rem] diag">
         <img src="/assets/img/logo-512.png" alt="" aria-hidden="true" className="hidden lg:block absolute -right-20 -bottom-24 w-[26rem] opacity-[0.08] pointer-events-none select-none" />
         <div className="max-w-7xl mx-auto w-full px-6 py-14 lg:py-20 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center relative">
           <div className="lg:col-span-7 space-y-6">
             {parti.badge && <span className="pill pill--yellow">{parti.badge}</span>}
-            <h2 className="text-4xl sm:text-5xl lg:text-7xl leading-none">
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl leading-none no-bar">
               {parti.titre} <span className="text-ecideYellow">{parti.titreAccent}</span>
             </h2>
             {parti.devise && <p className="text-2xl font-semibold text-white">{parti.devise}</p>}
             <p className="text-lg text-blue-100 leading-relaxed max-w-2xl">{parti.intro}</p>
             <div className="flex flex-wrap gap-4 pt-2">
-              {parti.bouton1 && <Link href={localePath(locale, parti.url1)} className="btn btn--dark">{parti.bouton1} <i className="fa-solid fa-arrow-right text-sm" aria-hidden="true"></i></Link>}
+              {parti.bouton1 && <Link href={localePath(locale, parti.url1)} className="btn btn--primary">{parti.bouton1} <i className="fa-solid fa-arrow-right text-sm" aria-hidden="true"></i></Link>}
               {parti.bouton2 && <Link href={localePath(locale, parti.url2)} className="btn btn--outline-white">{parti.bouton2} <i className="fa-solid fa-arrow-right text-sm" aria-hidden="true"></i></Link>}
             </div>
           </div>
           {chiffres.length > 0 && (
             <dl className="lg:col-span-5 grid grid-cols-2 gap-4">
               {chiffres.map((c, i) => (
-                <div key={i} className="bg-white text-gray-900 rounded-2xl p-5">
-                  <dd className="font-display text-4xl text-ecideBlue leading-none"><CounterValue value={c.valeur} /></dd>
+                <div key={i} className="bg-white text-gray-900 p-5">
+                  <dd className="font-display text-4xl text-ecideDarkBlue leading-none"><CounterValue value={c.valeur} /></dd>
                   <dt className="text-xs font-semibold text-gray-500 mt-2">{c.libelle}</dt>
                 </div>
               ))}

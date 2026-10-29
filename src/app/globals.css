@@ -2,8 +2,11 @@
 @source "../lib/tw-safelist.ts";
 
 /* ==========================================================================
-   ECiDé — site « campagne » : palette du parti, mise en page façon labour.org.uk
-   (Figtree, équivalent libre de la Proxima Nova de conservatives.com ; titres capitales gras, boutons pilules, cartes arrondies)
+   ECiDé — site « campagne » : palette du parti, mise en page façon warnockforgeorgia.com
+   (angles droits, panneaux blancs sur sections bleu nuit, bandeau d'appel au don jaune) et
+   typographie façon obama.org : titres, menu et boutons en condensé gras (Barlow Condensed,
+   équivalent libre du Gotham Condensed), texte courant en serif (Source Serif 4, proche du
+   Chronicle Text), filets épais au-dessus des titres de section, liens fléchés.
    ========================================================================== */
 @theme {
   --color-ecideBlue: #003399;
@@ -24,9 +27,10 @@
   --color-ecideYellow-700: #9a7400;
   --color-ecideYellow-800: #7a5c00;
 
-  --font-sans: "Figtree", "Proxima Nova", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
-  --font-serif: "Figtree", "Proxima Nova", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
-  --font-display: "Figtree", "Proxima Nova", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "Barlow Condensed", "Gotham Condensed", "Arial Narrow", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Source Serif 4", "Chronicle Text G1", Georgia, "Times New Roman", serif;
+  --font-display: "Barlow Condensed", "Gotham Condensed", "Arial Narrow", ui-sans-serif, system-ui, sans-serif;
+  --font-ui: "Source Sans 3", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
   --color-ink: #212121;
   --color-paper: #f4f4f4;
 
@@ -41,9 +45,9 @@
   --ecide-dark: #001b52;
   --ecide-yellow: #ffcc00;
   --ecide-green: #1f7a3e;
-  --ecide-ink: #212121;
-  --ecide-paper: #f4f4f4;
-  --radius-card: 1rem;
+  --ecide-ink: #111827;
+  --ecide-paper: #e7ecf0;
+  --radius-card: 0;
   /* Hauteur de l'en-tête (une rangée sur mobile, logo + menu sur grand écran) */
   --header-h: 4rem;
 }
@@ -181,29 +185,29 @@ select {
   display: none;
 }
 
-/* Typographie : tout en Figtree (proche de la Proxima Nova de conservatives.com) ; grands titres
-   en capitales grasses, sous-titres gras en bas de casse. Dans la couche base pour que les utilitaires Tailwind
+/* Typographie : titres et paragraphes en serif gras (comme warnockforgeorgia.com), interface,
+   étiquettes et boutons en sans capitales espacées. Dans la couche base pour que les utilitaires Tailwind
    (text-7xl, normal-case…) l'emportent. */
 @layer base {
   h1,
   h2 {
     font-family: var(--font-display);
     font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0;
-    line-height: 1.02;
+    text-transform: none;
+    letter-spacing: -0.01em;
+    line-height: 1.08;
   }
   h3 {
     font-family: var(--font-display);
     font-weight: 700;
-    letter-spacing: -0.01em;
-    line-height: 1.2;
+    letter-spacing: -0.005em;
+    line-height: 1.25;
   }
   p,
   blockquote,
   .prose,
   address {
-    font-family: var(--font-sans);
+    font-family: var(--font-serif);
   }
   p {
     font-weight: 400;
@@ -220,6 +224,23 @@ select {
   font-weight: 800;
   letter-spacing: -0.01em;
   line-height: 1;
+}
+/* Étiquette en capitales espacées (« VOTE WARNOCK », « ISSUES ») */
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: calc(0.75rem * var(--ts-all));
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: var(--ecide-yellow);
+}
+.eyebrow--dark {
+  color: #9a7400;
+}
+/* Titre de section avec la barre jaune à gauche */
+.bar-title {
+  border-left: 5px solid var(--ecide-yellow);
+  padding-left: 0.9rem;
 }
 
 ::-webkit-scrollbar {
@@ -1045,4 +1066,388 @@ details[open] .faq-icon {
 }
 .prose-lg pre {
   overflow-x: auto;
+}
+
+/* ==========================================================================
+   Thème « campagne » façon warnockforgeorgia.com : angles droits, boutons et étiquettes en
+   capitales espacées, surtitres en lettres jaunes, titres de section barrés de jaune.
+   Placé en fin de feuille pour l'emporter sur les réglages précédents.
+   ========================================================================== */
+.btn,
+main :is(a, button)[class*="bg-ecide"][class*="font-bold"],
+main :is(a, button)[class*="bg-ecide"][class*="font-black"],
+main :is(a, button)[class*="border-2"][class*="font-bold"],
+main :is(a, button)[class*="bg-gray-900"][class*="font-bold"],
+main :is(a, button)[class*="bg-[#1877f2]"][class*="font-bold"],
+footer :is(a, button)[class*="bg-ecide"][class*="font-bold"],
+footer :is(a, button)[class*="bg-ecide"][class*="font-black"],
+.pill,
+.icon-tile,
+.chip,
+.subnav-link,
+.news-tab,
+.chyron-tag,
+main :is(input, select, textarea):not([type="checkbox"]):not([type="radio"]),
+footer :is(input, select),
+main [class*="rounded-"]:not([class*="rounded-full"]),
+header [class*="rounded-"]:not([class*="rounded-full"]),
+.news-thumb {
+  border-radius: 0;
+}
+.btn {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: calc(0.8125rem * var(--ts-all));
+  padding: 0.95rem 1.7rem;
+}
+.btn:hover {
+  transform: none;
+}
+.btn--sm {
+  padding: 0.65rem 1.1rem;
+  font-size: calc(0.6875rem * var(--ts-all));
+}
+.btn--lg {
+  padding: 1.1rem 2.2rem;
+  font-size: calc(0.9rem * var(--ts-all));
+}
+.btn--primary {
+  background: var(--ecide-yellow);
+  color: var(--ecide-dark);
+}
+.btn--primary:hover {
+  background: #ffd633;
+}
+.btn--white:hover {
+  background: var(--ecide-yellow);
+  color: var(--ecide-dark);
+}
+.btn--outline-white:hover {
+  background: var(--ecide-yellow);
+  border-color: var(--ecide-yellow);
+  color: var(--ecide-dark);
+}
+.pill {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: calc(0.6875rem * var(--ts-all));
+  padding: 0.35rem 0.7rem;
+}
+.pill--soft {
+  background: var(--ecide-paper);
+}
+.card--paper {
+  background: var(--ecide-paper);
+}
+/* Surtitres de sections : lettres jaunes espacées, sans fond */
+main span[class*="text-ecideGreen"][class*="tracking-widest"],
+main :is(.bg-ecideBlue, .bg-ecideDarkBlue, .block-gradient) span[class*="text-ecideGreen"][class*="tracking-widest"] {
+  display: inline-block;
+  padding: 0;
+  background: transparent;
+  color: #9a7400;
+  font-family: var(--font-sans);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: calc(0.75rem * var(--ts-all));
+}
+main :is(.bg-ecideBlue, .bg-ecideDarkBlue, .block-gradient, .text-white) span[class*="text-ecideGreen"][class*="tracking-widest"] {
+  color: var(--ecide-yellow);
+}
+/* Titres de sections : barre jaune à gauche */
+main h2[class*="text-4xl"],
+main h2[class*="text-5xl"] {
+  border-left: 5px solid var(--ecide-yellow);
+  padding-left: 0.9rem;
+}
+main h2.no-bar {
+  border-left: 0;
+  padding-left: 0;
+}
+/* Menu : capitales espacées */
+.nav-link,
+.mobile-link {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: calc(0.7rem * var(--ts-all));
+}
+.mobile-link {
+  font-size: calc(0.8rem * var(--ts-all));
+}
+.nav-link {
+  color: #fff;
+  padding: 0.75rem 0;
+  border-bottom-width: 3px;
+}
+.nav-link:hover {
+  color: var(--ecide-yellow);
+}
+.nav-link[aria-current="page"] {
+  color: var(--ecide-yellow);
+  border-bottom-color: var(--ecide-yellow);
+}
+.mobile-link[aria-current="page"] {
+  color: var(--ecide-blue);
+}
+.subnav-link,
+.news-tab {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: calc(0.7rem * var(--ts-all));
+}
+.subnav-link:hover {
+  background: var(--ecide-paper);
+}
+.subnav-link.is-active,
+.news-tab.is-active {
+  background: var(--ecide-dark);
+  color: #fff;
+}
+.chip {
+  font-family: var(--font-sans);
+  font-weight: 700;
+}
+.chip.is-active {
+  background: var(--ecide-dark);
+  border-color: var(--ecide-dark);
+}
+.chyron-tag {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+/* Blocs de couleur : aplats, comme le bandeau orange de warnockforgeorgia.com */
+.block-gradient {
+  background: var(--ecide-dark);
+}
+.block-gradient--green {
+  background: var(--ecide-green);
+}
+.block-gradient--yellow {
+  background: var(--ecide-yellow);
+}
+/* Voile du bandeau : la photo reste nette à droite, le titre se détache à gauche */
+.hero-overlay {
+  background:
+    linear-gradient(180deg, rgba(0, 27, 82, 0.25) 0%, rgba(0, 27, 82, 0) 40%, rgba(0, 27, 82, 0.55) 100%),
+    linear-gradient(90deg, rgba(0, 27, 82, 0.8) 0%, rgba(0, 27, 82, 0.45) 45%, rgba(0, 27, 82, 0.05) 100%);
+}
+.hero-titre {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+/* Panneau blanc qui chevauche la section précédente */
+.overlap-up {
+  position: relative;
+  z-index: 1;
+  margin-top: -5rem;
+}
+@media (min-width: 1024px) {
+  .overlap-up {
+    margin-top: -7rem;
+  }
+}
+/* Motif diagonal jaune en arrière-plan d'une section bleu nuit */
+.diag {
+  position: relative;
+  overflow: hidden;
+}
+.diag::before {
+  content: "";
+  position: absolute;
+  top: -20%;
+  right: -12%;
+  width: 36%;
+  height: 140%;
+  background: var(--ecide-yellow);
+  opacity: 0.1;
+  transform: skewX(-18deg);
+  pointer-events: none;
+}
+.diag > * {
+  position: relative;
+}
+/* Citation : guillemet jaune */
+blockquote::before {
+  font-family: var(--font-display);
+  color: var(--ecide-yellow);
+}
+.card-index {
+  font-family: var(--font-sans);
+  letter-spacing: 0;
+  color: rgba(0, 27, 82, 0.07);
+}
+
+/* ==========================================================================
+   Typographie façon obama.org : condensé gras en bas de casse pour les titres, le menu, les
+   boutons et les liens fléchés ; filet épais au-dessus des titres de section.
+   ========================================================================== */
+h1,
+h2,
+h3,
+.font-display,
+.hero-titre {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+h3 {
+  line-height: 1.1;
+}
+.hero-titre {
+  font-weight: 700;
+}
+p,
+blockquote,
+.prose,
+address {
+  font-family: var(--font-serif);
+}
+body,
+input,
+select,
+textarea,
+button,
+.font-sans {
+  font-family: var(--font-ui);
+}
+.btn,
+.pill,
+.eyebrow,
+.nav-link,
+.mobile-link,
+.subnav-link,
+.news-tab,
+.chip,
+.chyron-tag,
+.card-index,
+.lang-switch {
+  font-family: var(--font-display);
+}
+.btn {
+  text-transform: none;
+  letter-spacing: 0.01em;
+  font-size: calc(1.125rem * var(--ts-all));
+  font-weight: 600;
+  padding: 0.8rem 1.6rem;
+}
+.btn--sm {
+  font-size: calc(1rem * var(--ts-all));
+  padding: 0.55rem 1.1rem;
+}
+.btn--lg {
+  font-size: calc(1.3rem * var(--ts-all));
+  padding: 1rem 2.2rem;
+}
+.btn--outline,
+.btn--outline-white {
+  border-width: 1px;
+}
+.eyebrow {
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  font-size: calc(0.875rem * var(--ts-all));
+}
+main span[class*="text-ecideGreen"][class*="tracking-widest"],
+main :is(.bg-ecideBlue, .bg-ecideDarkBlue, .block-gradient) span[class*="text-ecideGreen"][class*="tracking-widest"] {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  font-size: calc(0.875rem * var(--ts-all));
+}
+.pill {
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-size: calc(0.95rem * var(--ts-all));
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+}
+.nav-link,
+.mobile-link {
+  text-transform: none;
+  letter-spacing: 0.01em;
+  font-size: calc(1.2rem * var(--ts-all));
+  font-weight: 600;
+}
+.mobile-link {
+  font-size: calc(1.35rem * var(--ts-all));
+}
+.subnav-link,
+.news-tab {
+  text-transform: none;
+  letter-spacing: 0.01em;
+  font-size: calc(1.05rem * var(--ts-all));
+  font-weight: 600;
+}
+.chip {
+  font-size: calc(1.05rem * var(--ts-all));
+}
+.chyron-tag {
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-size: calc(0.9rem * var(--ts-all));
+}
+/* Titres de section : filet épais au-dessus (obama.org) plutôt que barre à gauche */
+main h2[class*="text-4xl"],
+main h2[class*="text-5xl"],
+.bar-title {
+  border-left: 0;
+  padding-left: 0;
+  border-top: 6px solid currentColor;
+  padding-top: 1rem;
+}
+main h2.no-bar {
+  border-top: 0;
+  padding-top: 0;
+}
+main :is(.bg-ecideDarkBlue, .bg-ecideBlue) h2[class*="text-4xl"],
+main :is(.bg-ecideDarkBlue, .bg-ecideBlue) h2[class*="text-5xl"],
+main :is(.bg-ecideDarkBlue, .bg-ecideBlue) .bar-title {
+  border-top-color: var(--ecide-yellow);
+}
+/* Lien fléché « En savoir plus → » */
+.arrow-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: calc(1.2rem * var(--ts-all));
+  line-height: 1.1;
+  color: var(--ecide-dark);
+  transition: color 0.15s ease, gap 0.15s ease;
+}
+.arrow-link::after {
+  content: "→";
+  font-weight: 500;
+}
+.arrow-link:hover {
+  color: var(--ecide-blue);
+  gap: 0.8rem;
+}
+.text-white .arrow-link,
+.arrow-link--light {
+  color: var(--ecide-yellow);
+}
+.arrow-link--light:hover {
+  color: #fff;
+}
+/* Lignes de séparation verticales entre colonnes (obama.org) */
+@media (min-width: 768px) {
+  .cols-rule > * + * {
+    border-left: 1px solid rgba(0, 27, 82, 0.2);
+    padding-left: 1.5rem;
+  }
 }
