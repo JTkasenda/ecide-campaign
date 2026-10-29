@@ -9,14 +9,14 @@ export default function NotFound() {
   const l = isLocale(locale) ? locale : "fr";
   return (
     <main id="main" className="flex-grow">
-      <section className="py-24 px-6">
+      <section className="py-24 px-6 bg-ecideDarkBlue text-white diag flex-grow">
         <div className="max-w-2xl mx-auto text-center space-y-8">
-          <p className="text-8xl font-black text-ecideBlue">404</p>
-          <h1 className="text-3xl md:text-4xl font-black text-ecideDarkBlue">{t("Page introuvable")}</h1>
-          <p className="text-lg text-gray-600">{t("La page que vous cherchez n'existe pas ou a été déplacée. Vérifiez l'adresse ou revenez à l'accueil.")}</p>
+          <p className="font-display text-9xl text-ecideYellow leading-none">404</p>
+          <h1 className="text-4xl md:text-5xl">{t("Page introuvable")}</h1>
+          <p className="text-lg text-blue-100">{t("La page que vous cherchez n'existe pas ou a été déplacée. Vérifiez l'adresse ou revenez à l'accueil.")}</p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link href={localePath(l, "/")} className="bg-ecideBlue text-white font-bold px-8 py-4 hover:bg-ecideDarkBlue transition"><i className="fa-solid fa-house mr-2" aria-hidden="true"></i>{t("Retour à l'accueil")}</Link>
-            <Link href={localePath(l, "/actualites")} className="border-2 border-ecideBlue text-ecideBlue font-bold px-8 py-4 hover:bg-ecideBlue hover:text-white transition">{t("Voir les actualités")}</Link>
+            <Link href={localePath(l, "/")} className="btn btn--primary btn--lg"><i className="fa-solid fa-house text-sm" aria-hidden="true"></i>{t("Retour à l'accueil")}</Link>
+            <Link href={localePath(l, "/actualites")} className="btn btn--outline-white btn--lg">{t("Voir les actualités")}</Link>
           </div>
         </div>
       </section>

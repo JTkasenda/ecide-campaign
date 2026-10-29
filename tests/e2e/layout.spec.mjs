@@ -62,19 +62,24 @@ for (const locale of LOCALES) {
   });
 }
 
-test("le menu de bureau tient sur une ligne dans toutes les langues à 1280 px, et l'accueil n'en affiche pas", async () => {
-  const page = await launch({ width: 1280, height: 900 });
+test("le menu (hamburger) est présent sur toutes les pages et à toutes les largeurs, sans rangée de liens", async () => {
+  const page = await launch({ width: 1440, height: 900 });
   try {
-    for (const locale of LOCALES) {
-      await page.goto(url(locale, "/parti"));
-      const m = await page.evaluate(OVERFLOW);
-      assert(m.navShown && !m.navClipped, `${locale} : menu ${m.navShown ? "tronqué" : "replié"}`);
+    for (const path of ["/", "/parti", "/actualites"]) {
+      for (const w of [1440, 390]) {
+        await page.setViewport(w, 900);
+        await page.goto(url("fr", path));
+        const m = await page.evaluate(OVERFLOW);
+        assert(!m.navShown, `${path} @${w} : une rangée de liens est affichée`);
+        const btn = await page.evaluate(`(() => { const b = document.querySelector('header button[aria-controls=mobileMenu]'); return b ? getComputedStyle(b).display !== "none" : false; })()`);
+        assert(btn, `${path} @${w} : bouton de menu absent`);
+        await page.evaluate(`document.querySelector('header button[aria-controls=mobileMenu]').click(); true`);
+        await new Promise((r) => setTimeout(r, 200));
+        const links = await page.evaluate(`[...document.querySelectorAll('#mobileMenu a')].filter((a) => getComputedStyle(a).display !== "none").length`);
+        assert(links >= 6, `${path} @${w} : le panneau de menu n'affiche pas les pages (${links} liens)`);
+      }
     }
     await page.goto(url("fr", "/"));
-    const home = await page.evaluate(OVERFLOW);
-    assert(!home.navShown, "l'accueil ne devrait pas afficher la rangée de liens");
-    const btn = await page.evaluate(`(() => { const b = document.querySelector('header button[aria-controls=mobileMenu]'); return b ? getComputedStyle(b).display !== "none" : false; })()`);
-    assert(btn, "le bouton de menu doit rester disponible sur l'accueil");
     const cards = await page.evaluate(`document.querySelectorAll('main section[aria-labelledby=explorer] a').length`);
     assert(cards >= 4, "les pages du site doivent être présentées sur l'accueil : " + cards);
   } finally {

@@ -38,7 +38,7 @@ export default async function PresidentPage({ params }: PageParams) {
   return (
     <main id="main" className="flex-grow">
       {/* PORTRAIT ET PRÉSENTATION */}
-      <section className="president-hero bg-ecideDarkBlue text-white lg:min-h-[32rem] lg:grid lg:grid-cols-2">
+      <section className="president-hero bg-ecideDarkBlue text-white lg:min-h-[32rem] lg:grid lg:grid-cols-2 diag">
         <figure className="relative h-72 sm:h-96 lg:h-auto lg:order-2">
           <img src={pres.portrait} alt={`${t("Portrait officiel de")} ${pres.nom}`} className="absolute inset-0 w-full h-full object-cover object-[50%_20%]" />
         </figure>
@@ -91,7 +91,7 @@ export default async function PresidentPage({ params }: PageParams) {
           </div>
           <div className="lg:col-span-5 space-y-6">
             {enBref.length > 0 && (
-              <aside className="card card--paper p-7 reveal">
+              <aside className="panel p-7 reveal">
                 <h3 className="text-xl text-ecideDarkBlue mb-3">{t("En bref")}</h3>
                 <dl className="divide-y divide-gray-200">
                   {enBref.map((b, i) => (
@@ -104,7 +104,7 @@ export default async function PresidentPage({ params }: PageParams) {
               </aside>
             )}
             {parcours.length > 0 && (
-              <section id="parcours" className="card p-7 reveal scroll-mt-32" aria-labelledby="parcours-titre">
+              <section id="parcours" className="panel panel--white border border-gray-200 p-7 reveal scroll-mt-32" aria-labelledby="parcours-titre">
                 <h3 id="parcours-titre" className="text-xl text-ecideDarkBlue mb-4">{t("Les grandes étapes")}</h3>
                 <ol className="space-y-4">
                   {parcours.map((e, i) => (
@@ -124,7 +124,7 @@ export default async function PresidentPage({ params }: PageParams) {
       </section>
 
       {/* DISCOURS & VIDÉOS */}
-      <section id="discours" className="bg-gray-50 border-y border-gray-200 py-16 lg:py-24 px-6 scroll-mt-32">
+      <section id="discours" className="bg-ecideBlue-50 py-16 lg:py-24 px-6 scroll-mt-32">
         <div className="max-w-7xl mx-auto space-y-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 reveal">
             <div className="space-y-3 max-w-2xl">
@@ -139,7 +139,7 @@ export default async function PresidentPage({ params }: PageParams) {
             <p className="text-gray-500 reveal">{t("Aucune vidéo publiée pour le moment.")}</p>
           )}
           {showFils && (
-            <div id="communication" className="card p-6 flex flex-col md:flex-row md:items-center gap-5 scroll-mt-32 reveal">
+            <div id="communication" className="panel panel--white p-6 flex flex-col md:flex-row md:items-center gap-5 scroll-mt-32 reveal">
               <p className="text-gray-700 flex-1 min-w-0">
                 <span className="font-semibold text-gray-900">{t("Sur les réseaux sociaux")}</span>
                 {pres.communicationTexte ? ` — ${pres.communicationTexte}` : ""}

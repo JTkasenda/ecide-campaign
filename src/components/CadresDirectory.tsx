@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, type ReactNode } from "react";
+import { useMemo } from "react";
 import { TONE, telHref, waLink, safeUrl } from "@/lib/format";
 import { useI18n } from "@/lib/i18n";
 import { localePath, type Locale } from "@/lib/locales";
@@ -60,7 +60,7 @@ interface Unit {
  * avenue, rue) et leurs places de résistance. L'état vit dans l'adresse
  * (#niveau=provincial&province=Kinshasa – Funa), ce qui permet les liens « Près de chez vous ».
  */
-export default function CadresDirectory({ data, locale, children }: { data: CadresData; locale: Locale; children?: ReactNode }) {
+export default function CadresDirectory({ data, locale }: { data: CadresData; locale: Locale }) {
   const { t } = useI18n();
   const [hash, setHash] = useHashParams();
   const state = parse(hash);
@@ -187,27 +187,9 @@ export default function CadresDirectory({ data, locale, children }: { data: Cadr
 
   const setNiveau = (id: State["niveau"]) => setState({ ...state, niveau: id, categorie: "all", commune: "", province: id === "national" ? "" : state.province });
   const selectCls = "w-full p-3 bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-ecideBlue";
-  const stats = data.stats || { nationaux: 0, spe: 0, sections: 0, cellules: 0 };
 
   return (
     <>
-      {/* Présentation et chiffres, comme sur la page Diaspora */}
-      <div className="relative flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-        {children}
-        <div className="flex flex-wrap gap-x-8 gap-y-4">
-          {[
-            [stats.spe, t("secrétariats provinciaux")],
-            [stats.sections, t("sections")],
-            [stats.cellules, t("cellules")],
-          ].map(([n, l]) => (
-            <div key={String(l)}>
-              <span className="font-display text-4xl font-bold text-ecideDarkBlue block leading-none">{n}</span>
-              <span className="text-xs font-bold uppercase tracking-widest text-gray-500">{l}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
       <div className="space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Niveau")}</span>
@@ -223,7 +205,7 @@ export default function CadresDirectory({ data, locale, children }: { data: Cadr
         <p className="text-sm text-gray-500">{NIVEAUX.find((n) => n.id === state.niveau)?.hint}</p>
       </div>
 
-      <div className="bg-white border border-gray-200 p-5 lg:p-6 space-y-5">
+      <div className="bg-ecideBlue-50 p-5 lg:p-6 space-y-5">
         <label className="block">
           <span className="sr-only">{t("Rechercher un cadre")}</span>
           <span className="relative block">
@@ -310,9 +292,9 @@ export default function CadresDirectory({ data, locale, children }: { data: Cadr
             const nSections = sectionsOf(province).length;
             const nLeaders = data.cadres.filter((x) => x.niveau === "provincial" && x.province === province).length;
             return (
-              <button type="button" key={province} onClick={() => setState({ ...state, province, commune: "" })} className="text-left bg-white border border-gray-200 border-t-ecideYellow-200 p-6 space-y-3 shadow-soft hover:border-ecideBlue transition">
+              <button type="button" key={province} onClick={() => setState({ ...state, province, commune: "" })} className="text-left panel p-6 space-y-3 hover:bg-white transition">
                 <span className="block text-[11px] font-bold uppercase tracking-widest text-ecideYellow-700">{province}</span>
-                <span className="block font-display text-xl font-bold uppercase text-ecideDarkBlue leading-tight">{organeLabel(organe)}</span>
+                <span className="block font-display text-2xl text-ecideDarkBlue leading-tight">{organeLabel(organe)}</span>
                 <span className="block text-sm text-gray-600">
                   {c.telephone || c.whatsapp ? (
                     <><i className="fa-solid fa-phone text-ecideBlue mr-1" aria-hidden="true"></i>{c.telephone || c.whatsapp}</>
@@ -363,34 +345,34 @@ function ProvinceView({ province, organe, label, contact: c, leaders, sections, 
       <button type="button" onClick={onBack} className="inline-flex items-center gap-2 text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue"><i className="fa-solid fa-arrow-left text-xs" aria-hidden="true"></i>{t("Tous les secrétariats provinciaux")}</button>
 
       {/* Siège du secrétariat provincial exécutif */}
-      <div className="bg-white border border-gray-200 border-l-4 border-l-ecideBlue p-6 lg:p-8 space-y-6">
+      <div className="bg-ecideDarkBlue text-white diag p-6 lg:p-8 space-y-6">
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
           <div className="min-w-0">
             <span className="block text-[11px] font-bold uppercase tracking-widest text-ecideGreen">{t("Siège du secrétariat provincial exécutif")}</span>
-            <h2 className="text-3xl text-ecideDarkBlue">{label}</h2>
-            <p className="text-sm text-gray-500 mt-1"><i className="fa-solid fa-map text-gray-400 mr-1" aria-hidden="true"></i>{province}</p>
+            <h2 className="text-3xl lg:text-4xl text-white no-bar">{label}</h2>
+            <p className="text-sm text-blue-200 mt-1"><i className="fa-solid fa-map text-gray-400 mr-1" aria-hidden="true"></i>{province}</p>
           </div>
           <div className="flex flex-wrap gap-2 text-sm md:justify-end">
             {c.telephone && <a href={telHref(c.telephone)} className={chip}><i className="fa-solid fa-phone text-ecideBlue" aria-hidden="true"></i>{c.telephone}</a>}
             {c.whatsapp && <a href={waLink(c.whatsapp)} target="_blank" rel="noopener" className={chip}><i className="fa-brands fa-whatsapp text-ecideGreen" aria-hidden="true"></i>{t("WhatsApp")}</a>}
             {c.email && <a href={`mailto:${c.email}`} className={chip}><i className="fa-solid fa-envelope text-ecideBlue" aria-hidden="true"></i>{c.email}</a>}
             {c.canal && <a href={safeUrl(c.canal)} target="_blank" rel="noopener" className={chip}><i className="fa-solid fa-bullhorn text-ecideYellow-700" aria-hidden="true"></i>{t("Chaîne officielle")}</a>}
-            <Link href={`${contactUrl}?structure=${encodeURIComponent(organe)}`} className="inline-flex items-center gap-2 px-3 py-1.5 bg-ecideBlue text-white font-bold hover:bg-ecideDarkBlue transition"><i className="fa-solid fa-paper-plane" aria-hidden="true"></i>{t("Écrire")}</Link>
+            <Link href={`${contactUrl}?structure=${encodeURIComponent(organe)}`} className="btn btn--primary btn--sm"><i className="fa-solid fa-paper-plane" aria-hidden="true"></i>{t("Écrire")}</Link>
           </div>
         </div>
-        <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-gray-600">
+        <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-blue-100">
           {c.adresse && <span className="inline-flex items-center gap-1.5"><i className="fa-solid fa-location-dot text-gray-400" aria-hidden="true"></i>{c.adresse}</span>}
           {c.permanence && <span className="inline-flex items-center gap-1.5"><i className="fa-regular fa-clock text-gray-400" aria-hidden="true"></i>{c.permanence}</span>}
           {!c.telephone && !c.whatsapp && <span className="inline-flex items-center gap-1.5 italic"><i className="fa-solid fa-phone text-gray-300" aria-hidden="true"></i>{t("Téléphone à confirmer")}{c.via ? ` · ${t("joignable via")} ${c.via}` : ""}</span>}
         </div>
         <div className="space-y-3">
-          <h3 className="text-lg text-gray-900">{t("Responsables du secrétariat provincial")}</h3>
+          <h3 className="text-xl text-white">{t("Responsables du secrétariat provincial")}</h3>
           {leaders.length === 0 ? (
-            <p className="text-sm text-gray-500 italic">{t("Responsables à confirmer.")}</p>
+            <p className="text-sm text-blue-200 italic">{t("Responsables à confirmer.")}</p>
           ) : (
             <ul className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-3">
               {leaders.map((l) => (
-                <LeaderRow key={l.id} c={l} tone="blue" tag={categories[l.categorie]} />
+                <LeaderRow key={l.id} c={l} tone="blue" tag={categories[l.categorie]} light />
               ))}
             </ul>
           )}
@@ -402,7 +384,7 @@ function ProvinceView({ province, organe, label, contact: c, leaders, sections, 
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
           <div>
             <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Sections, cellules et places de résistance")}</span>
-            <h3 className="text-2xl text-ecideDarkBlue">{communeFilter ? t("Section de :commune", { commune: communeFilter }) : t("Les sections du secrétariat provincial")}</h3>
+            <h3 className="text-3xl text-ecideDarkBlue">{communeFilter ? t("Section de :commune", { commune: communeFilter }) : t("Les sections du secrétariat provincial")}</h3>
           </div>
           {communeFilter && <button type="button" onClick={onAllSections} className="text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue">{t("Toutes les sections")}</button>}
         </div>
@@ -427,13 +409,12 @@ function UnitCard({ unit, contactUrl, nested = false }: { unit: Unit; contactUrl
   const row = "flex items-center gap-2 text-gray-800 hover:text-ecideBlue";
   const kind = unit.niveau === "section" ? t("Section") : unit.niveau === "cellule" ? t("Cellule") : t("Place de résistance");
   const lieuLabel = unit.niveau === "section" ? t("Commune, territoire ou secteur : :lieu", { lieu: unit.lieu }) : t("Quartier, avenue ou rue : :lieu", { lieu: unit.lieu });
-  const tone = unit.niveau === "section" ? "border-t-ecideGreen-200" : unit.niveau === "cellule" ? "border-t-ecideBlue-200" : "border-t-ecideYellow-200";
   const Heading = nested ? "h5" : "h4";
   return (
-    <article className={`bg-white border border-gray-200 ${tone} ${nested ? "p-4 space-y-3" : "p-6 space-y-4 shadow-soft"}`}>
+    <article className={nested ? "panel panel--white p-4 space-y-3" : "panel p-6 space-y-4"}>
       <header>
         <span className={`block text-[11px] font-bold uppercase tracking-widest ${unit.niveau === "section" ? "text-ecideGreen" : unit.niveau === "cellule" ? "text-ecideBlue" : "text-ecideYellow-700"}`}>{kind}</span>
-        <Heading className={`font-display font-bold uppercase text-ecideDarkBlue leading-tight ${nested ? "text-lg" : "text-xl"}`}>{unit.label}</Heading>
+        <Heading className={`font-display text-ecideDarkBlue leading-tight ${nested ? "text-xl" : "text-2xl"}`}>{unit.label}</Heading>
         {unit.lieu && <p className="text-sm text-gray-500 mt-1"><i className="fa-solid fa-location-dot text-gray-400 mr-1" aria-hidden="true"></i>{lieuLabel}</p>}
       </header>
       <div className="space-y-1.5 text-sm">
@@ -473,7 +454,7 @@ function UnitCard({ unit, contactUrl, nested = false }: { unit: Unit; contactUrl
 }
 
 /** Responsable en ligne compacte : photo ou initiales, fonction, nom, réseaux sociaux. */
-function LeaderRow({ c, tone, tag }: { c: Cadre; tone: "blue" | "green"; tag?: string }) {
+function LeaderRow({ c, tone, tag, light = false }: { c: Cadre; tone: "blue" | "green"; tag?: string; light?: boolean }) {
   const { t } = useI18n();
   const pending = c.nom === PENDING;
   const ini = !pending && c.nom ? c.nom.split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase() : "";
@@ -486,8 +467,8 @@ function LeaderRow({ c, tone, tag }: { c: Cadre; tone: "blue" | "green"; tag?: s
         <span className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${avatar}`}>{ini ? <span className="font-display font-bold">{ini}</span> : <i className="fa-solid fa-user text-sm" aria-hidden="true"></i>}</span>
       )}
       <span className="min-w-0 flex-1">
-        <span className="block text-[10px] font-bold uppercase tracking-widest text-gray-500 leading-tight">{c.fonction}{tag && c.categorie !== "federations" ? ` · ${tag}` : ""}</span>
-        <span className={`block text-sm leading-tight ${pending ? "italic text-gray-400" : "font-semibold text-gray-900"}`}>{pending ? t(PENDING) : c.nom}</span>
+        <span className={`block text-[10px] font-bold uppercase tracking-widest leading-tight ${light ? "text-blue-200" : "text-gray-500"}`}>{c.fonction}{tag && c.categorie !== "federations" ? ` · ${tag}` : ""}</span>
+        <span className={`block text-sm leading-tight ${pending ? `italic ${light ? "text-blue-300" : "text-gray-400"}` : `font-semibold ${light ? "text-white" : "text-gray-900"}`}`}>{pending ? t(PENDING) : c.nom}</span>
       </span>
       <SocialLinks r={c.reseaux} nom={c.nom} size="w-8 h-8" />
     </li>
@@ -503,14 +484,14 @@ function CadreCard({ c, niveauLabel, catLabel }: { c: Cadre; niveauLabel: string
   const ini = !pending && c.nom ? c.nom.split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase() : "";
   const lieu = [c.province, c.commune ? t("Section de :commune", { commune: c.commune }) : c.ville && c.niveau === "provincial" ? c.ville : "", c.quartier].filter(Boolean);
   return (
-    <article className={`bg-white p-6 shadow-soft text-center space-y-3 border-b-2 ${tone.border} reveal is-visible`}>
+    <article className="panel p-6 text-center space-y-3 reveal is-visible">
       {c.photo ? (
         <img src={c.photo} alt="" width={80} height={80} className="w-20 h-20 mx-auto rounded-full object-cover object-[50%_18%] border-2 border-ecideBlue-100" />
       ) : (
         <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center ${tone.avatar}`}>{ini ? <span className="font-display text-2xl font-bold">{ini}</span> : <i className="fa-solid fa-user text-2xl" aria-hidden="true"></i>}</div>
       )}
       <div>
-        <h3 className="text-lg font-bold text-gray-900 leading-tight">{c.organeLabel || c.organe}</h3>
+        <h3 className="text-xl text-gray-900 leading-tight">{c.organeLabel || c.organe}</h3>
         <p className={`text-xs font-bold uppercase tracking-widest ${tone.tag} mt-1`}>{c.fonction}</p>
       </div>
       <p className={pending ? "text-gray-400 italic" : "text-gray-800 font-semibold"}>{pending ? t(PENDING) : c.nom}</p>
@@ -536,22 +517,22 @@ function ContactStrip({ organe, label, organes, contacts, contactUrl, onVia, chi
   const chip = "inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 font-semibold text-gray-800 hover:border-ecideBlue hover:text-ecideBlue transition";
   return (
     <>
-      <div className="col-span-full bg-white border border-gray-200 border-l-4 border-l-ecideBlue p-5 mt-6 first:mt-0 space-y-3">
+      <div className="col-span-full bg-ecideDarkBlue text-white diag p-5 lg:p-6 mt-6 first:mt-0 space-y-3">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div>
             <span className="block text-[11px] font-bold uppercase tracking-widest text-ecideGreen">{t("Contacter la structure")}</span>
-            <h3 className="text-2xl text-ecideDarkBlue">{label}</h3>
+            <h3 className="text-3xl text-white">{label}</h3>
           </div>
           <div className="flex flex-wrap gap-2 text-sm">
             {c.telephone && <a href={telHref(c.telephone)} className={chip}><i className="fa-solid fa-phone text-ecideBlue" aria-hidden="true"></i>{c.telephone}</a>}
             {c.whatsapp && <a href={waLink(c.whatsapp)} target="_blank" rel="noopener" className={chip}><i className="fa-brands fa-whatsapp text-ecideGreen" aria-hidden="true"></i>{t("WhatsApp")}</a>}
             {c.email && <a href={`mailto:${c.email}`} className={chip}><i className="fa-solid fa-envelope text-ecideBlue" aria-hidden="true"></i>{c.email}</a>}
             {c.canal && <a href={safeUrl(c.canal)} target="_blank" rel="noopener" className={chip}><i className="fa-solid fa-bullhorn text-ecideYellow-700" aria-hidden="true"></i>{t("Chaîne officielle")}</a>}
-            <Link href={`${contactUrl}?structure=${encodeURIComponent(organe)}`} className="inline-flex items-center gap-2 px-3 py-1.5 bg-ecideBlue text-white font-bold hover:bg-ecideDarkBlue transition"><i className="fa-solid fa-paper-plane" aria-hidden="true"></i>{t("Écrire")}</Link>
+            <Link href={`${contactUrl}?structure=${encodeURIComponent(organe)}`} className="btn btn--primary btn--sm"><i className="fa-solid fa-paper-plane" aria-hidden="true"></i>{t("Écrire")}</Link>
           </div>
         </div>
         {(c.adresse || c.permanence || (!c.telephone && !c.whatsapp)) && (
-          <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-gray-600">
+          <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-blue-100">
             {c.adresse && <span className="inline-flex items-center gap-1.5"><i className="fa-solid fa-location-dot text-gray-400" aria-hidden="true"></i>{c.adresse}</span>}
             {c.permanence && <span className="inline-flex items-center gap-1.5"><i className="fa-regular fa-clock text-gray-400" aria-hidden="true"></i>{c.permanence}</span>}
             {!c.telephone && !c.whatsapp && (
@@ -559,10 +540,10 @@ function ContactStrip({ organe, label, organes, contacts, contactUrl, onVia, chi
                 <span className="inline-flex items-center gap-1.5">
                   <i className="fa-solid fa-diagram-project text-gray-400" aria-hidden="true"></i>
                   {t("Téléphone à confirmer")} · {t("joignable via")}{" "}
-                  <button type="button" onClick={() => onVia(c.via!)} className="font-semibold text-ecideBlue hover:text-ecideDarkBlue">{organes[c.via] || c.via}</button>
+                  <button type="button" onClick={() => onVia(c.via!)} className="font-semibold text-ecideYellow hover:text-white underline">{organes[c.via] || c.via}</button>
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1.5 italic"><i className="fa-solid fa-phone text-gray-300" aria-hidden="true"></i>{t("Téléphone à confirmer")}</span>
+                <span className="inline-flex items-center gap-1.5 italic"><i className="fa-solid fa-phone text-blue-300" aria-hidden="true"></i>{t("Téléphone à confirmer")}</span>
               )
             )}
           </div>

@@ -11,7 +11,8 @@ formulaires passent par l'API ; l'administration est commune aux deux sites.
 
 Le site tourne sur le port 3002 (`-p 3002` dans `package.json`) pour cohabiter avec
 `ecide-next` sur le port 3000. Les styles propres à cette version sont regroupés dans
-`src/app/globals.css` (`.btn`, `.pill`, `.eyebrow`, `.bar-title`, `.card`, `.icon-tile`, `.diag`).
+`src/app/globals.css` (`.btn`, `.pill`, `.eyebrow`, `.panel`, `.rule-title`, `.arrow-link`, `.icon-tile`, `.diag`), et chaque page intérieure
+commence par le bandeau bleu nuit de `src/components/PageBanner.tsx`.
 
 ## Démarrer
 

@@ -72,15 +72,15 @@ export function NewsFeed({ locale, news, labels }: { locale: Locale; news: NewsI
     window.scrollTo({ top, behavior: "smooth" });
   };
   const btn = (p: number, label: ReactNode, aria: string, disabled: boolean) => (
-    <button type="button" onClick={() => goTo(p)} disabled={disabled} className="w-11 h-11 rounded-full flex items-center justify-center border border-gray-200 font-bold hover:border-ecideBlue disabled:opacity-40 disabled:hover:border-gray-200" aria-label={aria}>
+    <button type="button" onClick={() => goTo(p)} disabled={disabled} className="w-11 h-11 flex items-center justify-center border border-gray-300 font-display font-semibold hover:border-ecideDarkBlue disabled:opacity-40 disabled:hover:border-gray-300" aria-label={aria}>
       {label}
     </button>
   );
 
   return (
     <div className="lg:col-span-2 flex flex-col">
-      <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-2 pb-4 border-b-2 border-ecideDarkBlue">
-        <h2 className="text-3xl text-ecideDarkBlue">{labels.allPublications}</h2>
+      <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-2 pb-4 border-b border-gray-200">
+        <h2 className="text-3xl text-ecideDarkBlue rule-title">{labels.allPublications}</h2>
         <p className="text-sm text-gray-500 shrink-0"><span>{filtered.length}</span> {labels.publications}</p>
       </div>
       <div ref={listRef} className="divide-y divide-gray-200 flex-1">
@@ -135,7 +135,7 @@ export function NewsFeed({ locale, news, labels }: { locale: Locale; news: NewsI
               {btn(current - 1, <i className="fa-solid fa-chevron-left text-xs" aria-hidden="true"></i>, t("Page précédente"), current === 1)}
               {Array.from({ length: pages }, (_, i) => i + 1).map((p) =>
                 p === current ? (
-                  <span key={p} className="w-11 h-11 rounded-full flex items-center justify-center bg-ecideBlue text-white font-bold" aria-current="page">{p}</span>
+                  <span key={p} className="w-11 h-11 flex items-center justify-center bg-ecideDarkBlue text-white font-display font-semibold" aria-current="page">{p}</span>
                 ) : (
                   <span key={p}>{btn(p, p, t("Page :page", { page: p }), false)}</span>
                 ),

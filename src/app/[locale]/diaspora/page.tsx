@@ -4,6 +4,7 @@ import { pageLocale, type PageParams } from "@/lib/page";
 import { getT, pageMetadata } from "@/lib/server";
 import DiasporaDirectory from "@/components/DiasporaDirectory";
 import FederationForm from "@/components/FederationForm";
+import PageBanner, { BannerStats } from "@/components/PageBanner";
 
 export async function generateMetadata({ params }: PageParams): Promise<Metadata> {
   const locale = await pageLocale(params);
@@ -16,29 +17,27 @@ export default async function DiasporaPage({ params }: PageParams) {
   const [data, t] = await Promise.all([getDiaspora(locale), getT(locale)]);
   const dp = data.page;
   const s = (k: string) => (typeof dp[k] === "string" ? (dp[k] as string) : "");
+  const entries = data.data.entries;
+  const nbPays = new Set(entries.map((e) => e.pays)).size;
+  const nbVilles = new Set(entries.filter((e) => e.ville).map((e) => e.pays + "/" + e.ville)).size;
 
   return (
     <main id="main" className="flex-grow">
-      <h1 className="sr-only">{t("Diaspora")}</h1>
-      <section className="py-14 lg:py-16 px-6 max-w-7xl mx-auto space-y-8 relative overflow-hidden">
-        <i className="fa-solid fa-earth-africa watermark-icon watermark-icon--xl text-ecideBlue" aria-hidden="true"></i>
-        <DiasporaDirectory data={data.data} locale={locale}>
-          <div className="space-y-2 max-w-2xl">
-            <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{s("surtitre") || t("Réseau mondial")}</span>
-            <h2 className="text-4xl font-black text-ecideDarkBlue">{s("titre")}</h2>
-            <p className="text-gray-600">{s("texte")}</p>
-          </div>
-        </DiasporaDirectory>
+      <PageBanner eyebrow={s("surtitre") || t("Réseau mondial")} title={s("titre") || t("Diaspora")} text={s("texte")}>
+        <BannerStats items={[[data.data.continents.length, t("continents")], [nbPays, t("pays")], [nbVilles, t("sections locales")]]} />
+      </PageBanner>
+      <section className="py-12 lg:py-16 px-6 max-w-7xl mx-auto space-y-8">
+        <DiasporaDirectory data={data.data} locale={locale} />
         <p className="text-center text-sm text-gray-500 italic relative">{t("Les noms et profils publics des responsables sont publiés après validation par la Coordination de la Diaspora ; leurs numéros personnels ne sont jamais affichés : utilisez les coordonnées de la fédération ou de la section. « À confirmer » signale un poste dont le titulaire n'est pas encore renseigné.")}</p>
       </section>
 
-      <section id="rejoindre" className="scroll-mt-24 py-24 px-6 bg-gray-50">
+      <section id="rejoindre" className="scroll-mt-24 py-20 lg:py-24 px-6 bg-ecideDarkBlue text-white diag">
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           <div className="space-y-6 reveal">
             <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{s("rejoindreSurtitre") || t("Mobilisation")}</span>
-            <h2 className="text-4xl font-black text-ecideDarkBlue">{s("rejoindreTitre")}</h2>
-            <p className="text-lg text-gray-600 leading-relaxed">{s("rejoindreTexte")}</p>
-            <ul className="space-y-3 text-gray-700">
+            <h2 className="text-4xl lg:text-5xl">{s("rejoindreTitre")}</h2>
+            <p className="text-lg text-blue-100 leading-relaxed">{s("rejoindreTexte")}</p>
+            <ul className="space-y-3 text-blue-50 font-serif">
               {dp.avantages.map((a, i) => (
                 <li key={i} className="flex items-start gap-3"><i className="fa-solid fa-circle-check text-ecideYellow mt-1" aria-hidden="true"></i> {a}</li>
               ))}

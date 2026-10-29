@@ -30,13 +30,13 @@ export default async function ArticlePage({ params }: ArticleParams) {
 
   return (
     <main id="main" className="flex-grow">
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <nav className="max-w-4xl mx-auto text-sm font-medium text-gray-500 flex flex-wrap items-center gap-2" aria-label={t("Fil d'Ariane")}>
-          <Link href={localePath(locale, "/")} className="hover:text-ecideBlue">{t("Accueil")}</Link>
+      <div className="bg-ecideDarkBlue text-blue-200 px-6 py-4">
+        <nav className="max-w-4xl mx-auto text-sm font-sans flex flex-wrap items-center gap-2" aria-label={t("Fil d'Ariane")}>
+          <Link href={localePath(locale, "/")} className="hover:text-white">{t("Accueil")}</Link>
           <i className="fa-solid fa-chevron-right text-xs" aria-hidden="true"></i>
-          <Link href={localePath(locale, "/actualites")} className="hover:text-ecideBlue">{t("Actualités")}</Link>
+          <Link href={localePath(locale, "/actualites")} className="hover:text-white">{t("Actualités")}</Link>
           <i className="fa-solid fa-chevron-right text-xs" aria-hidden="true"></i>
-          <span className="text-gray-800" aria-current="page">{article.titre}</span>
+          <span className="text-white" aria-current="page">{article.titre}</span>
         </nav>
       </div>
 
@@ -44,7 +44,7 @@ export default async function ArticlePage({ params }: ArticleParams) {
         <div className="max-w-4xl mx-auto space-y-10">
           <header className="space-y-6">
             <div className="flex flex-wrap items-center gap-3 text-xs font-bold uppercase tracking-widest">
-              <span className={`${cat.bg} ${cat.text} px-3 py-1 rounded-full`}>{cat.long}</span>
+              <span className="pill">{cat.long}</span>
               <time className="text-gray-500" dateTime={article.date}>{article.dateLabel}</time>
               {article.auteur && (
                 <>
@@ -59,7 +59,7 @@ export default async function ArticlePage({ params }: ArticleParams) {
                 </>
               )}
             </div>
-            <h1 className="text-3xl md:text-5xl font-bold normal-case tracking-tight text-ecideDarkBlue leading-tight">{article.titre}</h1>
+            <h1 className="text-4xl md:text-6xl text-ecideDarkBlue leading-none rule-title">{article.titre}</h1>
             {article.resume && <p className="text-xl md:text-2xl text-gray-600 leading-relaxed">{article.resume}</p>}
           </header>
 
@@ -97,14 +97,14 @@ export default async function ArticlePage({ params }: ArticleParams) {
 
           <ShareButtons title={article.titre} />
 
-          <Link href={localePath(locale, "/actualites")} className="inline-flex items-center gap-2 text-ecideBlue font-bold hover:text-ecideDarkBlue"><i className="fa-solid fa-arrow-left text-sm" aria-hidden="true"></i> {t("Retour aux actualités")}</Link>
+          <Link href={localePath(locale, "/actualites")} className="arrow-link">{t("Retour aux actualités")}</Link>
         </div>
       </article>
 
       {related.length > 0 && (
-        <section className="bg-white py-20 px-6 border-t border-gray-200">
+        <section className="bg-ecideBlue-50 py-20 px-6">
           <div className="max-w-6xl mx-auto space-y-10">
-            <h2 className="text-3xl font-black text-ecideDarkBlue reveal">{t("À lire aussi")}</h2>
+            <h2 className="text-4xl text-ecideDarkBlue reveal">{t("À lire aussi")}</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {related.map((n) => (
                 <RelatedCard key={n.id} n={n} locale={locale} />

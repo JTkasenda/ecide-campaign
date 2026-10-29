@@ -59,14 +59,14 @@ export default function Donation({ config, title, text, warning }: { config: Adh
   }
 
   return (
-    <div id="don" className="bg-white p-8 lg:p-10 shadow-soft space-y-8 reveal">
+    <div id="don" className="panel p-8 lg:p-10 space-y-8 reveal scroll-mt-32">
       <div>
-        <h2 className="text-3xl font-bold text-gray-900">{title}</h2>
+        <h2 className="text-4xl text-ecideDarkBlue no-bar">{title}</h2>
         <p className="text-gray-600 mt-2">{text}</p>
       </div>
       <div className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="font-bold text-gray-700">{t("Sélectionnez le montant")}</p>
+          <p className="font-display font-semibold text-xl text-ecideDarkBlue">{t("Sélectionnez le montant")}</p>
           <div className="flex flex-wrap gap-2" role="group" aria-label={t("Devise")}>
             <button type="button" onClick={() => changeCurrency("cdf")} className={`chip px-4 py-2 text-sm ${currency === "cdf" ? "is-active" : ""}`} aria-pressed={currency === "cdf"}>{t("Francs congolais")}</button>
             <button type="button" onClick={() => changeCurrency("usd")} className={`chip px-4 py-2 text-sm ${currency === "usd" ? "is-active" : ""}`} aria-pressed={currency === "usd"}>{t("Dollars US")}</button>
@@ -89,7 +89,7 @@ export default function Donation({ config, title, text, warning }: { config: Adh
         </p>
       </div>
       <div className="space-y-4">
-        <p className="block font-bold text-gray-700">{t("Méthode de paiement")}</p>
+        <p className="font-display font-semibold text-xl text-ecideDarkBlue">{t("Méthode de paiement")}</p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm" role="group" aria-label={t("Méthodes de paiement")}>
           {config.moyens.map((m) => (
             <button type="button" key={m.key} onClick={() => setMethod(m.key)} className={`chip p-3 ${method === m.key ? "is-active" : ""}`}>{m.court}</button>
@@ -97,8 +97,8 @@ export default function Donation({ config, title, text, warning }: { config: Adh
         </div>
       </div>
       {moyen && (
-        <div className="p-6 bg-gray-50 border border-gray-200 text-base space-y-1" aria-live="polite">
-          <p className="font-black text-gray-900">{moyen.label}</p>
+        <div className="p-6 bg-white border-l-4 border-ecideDarkBlue text-base space-y-1" aria-live="polite">
+          <p className="font-display font-semibold text-xl text-ecideDarkBlue">{moyen.label}</p>
           {moyen.lines.map((l, i) => (
             <p key={i} className="text-gray-700">{l}</p>
           ))}
@@ -114,8 +114,8 @@ export default function Donation({ config, title, text, warning }: { config: Adh
           <Summary text={t("Vous vous apprêtez à contribuer :montant via :moyen.")} montant={`${fmt(amountNum)} ${c.label}`} moyen={moyen?.label || ""} />
         )}
       </p>
-      <button type="button" onClick={confirm} disabled={busy} className="w-full bg-ecideBlue text-white font-black py-4 text-xl hover:bg-ecideDarkBlue transition disabled:opacity-60">
-        <i className="fa-solid fa-hand-holding-heart mr-2" aria-hidden="true"></i>
+      <button type="button" onClick={confirm} disabled={busy} className="btn btn--primary btn--lg w-full disabled:opacity-60">
+        <i className="fa-solid fa-hand-holding-heart text-sm" aria-hidden="true"></i>
         {t("Confirmer le Don")}
       </button>
       {success && (

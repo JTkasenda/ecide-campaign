@@ -1451,3 +1451,128 @@ main :is(.bg-ecideDarkBlue, .bg-ecideBlue) .bar-title {
     padding-left: 1.5rem;
   }
 }
+
+/* ==========================================================================
+   Pages intérieures : les boutons, liens, formulaires et cartes hérités prennent le style du site
+   (condensé, angles droits, bleu nuit et jaune) sans réécrire chaque composant.
+   ========================================================================== */
+main :is(a, button)[class*="bg-ecideBlue"][class*="text-white"]:not(.btn) {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: calc(1.125rem * var(--ts-all));
+  letter-spacing: 0.01em;
+  background: var(--ecide-dark);
+}
+main :is(a, button)[class*="bg-ecideBlue"][class*="text-white"]:not(.btn):hover {
+  background: var(--ecide-blue);
+}
+main :is(a, button)[class*="text-ecideBlue"][class*="font-bold"]:not(.btn):not(.subnav-link),
+main :is(a, button)[class*="text-ecideBlue"][class*="font-semibold"]:not(.btn) {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: calc(1.15rem * var(--ts-all));
+  line-height: 1.1;
+  color: var(--ecide-dark);
+}
+main :is(a, button)[class*="text-ecideBlue"][class*="font-bold"]:not(.btn):hover,
+main :is(a, button)[class*="text-ecideBlue"][class*="font-semibold"]:not(.btn):hover {
+  color: var(--ecide-blue);
+}
+main :is(.bg-ecideDarkBlue, .text-white) :is(a, button)[class*="text-ecideBlue"][class*="font-bold"]:not(.btn):not([class*="bg-white"]),
+main :is(.bg-ecideDarkBlue, .text-white) :is(a, button)[class*="text-ecideBlue"][class*="font-semibold"]:not(.btn):not([class*="bg-white"]) {
+  color: var(--ecide-yellow);
+}
+main :is(a, button)[class*="border-2"][class*="border-ecideBlue"] {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: calc(1.125rem * var(--ts-all));
+  border-width: 1px;
+  border-color: var(--ecide-dark);
+  color: var(--ecide-dark);
+}
+main :is(a, button)[class*="border-2"][class*="border-ecideBlue"]:hover {
+  background: var(--ecide-dark);
+  color: #fff;
+}
+/* Formulaires : étiquettes en condensé, champs blancs soulignés de bleu nuit (obama.org) */
+main form label[class*="font-bold"],
+main form span[class*="font-bold"][class*="uppercase"] {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: calc(1.1rem * var(--ts-all));
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: var(--ecide-dark);
+}
+main :is(input, select, textarea)[class*="bg-gray-50"] {
+  background: #fff;
+  border: 1px solid #c7d0dc;
+  border-bottom: 2px solid var(--ecide-dark);
+}
+main :is(input, select, textarea)[class*="bg-gray-50"]:focus {
+  border-bottom-color: var(--ecide-yellow);
+}
+/* Cartes de contenu : fond gris-bleu et filet jaune en bas (warnockforgeorgia.com) */
+.panel {
+  background: var(--color-ecideBlue-50);
+  border-bottom: 4px solid var(--ecide-yellow);
+}
+.panel--white {
+  background: #fff;
+}
+.panel--dark {
+  background: var(--ecide-dark);
+  color: #fff;
+}
+.org-card {
+  background: #fff;
+  border-bottom: 4px solid var(--ecide-yellow);
+}
+/* Petites étiquettes grises des annuaires */
+main span[class*="bg-gray-100"][class*="uppercase"] {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  font-size: calc(0.9rem * var(--ts-all));
+  background: #fff;
+  border: 1px solid #c7d0dc;
+}
+/* Onglets des actualités sur bande bleu nuit */
+.bg-ecideDarkBlue .news-tab {
+  background: #fff;
+  color: var(--ecide-dark);
+  border-color: #fff;
+}
+.bg-ecideDarkBlue .news-tab:hover,
+.bg-ecideDarkBlue .news-tab.is-active {
+  background: var(--ecide-yellow);
+  border-color: var(--ecide-yellow);
+  color: var(--ecide-dark);
+}
+/* Titres de rubriques des colonnes (actualités) : filet épais au-dessus */
+.rule-title {
+  border-top: 6px solid currentColor;
+  padding-top: 0.75rem;
+}
+/* Sections sombres : titres et sous-titres en blanc, corps en bleu clair */
+main .bg-ecideDarkBlue :is(h2, h3, h4)[class*="text-ecideDarkBlue"],
+main .bg-ecideDarkBlue :is(h2, h3, h4)[class*="text-gray-900"] {
+  color: #fff;
+}
+main .bg-ecideDarkBlue p[class*="text-gray-600"],
+main .bg-ecideDarkBlue p[class*="text-gray-700"] {
+  color: #dbe4f3;
+}
+main .bg-ecideDarkBlue .panel--white :is(h2, h3, h4, p),
+main .bg-ecideDarkBlue .panel :is(h2, h3, h4) {
+  color: var(--ecide-dark);
+}
+main .bg-ecideDarkBlue .panel p[class*="text-gray"],
+main .bg-ecideDarkBlue .panel--white p[class*="text-gray"] {
+  color: #374151;
+}
+/* Sommaire : lien d'action à droite */
+.page-subnav .subnav-link.ml-auto {
+  color: var(--ecide-blue);
+}

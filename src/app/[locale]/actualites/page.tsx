@@ -26,18 +26,18 @@ export default async function ActualitesPage({ params }: PageParams) {
     <main id="main" className="flex-grow">
       <NewsFilterProvider>
         {/* MANCHETTE */}
-        <section className="bg-white border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-6 pt-10 pb-0">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b-2 border-ecideDarkBlue">
-              <div className="space-y-2">
-                <p className="text-xs font-bold uppercase tracking-widest text-gray-500">
+        <section className="bg-ecideDarkBlue text-white diag">
+          <div className="max-w-7xl mx-auto px-6 pt-12 pb-6">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 mb-2 border-b border-white/20">
+              <div className="space-y-3">
+                <p className="eyebrow">
                   <i className="fa-regular fa-calendar mr-2" aria-hidden="true"></i>
                   {t("Édition du")} <time dateTime={edition.date}>{edition.dateLabel}</time> · {ap.signature || "Communication ECiDé"}
                 </p>
-                <h1 className="text-5xl lg:text-6xl leading-none text-ecideDarkBlue">{t("Actualités")}</h1>
-                <p className="text-gray-600">{ap.sousTitre || ""}</p>
+                <h1 className="text-5xl lg:text-6xl leading-none text-white">{t("Actualités")}</h1>
+                <p className="text-lg text-blue-100">{ap.sousTitre || ""}</p>
               </div>
-              <a href="#canaux" className="inline-flex items-center gap-2 text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue"><i className="fa-solid fa-circle-check text-ecideGreen" aria-hidden="true"></i>{t("Seuls nos canaux officiels font foi")}</a>
+              <a href="#canaux" className="arrow-link arrow-link--light"><i className="fa-solid fa-circle-check text-ecideGreen" aria-hidden="true"></i>{t("Seuls nos canaux officiels font foi")}</a>
             </div>
             <NewsTabs categories={data.categories} labels={{ all: t("Toutes"), sections: t("Rubriques"), declarations: t("Déclarations"), communiques: t("Communiqués"), presse: t("Revue de presse"), directs: t("Directs & replays") }} />
           </div>
@@ -91,7 +91,7 @@ export default async function ActualitesPage({ params }: PageParams) {
             <aside className="news-aside space-y-10 lg:border-l lg:border-gray-200 lg:pl-10">
               {video && (
                 <section className="reveal">
-                  <h2 className="text-xl text-ecideDarkBlue pb-3 border-b-2 border-ecideDarkBlue">{t("Directs & vidéos")}</h2>
+                  <h2 className="text-2xl text-ecideDarkBlue rule-title">{t("Directs & vidéos")}</h2>
                   {video.embed ? (
                     <div className="mt-4"><VideoPlayer embed={video.embed} title={video.titre} duree={video.duree} badge={video.typeLabel || t("Vidéo")} label={t("Lire la vidéo :")} watch={{ url: video.lien, plateforme: video.plateforme, here: t("Ici ou sur la plateforme") }} /></div>
                   ) : (
@@ -104,7 +104,7 @@ export default async function ActualitesPage({ params }: PageParams) {
                   <h3 className="text-lg text-gray-900 mt-4 leading-tight"><Link href={presidentUrl} className="hover:text-ecideBlue">{video.titre}</Link></h3>
                   {!video.embed && video.lien && <WatchLink url={video.lien} plateforme={video.plateforme} className="text-sm mt-2" />}
                   <p className="text-sm text-gray-500 mt-1">{video.lieu}{video.date ? ` · ${video.dateLabel}` : ""}</p>
-                  <Link href={presidentUrl} className="inline-flex items-center gap-2 text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue mt-4">{t("Tous les discours & vidéos")} <i className="fa-solid fa-arrow-right text-xs" aria-hidden="true"></i></Link>
+                  <Link href={presidentUrl} className="arrow-link mt-4">{t("Tous les discours & vidéos")}</Link>
                 </section>
               )}
               {data.newsletter && (
@@ -120,14 +120,14 @@ export default async function ActualitesPage({ params }: PageParams) {
       </NewsFilterProvider>
 
       {/* POSITIONS & CANAUX */}
-      <section className="bg-gray-50 border-t border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-2 gap-12">
+      <section className="bg-ecideBlue-50">
+        <div className="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-2 gap-12">
           <section className="reveal">
-            <h2 className="text-xl text-ecideDarkBlue pb-3 border-b-2 border-ecideDarkBlue">{t("Positions officielles")}</h2>
+            <h2 className="text-2xl text-ecideDarkBlue rule-title">{t("Positions officielles")}</h2>
             <ol className="mt-4 space-y-4">
               {positions.map((pos, i) => (
                 <li key={i} className="flex gap-4">
-                  <span className="font-display text-3xl text-gray-300 leading-none w-8 shrink-0">{pad2(i + 1)}</span>
+                  <span className="font-display text-3xl text-ecideBlue leading-none w-10 shrink-0">{pad2(i + 1)}</span>
                   <div>
                     <p className="font-bold text-gray-900">{pos.titre}</p>
                     <p className="text-sm text-gray-500">{pos.texte}</p>
@@ -135,10 +135,10 @@ export default async function ActualitesPage({ params }: PageParams) {
                 </li>
               ))}
             </ol>
-            <Link href={`${localePath(locale, "/parti")}#valeurs`} className="inline-flex items-center gap-2 text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue mt-4">{t("Notre charte")} <i className="fa-solid fa-arrow-right text-xs" aria-hidden="true"></i></Link>
+            <Link href={`${localePath(locale, "/parti")}#valeurs`} className="arrow-link mt-4">{t("Notre charte")}</Link>
           </section>
           <section id="canaux" className="reveal">
-            <h2 className="text-xl text-ecideDarkBlue pb-3 border-b-2 border-ecideDarkBlue">{t("Canaux officiels")}</h2>
+            <h2 className="text-2xl text-ecideDarkBlue rule-title">{t("Canaux officiels")}</h2>
             <p className="text-sm text-gray-600 mt-3">{ap.canauxTexte || ""}</p>
             <ul className="mt-4 divide-y divide-gray-200">
               {socials.length === 0 && <li className="py-3 text-sm text-gray-500">{t("Les canaux officiels seront annoncés prochainement.")}</li>}

@@ -59,7 +59,7 @@ function Status({ state, busy = false, onResubscribe }: { state: State; busy?: b
   const l = isLocale(locale) ? locale : "fr";
   const icon = state.step === "pending" ? "fa-spinner fa-spin text-ecideBlue" : state.step === "error" ? "fa-circle-exclamation text-red-600" : "fa-circle-check text-ecideGreen";
   return (
-    <div className="bg-white border border-gray-200 p-8 lg:p-10 space-y-6 text-center" aria-live="polite">
+    <div className="panel p-8 lg:p-10 space-y-6 text-center" aria-live="polite">
       <i className={`fa-solid ${icon} text-5xl`} aria-hidden="true"></i>
       {state.step === "pending" && <p className="text-lg text-gray-600">{t("Traitement de votre demande…")}</p>}
       {state.step === "done" && (
@@ -71,7 +71,7 @@ function Status({ state, busy = false, onResubscribe }: { state: State; busy?: b
             </p>
           )}
           {state.email && onResubscribe && (
-            <button type="button" onClick={() => onResubscribe(state.email)} disabled={busy} className="inline-flex items-center gap-2 border-2 border-ecideBlue-200 text-ecideBlue font-bold px-6 py-3 hover:bg-ecideBlue hover:text-white transition disabled:opacity-60">
+            <button type="button" onClick={() => onResubscribe(state.email)} disabled={busy} className="btn btn--dark disabled:opacity-60">
               <i className="fa-solid fa-envelope" aria-hidden="true"></i>
               {t("Se réabonner")}
             </button>
@@ -81,9 +81,7 @@ function Status({ state, busy = false, onResubscribe }: { state: State; busy?: b
       {state.step === "resubscribed" && <p className="text-lg font-semibold text-gray-900">{state.message}</p>}
       {state.step === "error" && <p className="text-lg font-semibold text-red-700">{state.message}</p>}
       <div>
-        <Link href={localePath(l, "/")} className="inline-flex items-center gap-2 text-ecideBlue font-bold hover:text-ecideDarkBlue">
-          <i className="fa-solid fa-arrow-left text-sm" aria-hidden="true"></i> {t("Retour à l'accueil")}
-        </Link>
+        <Link href={localePath(l, "/")} className="arrow-link">{t("Retour à l'accueil")}</Link>
       </div>
     </div>
   );

@@ -37,7 +37,7 @@ export default function FederationForm({ choix, confirmation, labels }: { choix:
   }
 
   return (
-    <form onSubmit={submit} className="bg-white p-8 lg:p-10 shadow-soft space-y-5 reveal">
+    <form onSubmit={submit} className="bg-white text-gray-900 p-8 lg:p-10 space-y-5 reveal">
       <div>
         <label htmlFor="dName" className="block font-bold text-gray-700 mb-2">{labels.name}</label>
         <input id="dName" type="text" required value={form.nom} onChange={(e) => setForm({ ...form, nom: e.target.value })} className={input} />
@@ -64,7 +64,7 @@ export default function FederationForm({ choix, confirmation, labels }: { choix:
           ))}
         </select>
       </div>
-      <button type="submit" disabled={busy} className="w-full bg-ecideBlue text-white font-bold py-4 text-lg hover:bg-ecideDarkBlue transition disabled:opacity-60">{labels.submit}</button>
+      <button type="submit" disabled={busy} className="btn btn--primary btn--lg w-full disabled:opacity-60">{labels.submit}</button>
     </form>
   );
 }

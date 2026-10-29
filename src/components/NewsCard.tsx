@@ -35,14 +35,14 @@ export function NewsMeta({ n, size = "text-xs" }: { n: NewsItem; size?: string }
 export function RelatedCard({ n, locale }: { n: NewsItem; locale: Locale }) {
   const c = n.categorie;
   return (
-    <article className="bg-gray-50 overflow-hidden border border-gray-100 hover:shadow-soft transition reveal">
+    <article className="panel panel--white overflow-hidden transition reveal">
       <div className={`relative h-40 overflow-hidden ${c.bg} flex items-center justify-center`}>
         {n.image ? <img src={n.image} alt="" loading="lazy" className="w-full h-full object-cover" /> : <i className={`${c.icon} text-4xl ${c.muted}`} aria-hidden="true"></i>}
         {n.duree && <span className="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] font-bold px-1.5 py-0.5">{n.duree}</span>}
       </div>
       <div className="p-6 space-y-2">
         <span className={`text-xs font-bold ${c.text} uppercase tracking-widest`}>{c.label}</span>
-        <h3 className="font-bold text-lg text-gray-900 leading-snug">
+        <h3 className="text-2xl text-gray-900 leading-tight">
           <Link href={localePath(locale, n.url)} className="hover:text-ecideBlue">{n.titre}</Link>
         </h3>
       </div>

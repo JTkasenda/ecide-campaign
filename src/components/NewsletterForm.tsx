@@ -68,24 +68,24 @@ export default function NewsletterForm({ variant, labels, description }: { varia
 
   if (variant === "aside") {
     return (
-      <section className="bg-ecideYellow-50 border border-ecideYellow-100 p-6 reveal">
-        <h2 className="text-xl text-ecideDarkBlue">{labels.title}</h2>
-        {description && <p className="text-sm text-gray-600 mt-2">{description}</p>}
+      <section className="bg-ecideDarkBlue text-white p-6 reveal diag">
+        <h2 className="text-2xl">{labels.title}</h2>
+        {description && <p className="text-sm text-blue-100 mt-2">{description}</p>}
         <form onSubmit={submit} className="mt-4 space-y-2">
           {labels.name && (
             <>
               <label htmlFor={`${id}Name`} className="sr-only">{labels.name}</label>
-              <input id={`${id}Name`} name="nom" type="text" autoComplete="given-name" maxLength={120} value={name} onChange={(e) => setName(e.target.value)} placeholder={labels.name} className="w-full px-4 py-3 bg-white border border-gray-200 text-sm focus:ring-2 focus:ring-ecideBlue" />
+              <input id={`${id}Name`} name="nom" type="text" autoComplete="given-name" maxLength={120} value={name} onChange={(e) => setName(e.target.value)} placeholder={labels.name} className="w-full px-4 py-3 bg-white text-gray-900 border border-gray-200 text-sm focus:ring-2 focus:ring-ecideYellow" />
             </>
           )}
           <div className="flex gap-2">
             <label htmlFor={id} className="sr-only">{labels.placeholder}</label>
-            <input id={id} name="email" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={labels.placeholder} className="flex-1 min-w-0 px-4 py-3 bg-white border border-gray-200 text-sm focus:ring-2 focus:ring-ecideBlue" />
-            <button type="submit" disabled={busy} className="bg-ecideBlue text-white font-bold px-4 hover:bg-ecideDarkBlue transition disabled:opacity-60" aria-label={labels.submit}>
+            <input id={id} name="email" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={labels.placeholder} className="flex-1 min-w-0 px-4 py-3 bg-white text-gray-900 border border-gray-200 text-sm focus:ring-2 focus:ring-ecideYellow" />
+            <button type="submit" disabled={busy} className="btn btn--primary px-4 disabled:opacity-60" aria-label={labels.submit}>
               <i className="fa-solid fa-paper-plane" aria-hidden="true"></i>
             </button>
           </div>
-          {labels.note && <p className="text-xs text-gray-500 pt-1">{labels.note}</p>}
+          {labels.note && <p className="text-xs text-blue-200 pt-1">{labels.note}</p>}
         </form>
       </section>
     );

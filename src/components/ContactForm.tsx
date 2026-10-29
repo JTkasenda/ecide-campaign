@@ -51,8 +51,8 @@ function Form({ destinataires, confirmation, labels, structure }: { destinataire
 
   const input = "w-full p-4 bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-ecideBlue";
   return (
-    <form onSubmit={submit} className="lg:col-span-3 bg-white p-8 lg:p-10 shadow-soft space-y-6 reveal">
-      <h2 className="text-3xl font-bold text-gray-900">{labels.title}</h2>
+    <form onSubmit={submit} className="lg:col-span-3 bg-ecideBlue-50 p-8 lg:p-10 space-y-6">
+      <h2 className="text-4xl text-ecideDarkBlue no-bar">{labels.title}</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
           <label htmlFor="cName" className="block font-bold text-gray-700 mb-2">{labels.name}</label>
@@ -76,7 +76,7 @@ function Form({ destinataires, confirmation, labels, structure }: { destinataire
         <label htmlFor="cMessage" className="block font-bold text-gray-700 mb-2">{labels.message}</label>
         <textarea id="cMessage" name="message" rows={6} required value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder={structure ? t("Votre message à la structure « :structure » sera transmis à ses responsables.", { structure }) : undefined} className={input}></textarea>
       </div>
-      <button type="submit" disabled={busy} className="w-full sm:w-auto bg-ecideBlue text-white font-bold px-10 py-4 text-lg hover:bg-ecideDarkBlue transition disabled:opacity-60"><i className="fa-solid fa-paper-plane mr-2" aria-hidden="true"></i>{labels.submit}</button>
+      <button type="submit" disabled={busy} className="btn btn--dark btn--lg w-full sm:w-auto disabled:opacity-60"><i className="fa-solid fa-paper-plane text-sm" aria-hidden="true"></i>{labels.submit}</button>
     </form>
   );
 }

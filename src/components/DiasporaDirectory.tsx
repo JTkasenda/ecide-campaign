@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, type ReactNode } from "react";
+import { useMemo } from "react";
 import { TONE, telHref, waLink, safeUrl } from "@/lib/format";
 import { useI18n } from "@/lib/i18n";
 import { localePath, type Locale } from "@/lib/locales";
@@ -18,7 +18,7 @@ interface State {
 }
 
 /** Annuaire de la diaspora : continent → pays → ville (section locale), avec recherche ; l'état vit dans l'adresse (#continent=…). */
-export default function DiasporaDirectory({ data, locale, children }: { data: DiasporaData; locale: Locale; children?: ReactNode }) {
+export default function DiasporaDirectory({ data, locale }: { data: DiasporaData; locale: Locale }) {
   const { t } = useI18n();
   const [hash, setHash] = useHashParams();
   const continentOf = (id: string) => data.continents.find((c) => c.id === id);
@@ -50,30 +50,12 @@ export default function DiasporaDirectory({ data, locale, children }: { data: Di
 
   const paysList = Array.from(new Set(data.entries.filter((e) => state.continent === "all" || e.continent === state.continent).map((e) => e.pays))).sort((a, b) => a.localeCompare(b, "fr"));
   const villes = state.pays ? Array.from(new Set(data.entries.filter((e) => e.pays === state.pays && e.ville).map((e) => e.ville))).sort((a, b) => a.localeCompare(b, "fr")) : [];
-  const nbPays = new Set(data.entries.map((e) => e.pays)).size;
-  const nbVilles = new Set(data.entries.filter((e) => e.ville).map((e) => e.pays + "/" + e.ville)).size;
   const cur = continentOf(state.continent);
   const crumbs = [state.continent === "all" ? t("Diaspora") : cur?.label || "", ...(state.pays ? [state.pays] : []), ...(state.ville ? [state.ville] : []), ...(state.q.trim() ? [`« ${state.q.trim()} »`] : [])];
   const selectCls = "w-full p-3 bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-ecideBlue";
 
   return (
     <>
-      <div className="relative flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-        {children}
-        <div className="flex flex-wrap gap-x-10 gap-y-4">
-          {[
-            [data.continents.length, t("continents")],
-            [nbPays, t("pays")],
-            [nbVilles, t("sections locales")],
-          ].map(([n, l]) => (
-            <div key={String(l)}>
-              <span className="font-display text-4xl font-bold text-ecideDarkBlue block leading-none">{n}</span>
-              <span className="text-xs font-bold uppercase tracking-widest text-gray-500">{l}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
       <div className="space-y-3 relative">
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Continent")}</span>
@@ -93,7 +75,7 @@ export default function DiasporaDirectory({ data, locale, children }: { data: Di
         <p className="text-sm text-gray-500">{cur ? cur.hint : t("Toutes les représentations de l'ECiDé à l'étranger.")}</p>
       </div>
 
-      <div className="bg-white border border-gray-200 p-5 lg:p-6 space-y-5 relative">
+      <div className="bg-ecideBlue-50 p-5 lg:p-6 space-y-5 relative">
         <label className="block">
           <span className="sr-only">{t("Rechercher une représentation")}</span>
           <span className="relative block">
@@ -164,13 +146,13 @@ function EntryCard({ e, continentLabel, color, contacts, organes, contactUrl, on
   const c = contacts[e.organe] || ({} as StructureContact);
   const row = "flex items-center gap-2 text-gray-800 hover:text-ecideBlue";
   return (
-    <article className={`bg-white p-6 shadow-soft space-y-3 ${tone.border} reveal is-visible`}>
+    <article className="panel p-6 space-y-3 reveal is-visible">
       <div className="flex items-start justify-between gap-3">
-        <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl ${tone.avatar}`}><i className={`fa-solid ${e.ville ? "fa-city" : "fa-flag"}`} aria-hidden="true"></i></div>
+        <div className={`icon-tile ${tone.avatar}`}><i className={`fa-solid ${e.ville ? "fa-city" : "fa-flag"}`} aria-hidden="true"></i></div>
         <span className={`text-[11px] font-bold uppercase tracking-widest ${tone.tag}`}>{e.ville ? t("Section locale") : t("Secrétariat provincial exécutif")}</span>
       </div>
       <div>
-        <h3 className="text-lg font-bold text-gray-900 leading-tight">{e.organeLabel || e.organe}</h3>
+        <h3 className="text-2xl text-gray-900 leading-tight">{e.organeLabel || e.organe}</h3>
         <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mt-1">{e.fonction}</p>
       </div>
       <p className={pending ? "text-gray-400 italic" : "text-gray-800 font-semibold"}>{pending ? t(PENDING) : e.nom}</p>
