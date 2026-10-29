@@ -88,7 +88,7 @@ export default async function PartiPage({ params }: PageParams) {
           { href: "#organisation", label: t("Organigramme") },
         ]}
       >
-        <Link href={localePath(locale, "/cadres")} className="subnav-link ml-auto shrink-0"><i className="fa-solid fa-people-group mr-2" aria-hidden="true"></i>{t("Annuaire des cadres")}</Link>
+        <Link href={localePath(locale, "/cadres")}><i className="fa-solid fa-people-group" aria-hidden="true"></i><span>{t("Annuaire des cadres")}</span></Link>
       </PageSubnav>
 
       {/* VISION */}

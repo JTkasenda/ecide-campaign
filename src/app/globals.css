@@ -848,27 +848,6 @@ details[open] .faq-icon {
   transform: none;
 }
 
-/* Sommaire de page */
-.subnav-link {
-  display: inline-block;
-  margin: 0.6rem 0;
-  padding: 0.45rem 1rem;
-  border-radius: 9999px;
-  font-size: calc(0.875rem * var(--ts-all));
-  font-weight: 600;
-  color: #4b5563;
-  white-space: nowrap;
-  transition: color 0.15s ease, background-color 0.15s ease;
-}
-.subnav-link:hover {
-  color: var(--ecide-blue);
-  background: var(--ecide-paper);
-}
-.subnav-link.is-active {
-  color: #fff;
-  background: var(--ecide-blue);
-}
-
 /* Organigramme */
 .orgchart {
   display: flex;
@@ -1084,7 +1063,6 @@ footer :is(a, button)[class*="bg-ecide"][class*="font-black"],
 .pill,
 .icon-tile,
 .chip,
-.subnav-link,
 .news-tab,
 .chyron-tag,
 main :is(input, select, textarea):not([type="checkbox"]):not([type="radio"]),
@@ -1196,7 +1174,6 @@ main h2.no-bar {
 .mobile-link[aria-current="page"] {
   color: var(--ecide-blue);
 }
-.subnav-link,
 .news-tab {
   font-family: var(--font-sans);
   font-weight: 800;
@@ -1204,10 +1181,6 @@ main h2.no-bar {
   letter-spacing: 0.14em;
   font-size: calc(0.7rem * var(--ts-all));
 }
-.subnav-link:hover {
-  background: var(--ecide-paper);
-}
-.subnav-link.is-active,
 .news-tab.is-active {
   background: var(--ecide-dark);
   color: #fff;
@@ -1328,7 +1301,6 @@ button,
 .eyebrow,
 .nav-link,
 .mobile-link,
-.subnav-link,
 .news-tab,
 .chip,
 .chyron-tag,
@@ -1384,7 +1356,6 @@ main :is(.bg-ecideBlue, .bg-ecideDarkBlue, .block-gradient) span[class*="text-ec
 .mobile-link {
   font-size: calc(1.35rem * var(--ts-all));
 }
-.subnav-link,
 .news-tab {
   text-transform: none;
   letter-spacing: 0.01em;
@@ -1572,7 +1543,244 @@ main .bg-ecideDarkBlue .panel p[class*="text-gray"],
 main .bg-ecideDarkBlue .panel--white p[class*="text-gray"] {
   color: #374151;
 }
-/* Sommaire : lien d'action à droite */
-.page-subnav .subnav-link.ml-auto {
-  color: var(--ecide-blue);
+
+@layer components {
+  /* ------------------------------------------------------------------------
+     Sommaire de page (voir PageSubnav) : index jaune sous le bandeau, barre collante sous
+     l'en-tête jusqu'à 1359 px, rail fixe à droite au-delà.
+     ------------------------------------------------------------------------ */
+  .subnav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-display);
+    font-size: calc(1.05rem * var(--ts-all));
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+  .subnav-num {
+    font-family: var(--font-display);
+    font-size: calc(0.75rem * var(--ts-all));
+    font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+
+  /* Index jaune */
+  .subnav-index {
+    background: var(--ecide-yellow);
+    color: var(--ecide-dark);
+    padding: 0.75rem 0;
+  }
+  .subnav-title {
+    font-family: var(--font-display);
+    font-size: calc(0.8rem * var(--ts-all));
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-right: 0.5rem;
+  }
+  .subnav-index-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .subnav-index .subnav-link {
+    padding: 0.45rem 0.75rem;
+    color: var(--ecide-dark);
+  }
+  .subnav-index .subnav-link:hover,
+  .subnav-index .subnav-link.is-active {
+    background: var(--ecide-dark);
+    color: #fff;
+  }
+  .subnav-index .subnav-num {
+    color: var(--ecide-blue);
+  }
+  .subnav-index .subnav-link:hover .subnav-num,
+  .subnav-index .subnav-link.is-active .subnav-num {
+    color: var(--ecide-yellow);
+  }
+  .subnav-extra {
+    margin-left: auto;
+  }
+  .subnav-extra > a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.9rem;
+    font-family: var(--font-display);
+    font-size: calc(1.05rem * var(--ts-all));
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    background: var(--ecide-dark);
+    color: #fff;
+  }
+  .subnav-extra > a:hover {
+    background: var(--ecide-blue);
+  }
+
+  /* Barre collante sous l'en-tête */
+  .subnav-sticky {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: var(--header-h);
+    z-index: 30;
+    background: var(--ecide-dark);
+    color: #fff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 24px rgba(0, 27, 82, 0.2);
+    opacity: 0;
+    transform: translateY(-0.5rem);
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  .subnav-sticky.is-shown {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+  .subnav-current {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    min-width: 0;
+    padding: 0.7rem 0;
+    font-family: var(--font-display);
+    font-size: calc(1.05rem * var(--ts-all));
+    font-weight: 600;
+    color: #fff;
+    text-align: left;
+  }
+  .subnav-current .subnav-num {
+    color: var(--ecide-yellow);
+  }
+  .subnav-current > i {
+    margin-left: auto;
+    color: var(--ecide-yellow);
+  }
+  .subnav-sheet {
+    position: absolute;
+    left: 1.5rem;
+    right: 1.5rem;
+    top: 100%;
+    margin: 0.25rem 0 0;
+    padding: 0.25rem 0;
+    list-style: none;
+    background: var(--ecide-dark);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 16px 40px rgba(0, 27, 82, 0.35);
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+  @media (min-width: 640px) {
+    .subnav-sheet {
+      right: auto;
+      min-width: 20rem;
+    }
+  }
+  .subnav-sheet .subnav-link {
+    display: flex;
+    width: 100%;
+    padding: 0.7rem 1rem;
+    color: #dbe4f3;
+    white-space: normal;
+  }
+  .subnav-sheet .subnav-num {
+    color: var(--ecide-yellow);
+  }
+  .subnav-sheet .subnav-link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .subnav-sheet .subnav-link.is-active {
+    background: var(--ecide-yellow);
+    color: var(--ecide-dark);
+  }
+  .subnav-sheet .subnav-link.is-active .subnav-num {
+    color: var(--ecide-dark);
+  }
+
+  /* Rail latéral */
+  .subnav-rail {
+    display: none;
+  }
+  @media (min-width: 1360px) {
+    .subnav-sticky {
+      display: none;
+    }
+    .subnav-rail {
+      position: fixed;
+      right: 1.25rem;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 30;
+      display: flex;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .subnav-rail.is-shown {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .subnav-rail {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.4rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .subnav-rail .subnav-link {
+      flex-direction: row-reverse;
+      gap: 0;
+      background: var(--ecide-dark);
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(0, 27, 82, 0.25);
+    }
+    .subnav-rail .subnav-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      font-size: calc(0.8rem * var(--ts-all));
+      color: var(--ecide-yellow);
+    }
+    .subnav-rail .subnav-label {
+      max-width: 0;
+      overflow: hidden;
+      padding: 0;
+      opacity: 0;
+      transition: max-width 0.25s ease, padding 0.25s ease, opacity 0.2s ease;
+    }
+    .subnav-rail .subnav-link:hover .subnav-label,
+    .subnav-rail .subnav-link:focus-visible .subnav-label,
+    .subnav-rail .subnav-link.is-active .subnav-label {
+      max-width: 18rem;
+      padding-left: 1rem;
+      opacity: 1;
+    }
+    .subnav-rail .subnav-link.is-active {
+      background: var(--ecide-yellow);
+      color: var(--ecide-dark);
+    }
+    .subnav-rail .subnav-link.is-active .subnav-num {
+      color: var(--ecide-dark);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .subnav-rail .subnav-label {
+      transition: none;
+    }
+  }
 }
