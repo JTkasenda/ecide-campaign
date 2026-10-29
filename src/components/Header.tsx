@@ -11,7 +11,7 @@ import type { Site } from "@/lib/types";
 /**
  * En-tête façon site de campagne : bandeau bleu nuit, logo à gauche, boutons « Adhérer » et
  * « Faire un don » à droite, et un bouton de menu (hamburger) à toutes les largeurs et sur toutes
- * les pages, qui ouvre le panneau des pages du site. Les pages sont aussi listées sur l'accueil
+ * les pages, qui ouvre un panneau minimaliste : les pages principales seulement. Les pages sont aussi listées sur l'accueil
  * (section « Explorer le site ») et dans le pied de page.
  */
 export default function Header({ site, locale }: { site: Site; locale: Locale }) {
@@ -21,7 +21,9 @@ export default function Header({ site, locale }: { site: Site; locale: Locale })
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const p = site.params;
-  const nav = siteNav(site, t).filter((n) => n.key !== "home");
+  // Menu minimaliste : les pages principales seulement ; les sous-pages (organigramme, charte, projet,
+  // biographie) restent accessibles depuis leur page parente, le pied de page et les cartes de l'accueil
+  const nav = siteNav(site, t).filter((n) => n.key !== "home" && !n.sub);
   const donUrl = p.don || `${localePath(locale, "/adherer")}#don`;
   const donExternal = /^https?:/i.test(donUrl);
 
@@ -113,7 +115,7 @@ export default function Header({ site, locale }: { site: Site; locale: Locale })
           {t("Accueil")}
         </Link>
         {nav.map((n, i) => (
-          <Link key={n.id || n.url} href={localePath(locale, n.url)} onClick={() => setOpen(false)} className={`mobile-link block py-3 text-gray-700 ${n.sub ? "mobile-link--sub " : ""}${i === nav.length - 1 ? "" : "border-b"}`} aria-current={isActive(n) ? "page" : undefined}>
+          <Link key={n.id || n.url} href={localePath(locale, n.url)} onClick={() => setOpen(false)} className={`mobile-link block py-3 text-gray-700 ${i === nav.length - 1 ? "" : "border-b"}`} aria-current={isActive(n) ? "page" : undefined}>
             {n.libelle}
           </Link>
         ))}

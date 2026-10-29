@@ -1782,17 +1782,9 @@ main .bg-ecideDarkBlue .panel--white p[class*="text-gray"] {
 }
 
 /* ==========================================================================
-   Pages-documents (charte des valeurs, projet de société) et sous-entrées du menu
+   Pages-documents (charte des valeurs, projet de société, biographie)
    ========================================================================== */
 @layer components {
-  .mobile-link--sub {
-    padding-left: 1.5rem;
-    font-size: calc(0.7rem * var(--ts-all));
-    color: #4b5563;
-  }
-  .mobile-link--sub[aria-current="page"] {
-    padding-left: 1.5rem;
-  }
   /* Aperçu du PDF dans la page : le lecteur du navigateur, à hauteur d'écran */
   .pdf-frame {
     display: block;
