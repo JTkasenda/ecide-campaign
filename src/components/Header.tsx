@@ -93,10 +93,10 @@ export default function Header({ site, locale }: { site: Site; locale: Locale })
           </Link>
 
           <div className="flex items-center gap-2 sm:gap-3 min-w-0 shrink-0 max-w-[calc(100%-3.5rem)] sm:max-w-none">
-            <label className="lang-switch hidden sm:flex items-center gap-2 text-blue-100 hover:text-white px-2 py-1.5 text-[11px] font-sans font-bold tracking-widest relative cursor-pointer transition">
-              <i className="fa-solid fa-globe" aria-hidden="true"></i>
+            <label className="lang-switch hidden sm:flex items-center gap-2 text-white border border-white/50 hover:border-white hover:bg-white/10 px-3 py-2 text-xs font-sans font-bold tracking-widest relative cursor-pointer transition">
+              <i className="fa-solid fa-globe text-ecideYellow" aria-hidden="true"></i>
               <span>{locale.toUpperCase()}</span>
-              <i className="fa-solid fa-chevron-down text-[9px] text-blue-300" aria-hidden="true"></i>
+              <i className="fa-solid fa-chevron-down text-[9px] text-ecideYellow" aria-hidden="true"></i>
               {langSelect("langSelect", "absolute inset-0 w-full h-full opacity-0 cursor-pointer")}
             </label>
             <Link href={localePath(locale, site.cta.url)} className="btn btn--outline-white btn--sm min-w-0 hidden md:inline-flex">
@@ -122,7 +122,7 @@ export default function Header({ site, locale }: { site: Site; locale: Locale })
         <label className="sm:hidden flex items-center gap-3 py-3 border-t text-sm font-sans font-semibold text-gray-700">
           <i className="fa-solid fa-globe text-ecideBlue" aria-hidden="true"></i>
           <span>{t("Langue")}</span>
-          {langSelect("langSelectMobile", "ml-auto min-w-0 bg-gray-100 px-3 py-2 text-sm font-semibold focus:outline-none")}
+          {langSelect("langSelectMobile", "ml-auto min-w-0 bg-white border border-ecideDarkBlue text-ecideDarkBlue px-3 py-2 text-sm font-semibold focus:outline-none")}
         </label>
         <div className="flex flex-col sm:flex-row gap-3 mt-4">
           <Link href={localePath(locale, site.cta.url)} onClick={() => setOpen(false)} className="btn btn--dark flex-1">

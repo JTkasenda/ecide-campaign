@@ -237,6 +237,10 @@ select {
 .eyebrow--dark {
   color: #9a7400;
 }
+/* Sur le bandeau jaune, le surtitre doré ne se lit pas : bleu nuit */
+main .bg-ecideYellow .eyebrow--dark {
+  color: var(--ecide-dark);
+}
 /* Titre de section avec la barre jaune à gauche */
 .bar-title {
   border-left: 5px solid var(--ecide-yellow);
@@ -581,7 +585,7 @@ footer :is(a, button)[class*="bg-ecide"][class*="font-black"] {
 }
 .chyron-date {
   font-size: calc(0.75rem * var(--ts-all));
-  color: #9ca3af;
+  color: #4b5563;
 }
 .chyron-date::before {
   content: "· ";
@@ -1427,15 +1431,33 @@ main :is(.bg-ecideDarkBlue, .bg-ecideBlue) .bar-title {
    Pages intérieures : les boutons, liens, formulaires et cartes hérités prennent le style du site
    (condensé, angles droits, bleu nuit et jaune) sans réécrire chaque composant.
    ========================================================================== */
-main :is(a, button)[class*="bg-ecideBlue"][class*="text-white"]:not(.btn) {
+/* Seuls les liens réellement « bg-ecideBlue text-white » (pas les variantes hover:, ni bg-ecideBlue-50) */
+main :is(a, button)[class~="bg-ecideBlue"][class~="text-white"]:not(.btn) {
   font-family: var(--font-display);
   font-weight: 600;
   font-size: calc(1.125rem * var(--ts-all));
   letter-spacing: 0.01em;
   background: var(--ecide-dark);
 }
-main :is(a, button)[class*="bg-ecideBlue"][class*="text-white"]:not(.btn):hover {
+main :is(a, button)[class~="bg-ecideBlue"][class~="text-white"]:not(.btn):hover {
   background: var(--ecide-blue);
+}
+/* Mentions en retrait (« À confirmer », etc.) : gris lisible, pas gris pâle */
+main p.text-gray-400 {
+  color: #6b7280;
+}
+/* Vignettes sans image : l'icône de la rubrique doit se voir sur le fond teinté */
+main i[class*="fa-"].text-ecideYellow-200 {
+  color: var(--color-ecideYellow-700);
+  opacity: 0.55;
+}
+main i[class*="fa-"].text-ecideBlue-200 {
+  color: var(--ecide-blue);
+  opacity: 0.4;
+}
+main i[class*="fa-"].text-gray-400 {
+  color: #4b5563;
+  opacity: 0.5;
 }
 main :is(a, button)[class*="text-ecideBlue"][class*="font-bold"]:not(.btn):not(.subnav-link),
 main :is(a, button)[class*="text-ecideBlue"][class*="font-semibold"]:not(.btn) {
@@ -1535,13 +1557,19 @@ main .bg-ecideDarkBlue p[class*="text-gray-600"],
 main .bg-ecideDarkBlue p[class*="text-gray-700"] {
   color: #dbe4f3;
 }
-main .bg-ecideDarkBlue .panel--white :is(h2, h3, h4, p),
-main .bg-ecideDarkBlue .panel :is(h2, h3, h4) {
+/* … sauf dans les cartes claires posées sur ces sections : texte sombre, lien fléché bleu nuit */
+main .bg-ecideDarkBlue :is(.panel--white, [class~="bg-white"]) :is(h2, h3, h4, p),
+main .bg-ecideDarkBlue :is(.panel, [class~="bg-ecideBlue-50"], [class~="bg-ecideYellow-50"]) :is(h2, h3, h4) {
   color: var(--ecide-dark);
 }
-main .bg-ecideDarkBlue .panel p[class*="text-gray"],
-main .bg-ecideDarkBlue .panel--white p[class*="text-gray"] {
+main .bg-ecideDarkBlue :is(.panel, .panel--white, [class~="bg-white"], [class~="bg-ecideBlue-50"], [class~="bg-ecideYellow-50"]) p[class*="text-gray"] {
   color: #374151;
+}
+main .text-white :is(.panel, .panel--white, [class~="bg-white"], [class~="bg-ecideBlue-50"], [class~="bg-ecideYellow-50"]) .arrow-link:not(.arrow-link--light) {
+  color: var(--ecide-dark);
+}
+main .text-white :is(.panel, .panel--white, [class~="bg-white"], [class~="bg-ecideBlue-50"], [class~="bg-ecideYellow-50"]) .arrow-link:not(.arrow-link--light):hover {
+  color: var(--ecide-blue);
 }
 
 @layer components {
