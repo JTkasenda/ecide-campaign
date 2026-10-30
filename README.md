@@ -71,9 +71,14 @@ et redirige `/fr/…` vers la racine. Le sélecteur de l'en-tête ouvre la page 
 dans la langue choisie ; chaque page déclare ses versions (`hreflang`).
 
 - Contenu : chaque page appelle `GET /api/v1/pages/…?lang=xx` et reçoit le contenu déjà
-  traduit (traductions des éditeurs, puis traduction automatique, puis français).
-- Interface : `GET /api/v1/i18n/{locale}` fournit le dictionnaire ; `getT()` côté
-  serveur et `useI18n()` côté client renvoient `t("phrase française", { param })`.
+  traduit (traductions des éditeurs, puis traduction automatique, puis texte saisi). Le contenu
+  peut être rédigé dans n'importe quelle langue : l'API détecte la langue de chaque texte et
+  ramène en français ce qui a été saisi dans une autre langue.
+- Interface : `GET /api/v1/i18n/{locale}` fournit le dictionnaire (le français ne contient que
+  les textes reformulés dans l'administration) ; `getT()` côté serveur et `useI18n()` côté client
+  renvoient `t("phrase française", { param })`. Toute phrase passée à `t()` doit exister dans
+  `lang/en.json` de l'API (dictionnaire de référence) : les autres langues sont complétées
+  automatiquement.
 
 ## Organisation
 
@@ -87,8 +92,12 @@ dans la langue choisie ; chaque page déclare ses versions (`hreflang`).
 | `src/app/globals.css` | Thème Tailwind v4 (palette et polices du site) et styles du site d'origine |
 | `public/assets/img` | Logo et images statiques ; tout autre chemin `/assets/…` (images ou documents gérés dans l'administration) est relayé depuis le serveur Laravel par `next.config.ts`, le navigateur n'appelle donc jamais l'API directement |
 
-Les annuaires gardent leur état dans le fragment d'adresse (`/cadres#niveau=provincial&province=Kinshasa`),
-ce qui permet les liens « Près de chez vous » de l'accueil.
+Les annuaires suivent les statuts du parti : organes nationaux (Congrès, Conseil national, Bureau
+national et ses secrétariats, Bureau d'études), secrétariats provinciaux exécutifs avec leurs sections,
+sous-sections, cellules et noyaux, organisations affiliées (AFEC, Ligue des Jeunes) ; en diaspora, un
+secrétariat provincial exécutif par pays puis ses sections. Ils gardent leur état dans le fragment
+d'adresse (`/cadres#niveau=provincial&province=Kinshasa – Funa`, `/cadres#niveau=national&organe=Congrès`,
+`/diaspora#pays=France`), ce qui permet les liens « Près de chez vous » de l'accueil et de l'organigramme.
 
 ## Lettre d'information
 
