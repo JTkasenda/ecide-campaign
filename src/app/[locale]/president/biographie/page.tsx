@@ -7,7 +7,7 @@ import { pageLocale, type PageParams } from "@/lib/page";
 import { getT, pageMetadata } from "@/lib/server";
 import { getWikipediaSummary } from "@/lib/wikipedia";
 import PageBanner from "@/components/PageBanner";
-import PdfDocument, { DocumentButtons } from "@/components/PdfDocument";
+import { DocumentButtons, DocumentCard } from "@/components/PdfDocument";
 
 export async function generateMetadata({ params }: PageParams): Promise<Metadata> {
   const locale = await pageLocale(params);
@@ -17,10 +17,10 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
 }
 
 /**
- * Biographie du Président, en un seul endroit (la page Président n'en garde qu'une amorce) : la
- * biographie officielle (PDF téléversé dans l'administration, aperçu et téléchargement), le texte
- * et les repères de l'administration, la carte de l'article Wikipédia en français (titre,
- * description courte, lien), puis les grandes étapes du parcours.
+ * Biographie du Président, en un seul endroit (la page Président n'en garde qu'une amorce) : le
+ * texte court et les repères de l'administration, la carte de l'article Wikipédia en français
+ * (titre, description courte, lien), le PDF de la biographie officielle à télécharger (sans
+ * aperçu dans la page), puis les grandes étapes du parcours.
  */
 export default async function BiographiePage({ params }: PageParams) {
   const locale = await pageLocale(params);
@@ -43,8 +43,6 @@ export default async function BiographiePage({ params }: PageParams) {
         <DocumentButtons doc={biographie} t={t} back={{ href: localePath(locale, "/president"), label: t("Président Élu") }} />
       </PageBanner>
 
-      <PdfDocument doc={biographie} title={t("Biographie officielle")} t={t} />
-
       {/* LE TEXTE DE LA BIOGRAPHIE */}
       {(pres.bioTexte || pres.bio2 || pres.bio3 || pres.citation || enBref.length > 0) && (
         <section id="parcours" className="bg-ecideBlue-50 py-16 lg:py-24 px-6 scroll-mt-32">
@@ -61,7 +59,6 @@ export default async function BiographiePage({ params }: PageParams) {
                 </blockquote>
               )}
               <div className="flex flex-wrap gap-x-6 gap-y-2 pt-2">
-                <Link href={localePath(locale, "/parti")} className="arrow-link">{t("Le parti qu'il a fondé")}</Link>
                 <Link href={`${localePath(locale, "/president")}#discours`} className="arrow-link">{t("Discours & vidéos")}</Link>
               </div>
             </div>
@@ -105,6 +102,13 @@ export default async function BiographiePage({ params }: PageParams) {
           </div>
         </section>
       )}
+
+      {/* LA BIOGRAPHIE OFFICIELLE EN PDF : à télécharger (pas d'aperçu dans la page) */}
+      <section id="document" className={`bg-white px-6 scroll-mt-32 ${wikiUrl ? "pb-12 lg:pb-16" : "py-12 lg:py-16"}`}>
+        <div className="max-w-7xl mx-auto panel p-6 lg:p-8 reveal">
+          <DocumentCard doc={biographie} title={t("Biographie officielle")} t={t} />
+        </div>
+      </section>
 
       {/* LES GRANDES ÉTAPES */}
       {parcours.length > 0 && (

@@ -48,12 +48,12 @@
   --ecide-ink: #111827;
   --ecide-paper: #e7ecf0;
   --radius-card: 0;
-  /* Hauteur de l'en-tête (une rangée sur mobile, logo + menu sur grand écran) */
+  /* Hauteur de l'en-tête (h-16, puis h-20 à partir de 1280 px) : sommaire et fil d'actualité collants s'y alignent */
   --header-h: 4rem;
 }
 @media (min-width: 1280px) {
   :root {
-    --header-h: 7rem;
+    --header-h: 5rem;
   }
 }
 
@@ -531,7 +531,12 @@ footer :is(a, button)[class*="bg-ecide"][class*="font-black"] {
   }
 }
 
-/* Fil d'actualité (chyron) */
+/* Fil d'actualité (chyron) : reste collé sous l'en-tête quand on fait défiler la page */
+.chyron {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 30;
+}
 .chyron-viewport {
   flex: 1;
   min-width: 0;

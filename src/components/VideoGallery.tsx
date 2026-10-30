@@ -9,8 +9,13 @@ import { VideoPlayer, WatchLink } from "./VideoPlayer";
 const VID_TINT = ["bg-ecideYellow-50 text-ecideYellow-700", "bg-ecideGreen-50 text-ecideGreen", "bg-ecideBlue-50 text-ecideBlue"];
 const TYPE_TINT: Record<string, string> = { Discours: "text-ecideBlue", Meeting: "text-ecideYellow-700", Interview: "text-ecideGreen", Direct: "text-red-600" };
 
-/** Galerie « Discours & vidéos » : un lecteur principal, les autres vidéos s'y chargent au clic. */
-export function VideoGallery({ videos, labels, newsUrl }: { videos: Video[]; labels: { lire: string; latest: string; allLives: string; lives: string; inNews: string }; newsUrl: string }) {
+/**
+ * Galerie « Discours & vidéos » : un lecteur principal dans la page (YouTube, Facebook, Vimeo,
+ * Dailymotion ou fichier), les autres vidéos s'y chargent au clic ; sous le lecteur, le lien
+ * « Regarder sur … » pour qui préfère la plateforme. Une vidéo sans adresse lisible n'est pas un
+ * lien cassé mais une vignette « Vidéo à venir ».
+ */
+export function VideoGallery({ videos, labels, newsUrl }: { videos: Video[]; labels: { lire: string; latest: string; allLives: string; lives: string; inNews: string; soon: string }; newsUrl: string }) {
   const [current, setCurrent] = useState(0);
   const main = videos[current] || videos[0];
   if (!main) return null;
@@ -21,12 +26,17 @@ export function VideoGallery({ videos, labels, newsUrl }: { videos: Video[]; lab
       <article className="lg:col-span-2 reveal">
         {main.embed ? (
           <VideoPlayer key={main.id || current} embed={main.embed} title={main.titre} duree={main.duree} badge={current === 0 ? labels.latest : main.typeLabel} label={labels.lire} immediate={current !== 0} watch={{ url: main.lien, plateforme: main.plateforme }} />
-        ) : (
-          <a href={safeUrl(main.url || "#")} target="_blank" rel="noopener" className="relative bg-ecideBlue-50 aspect-video flex items-center justify-center group" aria-label={`${labels.lire} ${main.titre}`}>
+        ) : main.lien ? (
+          <a href={safeUrl(main.lien)} target="_blank" rel="noopener" className="relative bg-ecideBlue-50 aspect-video flex items-center justify-center group" aria-label={`${labels.lire} ${main.titre}`}>
             <span className="w-20 h-20 rounded-full bg-white/90 text-ecideBlue flex items-center justify-center text-3xl group-hover:scale-110 transition"><i className="fa-solid fa-play ml-1" aria-hidden="true"></i></span>
             <span className="absolute top-4 left-4 pill pill--yellow">{current === 0 ? labels.latest : main.typeLabel}</span>
             {main.duree && <span className="absolute bottom-4 right-4 bg-black/60 text-white text-xs font-bold px-2 py-1">{main.duree}</span>}
           </a>
+        ) : (
+          <div className="relative bg-ecideBlue-50 aspect-video flex items-center justify-center">
+            <span className="w-20 h-20 rounded-full bg-white/70 text-gray-400 flex items-center justify-center text-3xl"><i className="fa-solid fa-video-slash" aria-hidden="true"></i></span>
+            <span className="absolute top-4 left-4 pill">{labels.soon}</span>
+          </div>
         )}
         <div className="pt-5 space-y-2">
           <p className="text-xs font-bold uppercase tracking-widest">
@@ -35,7 +45,7 @@ export function VideoGallery({ videos, labels, newsUrl }: { videos: Video[]; lab
             <span className="text-gray-500 normal-case tracking-normal font-semibold">{main.lieu}{main.date ? ` · ${main.dateLabel}` : ""}</span>
           </p>
           <h3 className="text-3xl text-gray-900 leading-tight">
-            {main.embed ? main.titre : <a href={safeUrl(main.url || "#")} target="_blank" rel="noopener" className="hover:text-ecideBlue">{main.titre}</a>}
+            {!main.embed && main.lien ? <a href={safeUrl(main.lien)} target="_blank" rel="noopener" className="hover:text-ecideBlue">{main.titre}</a> : main.titre}
           </h3>
           {!main.embed && main.lien && <WatchLink url={main.lien} plateforme={main.plateforme} className="text-sm" />}
         </div>
@@ -53,13 +63,15 @@ export function VideoGallery({ videos, labels, newsUrl }: { videos: Video[]; lab
             <article key={v.id || i} className="flex gap-4 py-5 first:pt-0 reveal">
               {v.embed ? (
                 <button type="button" onClick={() => setCurrent(i)} className={cls} aria-label={`${labels.lire} ${v.titre}`}>{thumb}</button>
+              ) : v.lien ? (
+                <a href={safeUrl(v.lien)} target="_blank" rel="noopener" className={cls} aria-label={`${labels.lire} ${v.titre}`}>{thumb}</a>
               ) : (
-                <a href={safeUrl(v.url || "#")} target="_blank" rel="noopener" className={cls} aria-label={`${labels.lire} ${v.titre}`}>{thumb}</a>
+                <span className={`${cls} opacity-60`} aria-hidden="true">{thumb}</span>
               )}
               <div className="min-w-0">
                 <p className={`text-[11px] font-bold uppercase tracking-widest ${TYPE_TINT[v.type] || "text-ecideBlue"}`}>{v.typeLabel}</p>
                 <h3 className="text-lg text-gray-900 leading-tight mt-1">
-                  {v.embed ? <button type="button" onClick={() => setCurrent(i)} className="text-left hover:text-ecideBlue">{v.titre}</button> : <a href={safeUrl(v.url || "#")} target="_blank" rel="noopener" className="hover:text-ecideBlue">{v.titre}</a>}
+                  {v.embed ? <button type="button" onClick={() => setCurrent(i)} className="text-left hover:text-ecideBlue">{v.titre}</button> : v.lien ? <a href={safeUrl(v.lien)} target="_blank" rel="noopener" className="hover:text-ecideBlue">{v.titre}</a> : v.titre}
                 </h3>
                 <p className="text-sm text-gray-500 mt-1">{v.lieu}{v.date ? ` · ${v.dateLabel}` : ""}</p>
               </div>

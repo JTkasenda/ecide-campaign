@@ -79,7 +79,6 @@ export default async function PresidentPage({ params }: PageParams) {
           </div>
           <div className="lg:col-span-4 flex flex-wrap lg:flex-col lg:items-end gap-3 reveal">
             <Link href={localePath(locale, "/president/biographie")} className="btn btn--dark"><i className="fa-solid fa-book-open text-sm" aria-hidden="true"></i>{t("Lire la biographie")}</Link>
-            <Link href={localePath(locale, "/parti")} className="arrow-link">{t("Le parti qu'il a fondé")}</Link>
           </div>
         </div>
       </section>
@@ -95,7 +94,7 @@ export default async function PresidentPage({ params }: PageParams) {
             {pres.youtube && <a href={safeUrl(pres.youtube)} target="_blank" rel="noopener" className="btn btn--outline text-ecideBlue btn--sm md:shrink-0"><i className="fa-brands fa-youtube text-red-600 text-lg" aria-hidden="true"></i> {t("Chaîne YouTube officielle")}</a>}
           </div>
           {main ? (
-            <VideoGallery videos={videos.slice(0, 3)} labels={{ lire, latest: t("Dernière intervention"), allLives: t("Tous les directs & replays"), lives: t("Directs"), inNews: t("Dans la rubrique Actualités") }} newsUrl={localePath(locale, "/actualites")} />
+            <VideoGallery videos={videos.slice(0, 3)} labels={{ lire, latest: t("Dernière intervention"), allLives: t("Tous les directs & replays"), lives: t("Directs"), inNews: t("Dans la rubrique Actualités"), soon: t("Vidéo à venir") }} newsUrl={localePath(locale, "/actualites")} />
           ) : (
             <p className="text-gray-500 reveal">{t("Aucune vidéo publiée pour le moment.")}</p>
           )}

@@ -94,12 +94,17 @@ export default async function ActualitesPage({ params }: PageParams) {
                   <h2 className="text-2xl text-ecideDarkBlue rule-title">{t("Directs & vidéos")}</h2>
                   {video.embed ? (
                     <div className="mt-4"><VideoPlayer embed={video.embed} title={video.titre} duree={video.duree} badge={video.typeLabel || t("Vidéo")} label={t("Lire la vidéo :")} watch={{ url: video.lien, plateforme: video.plateforme, here: t("Ici ou sur la plateforme") }} /></div>
-                  ) : (
-                    <a href={safeUrl(video.url || "#")} target="_blank" rel="noopener" className="relative block bg-ecideBlue-50 h-44 mt-4 flex items-center justify-center" aria-label={`${t("Lire la vidéo :")} ${video.titre}`}>
+                  ) : video.lien ? (
+                    <a href={safeUrl(video.lien)} target="_blank" rel="noopener" className="relative block bg-ecideBlue-50 h-44 mt-4 flex items-center justify-center" aria-label={`${t("Lire la vidéo :")} ${video.titre}`}>
                       <span className="w-14 h-14 rounded-full bg-white/90 text-ecideBlue flex items-center justify-center text-xl"><i className="fa-solid fa-play ml-0.5" aria-hidden="true"></i></span>
                       <span className="absolute top-3 left-3 pill">{video.typeLabel || t("Vidéo")}</span>
                       {video.duree && <span className="absolute bottom-3 right-3 bg-black/60 text-white text-xs font-bold px-2 py-1">{video.duree}</span>}
                     </a>
+                  ) : (
+                    <div className="relative bg-ecideBlue-50 h-44 mt-4 flex items-center justify-center">
+                      <span className="w-14 h-14 rounded-full bg-white/70 text-gray-400 flex items-center justify-center text-xl"><i className="fa-solid fa-video-slash" aria-hidden="true"></i></span>
+                      <span className="absolute top-3 left-3 pill">{t("Vidéo à venir")}</span>
+                    </div>
                   )}
                   <h3 className="text-lg text-gray-900 mt-4 leading-tight"><Link href={presidentUrl} className="hover:text-ecideBlue">{video.titre}</Link></h3>
                   {!video.embed && video.lien && <WatchLink url={video.lien} plateforme={video.plateforme} className="text-sm mt-2" />}
