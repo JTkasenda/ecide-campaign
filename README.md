@@ -18,6 +18,8 @@ rapide au pied de la photo d'accueil ne listent que les pages principales) par `
 (`/organigramme`), la charte des valeurs (`/charte-valeurs`) et le projet de société (`/projet-societe`).
 Les deux dernières présentent le PDF téléversé dans l'administration (écran Le Parti, onglets « Charte des
 valeurs » et « Projet de société ») : aperçu dans la page et téléchargement (`src/components/PdfDocument.tsx`).
+Chaque contenu n'est développé qu'à un seul endroit : la page Le Parti ne garde des valeurs, des engagements,
+des axes du projet et de la biographie qu'une amorce (intitulés, bouton vers la page dédiée), jamais les cartes.
 La biographie du Président a aussi sa page (`/president/biographie`, sous « Président » dans le menu) : PDF de la
 biographie officielle (écran Président, onglet « Biographie & parcours »), texte et repères, résumé de l'article
 Wikipédia en français (`src/lib/wikipedia.ts`, rafraîchi chaque jour, simple lien si Wikipédia ne répond pas) et parcours.

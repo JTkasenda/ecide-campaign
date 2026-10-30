@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
 
 /**
  * Projet de société : l'introduction, le PDF publié dans l'administration (aperçu dans la page et
- * téléchargement), puis les axes du projet et l'appel à rejoindre le parti.
+ * téléchargement), puis les axes du projet et l'appel à rejoindre le parti (la mission reste sur la page Le Parti).
  */
 export default async function ProjetSocietePage({ params }: PageParams) {
   const locale = await pageLocale(params);
@@ -58,8 +58,7 @@ export default async function ProjetSocietePage({ params }: PageParams) {
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center justify-between gap-8 reveal">
           <div className="space-y-3 max-w-2xl">
             <span className="eyebrow">{t("Agir")}</span>
-            <h2 className="text-4xl no-bar">{parti.mission ? t("Notre mission") : t("Rejoindre le parti")}</h2>
-            {parti.mission && <p className="text-lg text-blue-100 leading-relaxed">{parti.mission}</p>}
+            <h2 className="text-4xl no-bar">{t("Rejoindre le parti")}</h2>
           </div>
           <div className="flex flex-wrap gap-3 shrink-0">
             <Link href={localePath(locale, parti.url1 || "/adherer")} className="btn btn--primary btn--lg">{parti.bouton1 || t("Rejoindre le parti")}</Link>

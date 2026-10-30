@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getParti } from "@/lib/api";
-import { pad2, tint, safeUrl } from "@/lib/format";
+import { pad2, safeUrl } from "@/lib/format";
 import { localePath } from "@/lib/locales";
 import { pageLocale, type PageParams } from "@/lib/page";
 import { getT, pageMetadata } from "@/lib/server";
@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
 export default async function PartiPage({ params }: PageParams) {
   const locale = await pageLocale(params);
   const [data, t] = await Promise.all([getParti(locale), getT(locale)]);
-  const { parti, page: pp, chiffres, engagements, valeurs, etapes, documents } = data;
+  const { parti, page: pp, chiffres, valeurs, etapes, documents } = data;
   const missions = data.missions || [];
   const projetAxes = data.projetAxes || [];
   const hasVision = !!(parti.vision || parti.visionCitation);
@@ -119,39 +119,28 @@ export default async function PartiPage({ params }: PageParams) {
         </div>
       </section>
 
-      {/* CHARTE ET VALEURS */}
+      {/* CHARTE ET VALEURS : une amorce (les noms des valeurs) et les statuts ; les cartes des valeurs et les
+          engagements sont sur la page Charte des valeurs, pour ne pas les répéter ici */}
       <section id="charte-valeurs" className="bg-ecideBlue-50 py-20 lg:py-24 px-6 scroll-mt-32">
         <span id="valeurs" className="block scroll-mt-32" aria-hidden="true"></span>
         <span id="charte" className="block scroll-mt-32" aria-hidden="true"></span>
         <span id="statuts" className="block scroll-mt-32" aria-hidden="true"></span>
         <span id="textes" className="block scroll-mt-32" aria-hidden="true"></span>
-        <div className="max-w-6xl mx-auto space-y-14">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 reveal">
-            <div className="space-y-4">
-              <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Textes fondateurs")}</span>
-              <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue">{t("Charte et valeurs")}</h2>
-              <p className="text-lg text-gray-600 max-w-2xl">{valeurs.length === 13 ? t("Les 13 valeurs de l'ECiDé") : t("Nos valeurs")}</p>
-            </div>
-            <Link href={localePath(locale, "/charte-valeurs")} className="btn btn--dark shrink-0"><i className="fa-regular fa-file-pdf" aria-hidden="true"></i>{t("Lire la charte des valeurs")}</Link>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {valeurs.map((v, i) => {
-              const tt = tint(v.couleur);
-              return (
-                <div key={i} className="panel panel--white p-8 space-y-3 reveal relative overflow-hidden">
-                  <span className="card-index" aria-hidden="true">{pad2(i + 1)}</span>
-                  <div className={`w-14 h-14 ${tt.bg} ${tt.text} flex items-center justify-center text-2xl`}><i className={`fa-solid ${v.icone}`} aria-hidden="true"></i></div>
-                  <h3 className="text-xl font-bold text-gray-900">{v.titre}</h3>
-                  <p className="text-gray-600">{v.texte}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-        <div className="max-w-6xl mx-auto mt-16 pt-16 border-t border-ecideDarkBlue/20">
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16 items-start">
-          <div className="lg:col-span-2 space-y-6 reveal">
+          <div className="lg:col-span-3 space-y-6 reveal">
             <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Textes fondateurs")}</span>
+            <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue">{t("Charte et valeurs")}</h2>
+            <p className="text-lg text-gray-600 leading-relaxed max-w-2xl">{pp.charteTexte || (valeurs.length === 13 ? t("Les 13 valeurs de l'ECiDé") : t("Nos valeurs"))}</p>
+            {valeurs.length > 0 && (
+              <ul className="flex flex-wrap gap-2" aria-label={valeurs.length === 13 ? t("Les 13 valeurs de l'ECiDé") : t("Nos valeurs")}>
+                {valeurs.map((v, i) => (
+                  <li key={i} className="chip inline-flex items-center gap-2 px-3 py-1.5 bg-white"><i className={`fa-solid ${v.icone} text-ecideBlue`} aria-hidden="true"></i>{v.titre}</li>
+                ))}
+              </ul>
+            )}
+            <Link href={localePath(locale, "/charte-valeurs")} className="btn btn--dark"><i className="fa-regular fa-file-pdf" aria-hidden="true"></i>{t("Lire la charte des valeurs")}</Link>
+          </div>
+          <div className="lg:col-span-2 space-y-6 reveal">
             <h3 className="text-3xl text-ecideDarkBlue">{t("Statuts & charte")}</h3>
             <p className="text-lg text-gray-600 leading-relaxed">{pp.docsTexte || ""}</p>
             <ul className="divide-y divide-gray-200 bg-white panel panel--white">
@@ -176,17 +165,7 @@ export default async function PartiPage({ params }: PageParams) {
                 ),
               )}
             </ul>
-            <Link href={localePath(locale, "/adherer")} className="btn btn--dark">{t("Rejoindre le parti")}</Link>
           </div>
-          <div className="lg:col-span-3 space-y-6 reveal">
-            <h3 className="text-2xl text-ecideDarkBlue rule-title">{t("Les engagements de la charte")}</h3>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-6 text-lg text-gray-700">
-              {engagements.map((e, i) => (
-                <li key={i} className="flex items-start gap-4"><i className="fa-solid fa-check text-ecideGreen text-2xl mt-1" aria-hidden="true"></i><span>{e}</span></li>
-              ))}
-            </ul>
-          </div>
-        </div>
         </div>
       </section>
 
@@ -211,30 +190,25 @@ export default async function PartiPage({ params }: PageParams) {
         </section>
       )}
 
-      {/* PROJET DE SOCIÉTÉ */}
+      {/* PROJET DE SOCIÉTÉ : une amorce (intitulés des axes) ; les axes détaillés et le PDF sont sur la page dédiée */}
       {hasProjet && (
         <section id="projet" className="bg-white py-20 lg:py-24 px-6 scroll-mt-32">
-          <div className="max-w-6xl mx-auto space-y-12">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 reveal">
-              <div className="max-w-3xl space-y-3">
-                <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Projet de société")}</span>
-                <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue">{t("Notre projet de société")}</h2>
-                {parti.projetIntro && <p className="text-lg text-gray-600 leading-relaxed">{parti.projetIntro}</p>}
-              </div>
-              <Link href={localePath(locale, "/projet-societe")} className="btn btn--dark shrink-0"><i className="fa-regular fa-file-pdf" aria-hidden="true"></i>{t("Lire le projet de société")}</Link>
+          <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+            <div className="lg:col-span-8 space-y-5 reveal">
+              <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Projet de société")}</span>
+              <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue">{t("Notre projet de société")}</h2>
+              {parti.projetIntro && <p className="text-lg text-gray-600 leading-relaxed max-w-3xl">{parti.projetIntro}</p>}
+              {projetAxes.length > 0 && (
+                <ul className="flex flex-wrap gap-2" aria-label={t("Les axes du projet")}>
+                  {projetAxes.map((a, i) => (
+                    <li key={i} className="chip inline-flex items-center gap-2 px-3 py-1.5"><i className={`fa-solid ${a.icone} text-ecideBlue`} aria-hidden="true"></i>{a.titre}</li>
+                  ))}
+                </ul>
+              )}
             </div>
-            {projetAxes.length > 0 && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {projetAxes.map((a, i) => (
-                  <article key={i} className="panel p-7 space-y-4 reveal relative overflow-hidden">
-                    <span className="card-index" aria-hidden="true">{pad2(i + 1)}</span>
-                    <div className="icon-tile icon-tile--dark"><i className={`fa-solid ${a.icone}`} aria-hidden="true"></i></div>
-                    <h3 className="text-xl font-bold text-gray-900">{a.titre}</h3>
-                    <p className="text-gray-600">{a.texte}</p>
-                  </article>
-                ))}
-              </div>
-            )}
+            <div className="lg:col-span-4 flex lg:justify-end reveal">
+              <Link href={localePath(locale, "/projet-societe")} className="btn btn--dark btn--lg"><i className="fa-regular fa-file-pdf" aria-hidden="true"></i>{t("Lire le projet de société")}</Link>
+            </div>
           </div>
         </section>
       )}
