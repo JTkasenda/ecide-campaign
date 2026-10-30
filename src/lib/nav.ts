@@ -10,6 +10,7 @@ export const EXTRA_PAGES = [
   { key: "charte-valeurs", url: "/charte-valeurs", label: "Charte des valeurs", after: "parti" },
   { key: "projet-societe", url: "/projet-societe", label: "Projet de société", after: "parti" },
   { key: "biographie", url: "/president/biographie", label: "Biographie", after: "president" },
+  { key: "don", url: "/don", label: "Faire un don", after: "adherer" },
 ] as const;
 
 /**

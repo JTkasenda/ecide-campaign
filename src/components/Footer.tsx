@@ -81,7 +81,7 @@ export default async function Footer({ site, locale }: { site: Site; locale: Loc
           {p.newsletter && (
             <NewsletterForm
               variant="footer"
-              labels={{ title: t("Recevoir les communiqués"), placeholder: t("Votre e-mail"), submit: t("S'abonner"), success: t("Merci ! Vous recevrez nos communiqués officiels.") }}
+              labels={{ title: t("Recevoir les communiqués"), placeholder: t("Votre e-mail"), phone: t("Votre numéro (SMS)"), note: t("Par e-mail, par SMS ou les deux."), submit: t("S'abonner"), success: t("Merci ! Vous recevrez nos communiqués officiels.") }}
             />
           )}
         </div>

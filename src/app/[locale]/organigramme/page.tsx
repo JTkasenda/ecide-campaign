@@ -13,19 +13,30 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   return pageMetadata(locale, "/organigramme", { title: t("Organigramme"), description: data.page.orgaTexte || data.parti.intro });
 }
 
-/** Organigramme du parti : les organes (du national au local), puis les catégories de membres. */
+/**
+ * Organigramme du parti, par niveau : national (Congrès, Conseil national, Bureau national),
+ * provincial et local (secrétariat exécutif provincial, sections, sous-sections, cellules,
+ * noyaux), organisations affiliées (AFEC, Ligue des Jeunes) ; puis les catégories de membres.
+ * Les organes et leur niveau viennent de l'administration (écran Le Parti, onglet Organisation).
+ */
 export default async function OrganigrammePage({ params }: PageParams) {
   const locale = await pageLocale(params);
   const [data, t] = await Promise.all([getParti(locale), getT(locale)]);
   const { page: pp, organes, membres = [] } = data;
-  const n = organes.length;
+  const niveau = (o: { niveau?: string }) => o.niveau || "national";
+  const groupes = [
+    { key: "national", title: t("Niveau national"), tone: "blue", items: organes.filter((o) => niveau(o) === "national") },
+    { key: "provincial", title: t("Niveau provincial et local"), tone: "yellow", items: organes.filter((o) => niveau(o) === "provincial") },
+    { key: "affilie", title: t("Organisations affiliées"), tone: "green", items: organes.filter((o) => niveau(o) === "affilie") },
+  ].filter((g) => g.items.length > 0);
 
   const orgCard = (o: { titre: string; texte: string; icone: string }, tone: string) => {
     const low = o.titre.toLowerCase();
     let extra = null;
     if (low.includes("diaspora")) extra = <Link href={localePath(locale, "/diaspora")} className="text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue">{t("Voir la diaspora")} →</Link>;
+    if (low.includes("bureau national")) extra = <Link href={`${localePath(locale, "/cadres")}#niveau=national`} className="text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue">{t("Voir les membres du Bureau national")} →</Link>;
     if (low.includes("provinci")) extra = <Link href={`${localePath(locale, "/cadres")}#niveau=provincial`} className="text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue">{t("Voir les secrétariats provinciaux")} →</Link>;
-    if (low.includes("section") || low.includes("cellule")) extra = <Link href={`${localePath(locale, "/cadres")}#niveau=provincial`} className="text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue">{t("Trouver ma section")} →</Link>;
+    if (low.includes("section") || low.includes("cellule") || low.includes("noyau")) extra = <Link href={`${localePath(locale, "/cadres")}#niveau=provincial`} className="text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue">{t("Trouver ma section")} →</Link>;
     return (
       <div className={`org-card org-card--${tone}`}>
         <i className={`fa-solid ${o.icone}`} aria-hidden="true"></i>
@@ -54,39 +65,30 @@ export default async function OrganigrammePage({ params }: PageParams) {
           <div className="lg:col-span-4 space-y-5 reveal lg:sticky lg:top-32">
             <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue">{t("Les organes du parti")}</h2>
             <ul className="space-y-2 text-sm text-gray-600">
-              <li className="flex items-center gap-3"><span className="w-3 h-3 bg-ecideBlue" aria-hidden="true"></span>{t("Organes nationaux")}</li>
-              <li className="flex items-center gap-3"><span className="w-3 h-3 bg-ecideYellow" aria-hidden="true"></span>{t("Relais territoriaux")}</li>
-              <li className="flex items-center gap-3"><span className="w-3 h-3 bg-ecideGreen" aria-hidden="true"></span>{t("Structures spécialisées")}</li>
+              <li className="flex items-center gap-3"><span className="w-3 h-3 bg-ecideBlue" aria-hidden="true"></span>{t("Niveau national")}</li>
+              <li className="flex items-center gap-3"><span className="w-3 h-3 bg-ecideYellow" aria-hidden="true"></span>{t("Niveau provincial et local")}</li>
+              <li className="flex items-center gap-3"><span className="w-3 h-3 bg-ecideGreen" aria-hidden="true"></span>{t("Organisations affiliées")}</li>
             </ul>
+            <p className="text-sm text-gray-600">{t("Congrès, Conseil national et Bureau national ; secrétariats exécutifs provinciaux, sections, sous-sections, cellules et noyaux ; organisations affiliées.")}</p>
             <Link href={localePath(locale, "/cadres")} className="arrow-link">{t("Consulter l'annuaire des cadres")}</Link>
           </div>
-          <div className="lg:col-span-8 orgchart reveal">
-            {organes.map((o, i) => {
-              if (n >= 6 && i === n - 2) {
-                return (
-                  <div key={i} className="org-level org-level--split">
-                    {orgCard(o, "yellow")}
-                    {orgCard(organes[i + 1], "green")}
-                  </div>
-                );
-              }
-              if (n >= 6 && i === n - 1) return null;
-              return (
-                <div key={i} className="org-level">
-                  {orgCard(o, i < 4 ? "blue" : "yellow")}
-                </div>
-              );
-            })}
-            <div className="org-level">
-              <div className="org-card org-card--yellow">
-                <i className="fa-solid fa-house-user" aria-hidden="true"></i>
-                <div>
-                  <h3 className="text-lg text-gray-900">{t("Cellules et places de résistance")}</h3>
-                  <p className="text-sm text-gray-600">{t("Présence de proximité : une cellule par quartier, avenue ou rue, et des places de résistance.")}</p>
-                  <Link href={`${localePath(locale, "/cadres")}#niveau=provincial`} className="text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue">{t("Trouver ma section")} →</Link>
+          <div className="lg:col-span-8 space-y-12 reveal">
+            {groupes.map((g) => (
+              <div key={g.key}>
+                <h3 className="eyebrow eyebrow--dark text-xs mb-4">{g.title}</h3>
+                <div className="orgchart">
+                  {g.key === "affilie" ? (
+                    <div className="org-level org-level--split">{g.items.map((o, i) => <div key={i} className="contents">{orgCard(o, g.tone)}</div>)}</div>
+                  ) : (
+                    g.items.map((o, i) => (
+                      <div key={i} className="org-level">
+                        {orgCard(o, g.tone)}
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
         {membres.length > 0 && (

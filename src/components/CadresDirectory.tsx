@@ -54,7 +54,7 @@ interface Unit {
 
 /**
  * Annuaire des structures en RDC. Deux entrées : les organes nationaux (Bureau national,
- * secrétariats nationaux, AFE, structures spécialisées, Bureau d'études) et les secrétariats
+ * secrétariats nationaux, AFEC, structures spécialisées, Bureau d'études) et les secrétariats
  * provinciaux exécutifs (provinces, districts de Kinshasa) — chacun présenté avec son siège,
  * ses responsables, puis ses sections (commune, territoire, secteur), leurs cellules (quartier,
  * avenue, rue) et leurs places de résistance. L'état vit dans l'adresse
@@ -70,11 +70,11 @@ export default function CadresDirectory({ data, locale }: { data: CadresData; lo
   const contactUrl = localePath(locale, data.contactUrl);
 
   const NIVEAUX = [
-    { id: "national" as const, label: t("Organes nationaux"), icon: "fa-landmark", hint: t("Le Bureau national, les secrétariats nationaux, l'AFE, les structures spécialisées et le Bureau d'études.") },
-    { id: "provincial" as const, label: t("Secrétariats provinciaux"), icon: "fa-map-location-dot", hint: t("Choisissez une province ou un district de Kinshasa : le siège du secrétariat provincial exécutif, ses responsables, puis les sections, cellules et places de résistance avec leurs coordonnées.") },
+    { id: "national" as const, label: t("Organes nationaux"), icon: "fa-landmark", hint: t("Le Bureau national, les secrétariats nationaux, l'AFEC, les structures spécialisées et le Bureau d'études.") },
+    { id: "provincial" as const, label: t("Secrétariats provinciaux"), icon: "fa-map-location-dot", hint: t("Choisissez une province ou un district de Kinshasa : le siège du secrétariat provincial exécutif, ses responsables, puis les sections, cellules et noyaux avec leurs coordonnées.") },
   ];
-  const CATEGORIES: Record<string, string> = { direction: t("Bureau national"), secretariats: t("Secrétariats nationaux"), afe: t("AFE"), specialisees: t("Structures spécialisées"), etudes: t("Bureau d'études"), communication: t("Communication"), finances: t("Finances"), federations: t("Secrétariats provinciaux"), ligues: t("Ligues"), cellules: t("Sections & cellules") };
-  const NIVEAU_LABEL: Record<string, string> = { national: t("National"), provincial: t("Secrétariat provincial exécutif"), section: t("Section"), cellule: t("Cellule"), place: t("Place de résistance") };
+  const CATEGORIES: Record<string, string> = { direction: t("Bureau national"), secretariats: t("Secrétariats nationaux"), afe: t("AFEC"), specialisees: t("Structures spécialisées"), etudes: t("Bureau d'études"), communication: t("Communication"), finances: t("Finances"), federations: t("Secrétariats provinciaux"), ligues: t("Ligues"), cellules: t("Sections & cellules") };
+  const NIVEAU_LABEL: Record<string, string> = { national: t("National"), provincial: t("Secrétariat provincial exécutif"), section: t("Section"), cellule: t("Cellule"), place: t("Noyau") };
 
   /* ---------- Secrétariats provinciaux exécutifs : provinces, siège, sections ---------- */
 
@@ -383,7 +383,7 @@ function ProvinceView({ province, organe, label, contact: c, leaders, sections, 
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
           <div>
-            <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Sections, cellules et places de résistance")}</span>
+            <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Sections, cellules et noyaux")}</span>
             <h3 className="text-3xl text-ecideDarkBlue">{communeFilter ? t("Section de :commune", { commune: communeFilter }) : t("Les sections du secrétariat provincial")}</h3>
           </div>
           {communeFilter && <button type="button" onClick={onAllSections} className="text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue">{t("Toutes les sections")}</button>}
@@ -407,7 +407,7 @@ function UnitCard({ unit, contactUrl, nested = false }: { unit: Unit; contactUrl
   const { t } = useI18n();
   const c = unit.contact;
   const row = "flex items-center gap-2 text-gray-800 hover:text-ecideBlue";
-  const kind = unit.niveau === "section" ? t("Section") : unit.niveau === "cellule" ? t("Cellule") : t("Place de résistance");
+  const kind = unit.niveau === "section" ? t("Section") : unit.niveau === "cellule" ? t("Cellule") : t("Noyau");
   const lieuLabel = unit.niveau === "section" ? t("Commune, territoire ou secteur : :lieu", { lieu: unit.lieu }) : t("Quartier, avenue ou rue : :lieu", { lieu: unit.lieu });
   const Heading = nested ? "h5" : "h4";
   return (

@@ -14,27 +14,36 @@ interface Labels {
   name?: string;
   /** Note sous le formulaire (langue des envois) */
   note?: string;
+  /** Numéro de téléphone (pied de page) : abonnement aux alertes par SMS, en plus ou à la place de l'e-mail */
+  phone?: string;
 }
 
 /**
- * Inscription aux communiqués (pied de page et colonne des actualités). L'API reçoit
- * la langue de la page (?lang) : chaque abonné reçoit ses e-mails dans cette langue.
+ * Inscription aux communiqués (pied de page, colonne des actualités, bandeau d'accueil). L'API
+ * reçoit la langue de la page (?lang) : chaque abonné reçoit ses e-mails dans cette langue. Le
+ * pied de page propose aussi le numéro de téléphone : alertes par SMS, en plus ou à la place de l'e-mail.
  */
 export default function NewsletterForm({ variant, labels, description }: { variant: "footer" | "aside" | "hero"; labels: Labels; description?: string }) {
   const { t, locale } = useI18n();
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
   const id = variant === "footer" ? "footerEmail" : variant === "hero" ? "heroEmail" : "newsEmail";
 
   async function submit(e: FormEvent) {
     e.preventDefault();
+    if (!email.trim() && !phone.trim()) {
+      showToast(t("Indiquez un e-mail ou un numéro de téléphone."), "error");
+      return;
+    }
     setBusy(true);
     try {
-      const r = await postForm("newsletter", locale, { email: email.trim(), nom: name.trim(), source: variant === "aside" ? "actualites" : variant === "hero" ? "accueil" : "footer" });
+      const r = await postForm("newsletter", locale, { email: email.trim(), telephone: phone.trim(), nom: name.trim(), source: variant === "aside" ? "actualites" : variant === "hero" ? "accueil" : "footer" });
       showToast(r.ok ? r.message || labels.success : r.message || t("Le message n'a pas pu être envoyé. Vérifiez les champs."), r.ok ? "info" : "error");
       if (r.ok) {
         setEmail("");
+        setPhone("");
         setName("");
       }
     } catch {
@@ -92,14 +101,24 @@ export default function NewsletterForm({ variant, labels, description }: { varia
   }
 
   return (
-    <form onSubmit={submit} className="pt-2">
-      <label htmlFor={id} className="block text-xs font-bold uppercase tracking-wider text-blue-200 mb-2">{labels.title}</label>
+    <form onSubmit={submit} className="pt-2 space-y-2">
+      <p id={`${id}Title`} className="block text-xs font-bold uppercase tracking-wider text-blue-200 mb-2">{labels.title}</p>
+      <label htmlFor={id} className="sr-only">{labels.placeholder}</label>
+      <input id={id} name="email" type="email" required={!labels.phone} autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={labels.placeholder} className="w-full min-w-0 px-4 py-2.5 text-gray-900 bg-white text-sm" />
       <div className="flex gap-2">
-        <input id={id} name="email" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={labels.placeholder} className="flex-1 min-w-0 px-4 py-2.5 text-gray-900 bg-white text-sm" />
+        {labels.phone ? (
+          <>
+            <label htmlFor={`${id}Phone`} className="sr-only">{labels.phone}</label>
+            <input id={`${id}Phone`} name="telephone" type="tel" autoComplete="tel" inputMode="tel" maxLength={30} value={phone} onChange={(e) => setPhone(e.target.value)} placeholder={labels.phone} className="flex-1 min-w-0 px-4 py-2.5 text-gray-900 bg-white text-sm" />
+          </>
+        ) : (
+          <span className="flex-1" aria-hidden="true"></span>
+        )}
         <button type="submit" disabled={busy} className="bg-ecideYellow text-ecideDarkBlue font-black px-4 hover:bg-yellow-400 transition disabled:opacity-60" aria-label={labels.submit}>
           <i className="fa-solid fa-paper-plane" aria-hidden="true"></i>
         </button>
       </div>
+      {labels.phone && labels.note && <p className="text-xs text-blue-200">{labels.note}</p>}
     </form>
   );
 }

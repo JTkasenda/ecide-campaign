@@ -934,6 +934,10 @@ details[open] .faq-icon {
   gap: 1.5rem;
   flex-wrap: wrap;
 }
+.orgchart > .org-level--split:first-child::after,
+.orgchart > .org-level--split:first-child .org-card::before {
+  display: none;
+}
 .org-level--split .org-card {
   flex: 1 1 16rem;
   max-width: none;
@@ -1214,6 +1218,10 @@ main h2.no-bar {
 .chip.is-active {
   background: var(--ecide-dark);
   border-color: var(--ecide-dark);
+}
+/* Puce sélectionnée : les logos (Visa, Mastercard, opérateurs) passent en blanc sur le bleu nuit */
+.chip.is-active i {
+  color: #fff;
 }
 .chyron-tag {
   font-family: var(--font-sans);

@@ -4,7 +4,7 @@ const { test, run } = createRunner("Pages : réponses, langue, 404 et redirectio
 export { run };
 
 export const LOCALES = ["fr", "en", "ln", "sw", "tsh", "kik"];
-export const PATHS = ["/", "/parti", "/organigramme", "/charte-valeurs", "/projet-societe", "/president", "/president/biographie", "/actualites", "/cadres", "/diaspora", "/contact", "/adherer", "/mentions-legales", "/newsletter/desinscription"];
+export const PATHS = ["/", "/parti", "/organigramme", "/charte-valeurs", "/projet-societe", "/president", "/president/biographie", "/actualites", "/cadres", "/diaspora", "/contact", "/adherer", "/don", "/mentions-legales", "/newsletter/desinscription"];
 export const url = (locale, path) => BASE_URL + (locale === "fr" ? "" : `/${locale}`) + (path === "/" ? "" : path);
 
 /** Premier article publié (API), pour tester la page article. */

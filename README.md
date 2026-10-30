@@ -15,7 +15,10 @@ Le site tourne sur le port 3002 (`-p 3002` dans `package.json`) pour cohabiter a
 commence par le bandeau bleu nuit de `src/components/PageBanner.tsx`. Trois pages propres à ce site
 complètent la page Le Parti et sont insérées après elle (pied de page ; le menu hamburger ne liste que les
 pages principales, et la photo d'accueil ne porte aucun menu) par `siteNav()` : l'organigramme
-(`/organigramme`), la charte des valeurs (`/charte-valeurs`) et le projet de société (`/projet-societe`).
+(`/organigramme`), la charte des valeurs (`/charte-valeurs`), le projet de société (`/projet-societe`) et la page
+Faire un don (`/don`, sous « Adhésion » : carte bancaire Visa / Mastercard via la page sécurisée du prestataire,
+Airtel Money, Orange Money, M-Pesa, Afrimoney, PayPal / banque ; le formulaire du pied de page accepte un e-mail,
+un numéro de téléphone pour les alertes par SMS, ou les deux).
 Les deux dernières présentent le PDF téléversé dans l'administration (écran Le Parti, onglets « Charte des
 valeurs » et « Projet de société ») : aperçu dans la page et téléchargement (`src/components/PdfDocument.tsx`).
 Chaque contenu n'est développé qu'à un seul endroit : la page Le Parti ne garde des valeurs, des engagements,

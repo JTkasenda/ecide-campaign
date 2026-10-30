@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { getAdherer } from "@/lib/api";
 import { formatNumber, safeUrl } from "@/lib/format";
+import { localePath } from "@/lib/locales";
 import { pageLocale, type PageParams } from "@/lib/page";
 import { getT, pageMetadata } from "@/lib/server";
-import Donation from "@/components/Donation";
+import { MethodIcons } from "@/components/Donation";
 import PageBanner from "@/components/PageBanner";
 
 export async function generateMetadata({ params }: PageParams): Promise<Metadata> {
@@ -81,13 +83,23 @@ export default async function AdhererPage({ params }: PageParams) {
             )}
           </div>
 
-          {/* DON */}
-          <Donation
-            config={paiement}
-            title={s("donTitre") || t("Soutenir le Combat (Don)")}
-            text={s("donTexte")}
-            warning={s("donAvertissement")}
-          />
+          {/* DON : le formulaire est sur sa page ; ici l'appel, les moyens acceptés et le bouton */}
+          <div id="don" className="panel panel--dark p-8 lg:p-10 space-y-6 reveal scroll-mt-32">
+            <div className="space-y-3">
+              <span className="eyebrow">{t("Soutenir le Combat (Don)")}</span>
+              <h2 className="text-3xl no-bar">{s("donTitre") || t("Faire un don")}</h2>
+              {s("donTexte") && <p className="text-blue-100 leading-relaxed">{s("donTexte")}</p>}
+            </div>
+            <ul className="flex flex-wrap gap-x-5 gap-y-3" aria-label={t("Moyens de paiement acceptés")}>
+              {paiement.moyens.map((m) => (
+                <li key={m.key} className="inline-flex items-center gap-2 text-sm font-semibold text-blue-100"><MethodIcons m={m} size="text-xl" light />{m.court}</li>
+              ))}
+            </ul>
+            <Link href={localePath(locale, "/don")} className="btn btn--primary btn--lg">
+              <i className="fa-solid fa-hand-holding-heart text-sm" aria-hidden="true"></i>
+              {t("Faire un don")}
+            </Link>
+          </div>
         </div>
       </section>
 

@@ -24,7 +24,7 @@ export default function Header({ site, locale }: { site: Site; locale: Locale })
   // Menu minimaliste : les pages principales seulement ; les sous-pages (organigramme, charte, projet,
   // biographie) restent accessibles depuis leur page parente et le pied de page
   const nav = siteNav(site, t).filter((n) => n.key !== "home" && !n.sub);
-  const donUrl = p.don || `${localePath(locale, "/adherer")}#don`;
+  const donUrl = p.don && /^https?:\/\//i.test(p.don) ? p.don : localePath(locale, "/don");
   const donExternal = /^https?:/i.test(donUrl);
 
   // Clé de la page courante (home, parti, actualites…) pour marquer le lien actif

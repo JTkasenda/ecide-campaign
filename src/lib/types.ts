@@ -190,7 +190,7 @@ export interface PartiPage {
   projetAxes: { titre: string; texte: string; icone: string }[];
   valeurs: { titre: string; texte: string; icone: string; couleur: Couleur }[];
   etapes: { repere: string; titre: string; texte: string }[];
-  organes: { titre: string; texte: string; icone: string }[];
+  organes: { titre: string; texte: string; icone: string; niveau?: "national" | "provincial" | "affilie" }[];
   membres: { titre: string; texte: string; icone: string; couleur: Couleur }[];
   documents: ({ nom: string } & PartyDocument)[];
   charte: PartyDocument | null;
@@ -324,6 +324,12 @@ export interface PaymentMethod {
   court: string;
   lines: string[];
   note?: string;
+  /** Icône Font Awesome du moyen (carte, téléphone, PayPal) */
+  icone?: string;
+  /** Marques affichées sur la puce : visa, mastercard, airtel, orange, mpesa, afrimoney, paypal */
+  marques?: string[];
+  /** Page de paiement sécurisée du prestataire (carte bancaire), ou vide */
+  url?: string;
 }
 
 export interface AdhererPage {

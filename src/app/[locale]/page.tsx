@@ -31,7 +31,7 @@ export default async function HomePage({ params }: PageParams) {
   const { hero, chiffres, manifeste: m, combats, positions, sections: s, president: pres, news, fils, proximite, agir } = home;
   const nom = site.params.nom || "ECiDé";
   const featured = news.featured;
-  const donUrl = site.params.don || `${localePath(locale, "/adherer")}#don`;
+  const donUrl = site.params.don && /^https?:\/\//i.test(site.params.don) ? site.params.don : localePath(locale, "/don");
   const donExternal = /^https?:/i.test(donUrl);
   const paiement = adherer?.paiement;
   const devise = paiement ? (paiement.deviseDefaut === "usd" ? "USD" : "FC") : "";
@@ -125,7 +125,7 @@ export default async function HomePage({ params }: PageParams) {
             </div>
             <div className="flex flex-wrap items-stretch gap-3 lg:flex-1 lg:justify-end">
               {montants.map((n) => (
-                <Link key={n} href={`${localePath(locale, "/adherer")}#don`} className="min-w-28 px-5 py-4 bg-white/60 hover:bg-white text-ecideDarkBlue font-display font-black text-3xl leading-none text-center transition">
+                <Link key={n} href={`${localePath(locale, "/don")}?montant=${n}`} className="min-w-28 px-5 py-4 bg-white/60 hover:bg-white text-ecideDarkBlue font-display font-black text-3xl leading-none text-center transition">
                   {formatNumber(n, locale)}
                   <span className="block font-sans text-[11px] font-bold tracking-widest mt-1">{devise}</span>
                 </Link>

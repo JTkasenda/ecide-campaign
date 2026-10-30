@@ -21,11 +21,11 @@ describe("siteNav", () => {
     const parti = { id: "6", libelle: "Le Parti", url: "/parti", key: "parti" };
     const president = { id: "8", libelle: "Président", url: "/president", key: "president" };
     const withParti = { nav: [site.nav[0], parti, president, site.nav[3]] } as unknown as Site;
-    expect(siteNav(withParti, t).map((n) => n.url)).toEqual(["/", "/parti", "/organigramme", "/charte-valeurs", "/projet-societe", "/president", "/president/biographie", "/actualites"]);
+    expect(siteNav(withParti, t).map((n) => n.url)).toEqual(["/", "/parti", "/organigramme", "/charte-valeurs", "/projet-societe", "/president", "/president/biographie", "/actualites", "/don"]);
     expect(siteNav(withParti, t)[2]).toMatchObject({ key: "organigramme", libelle: "[Organigramme]", sub: true });
-    expect(siteNav(site, t).map((n) => n.url)).toEqual(["/", "/actualites", "/directives", "/organigramme", "/charte-valeurs", "/projet-societe", "/president/biographie"]);
+    expect(siteNav(site, t).map((n) => n.url)).toEqual(["/", "/actualites", "/directives", "/organigramme", "/charte-valeurs", "/projet-societe", "/president/biographie", "/don"]);
     const listed = { nav: [parti, { id: "7", libelle: "Orga", url: "/organigramme", key: "organigramme" }] } as unknown as Site;
-    expect(siteNav(listed, t).map((n) => n.url)).toEqual(["/parti", "/organigramme", "/charte-valeurs", "/projet-societe", "/president/biographie"]);
+    expect(siteNav(listed, t).map((n) => n.url)).toEqual(["/parti", "/organigramme", "/charte-valeurs", "/projet-societe", "/president/biographie", "/don"]);
     expect(siteNav(listed, t)[1].sub).toBeUndefined();
   });
 });

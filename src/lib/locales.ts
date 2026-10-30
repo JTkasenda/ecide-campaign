@@ -46,7 +46,13 @@ export function localePrefix(locale: Locale): string {
  * Chemin public d'un lien interne dans une langue. Les liens externes,
  * mailto:, tel: et ancres sont rendus tels quels.
  */
+/** Anciennes adresses du bloc Don de la page Adhésion : la page Faire un don les remplace. */
+function retargetDon(path: string): string {
+  return path.replace(/^(\/[a-z]{2,3})?\/adherer#don$/i, "$1/don");
+}
+
 export function localePath(locale: Locale, path: string): string {
+  path = retargetDon(path);
   if (!path || path === "#") return "#";
   if (/^(https?:|mailto:|tel:|#)/.test(path)) return path;
   const clean = path.startsWith("/") ? path : `/${path}`;
