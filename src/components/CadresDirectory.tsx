@@ -9,11 +9,20 @@ import type { Cadre, CadresData, StructureContact } from "@/lib/types";
 import { SocialLinks, fold, useHashParams } from "./directory";
 
 const PENDING = "À confirmer"; // valeur enregistrée (en français) pour un poste sans titulaire
-const CATEGORY_TONE: Record<string, keyof typeof TONE> = { direction: "blue", secretariats: "blue", afe: "yellow", specialisees: "green", etudes: "blue", communication: "yellow", finances: "blue", federations: "green", ligues: "yellow", cellules: "green" };
+const CATEGORY_TONE: Record<string, keyof typeof TONE> = { congres: "blue", conseil: "blue", direction: "blue", secretariats: "blue", afe: "yellow", ligues: "green", specialisees: "green", etudes: "blue", communication: "yellow", finances: "blue", federations: "green", cellules: "green" };
+
+/** Ordre officiel des organes nationaux : le Congrès, le Conseil national, le Bureau national et ses secrétariats, le Bureau d'études. */
+const NATIONAL_ORDER = ["congres", "conseil national", "bureau national", "secretariats nationaux", "bureau d'etudes"];
+const AFFILIE_ORDER = ["association des femmes", "ligue des jeunes", "structures specialisees"];
+
+type Niveau = "national" | "provincial" | "affilie";
+type LocalLevel = "section" | "soussection" | "cellule" | "place";
+const LOCAL_LEVELS: LocalLevel[] = ["section", "soussection", "cellule", "place"];
 
 interface State {
-  niveau: "national" | "provincial";
+  niveau: Niveau;
   categorie: string;
+  organe: string;
   province: string;
   commune: string;
   q: string;
@@ -23,8 +32,9 @@ interface State {
 function parse(h: URLSearchParams): State {
   const niveau = h.get("niveau");
   return {
-    niveau: niveau === "provincial" || niveau === "cellule" || niveau === "section" ? "provincial" : "national",
+    niveau: niveau === "provincial" || niveau === "cellule" || niveau === "section" ? "provincial" : niveau === "affilie" ? "affilie" : "national",
     categorie: h.get("categorie") || "all",
+    organe: h.get("organe") || "",
     province: h.get("province") || "",
     commune: h.get("commune") || "",
     q: h.get("q") || "",
@@ -35,29 +45,37 @@ function serialize(s: State): URLSearchParams {
   const h = new URLSearchParams();
   h.set("niveau", s.niveau);
   if (s.categorie !== "all") h.set("categorie", s.categorie);
+  if (s.organe) h.set("organe", s.organe);
   if (s.province) h.set("province", s.province);
   if (s.commune) h.set("commune", s.commune);
   if (s.q) h.set("q", s.q);
   return h;
 }
 
-/** Structure locale (section, cellule ou place de résistance) : coordonnées, responsables, sous-structures. */
+/** Structure locale (section, sous-section, cellule ou noyau) : coordonnées, responsables, sous-structures. */
 interface Unit {
   organe: string;
   label: string;
-  niveau: "section" | "cellule" | "place";
+  niveau: LocalLevel;
   lieu: string;
   contact: StructureContact;
   cadres: Cadre[];
   children: Unit[];
 }
 
+const orderIndex = (order: string[], organe: string) => {
+  const f = fold(organe);
+  const i = order.findIndex((o) => f.includes(o));
+  return i === -1 ? order.length : i;
+};
+
 /**
- * Annuaire des structures en RDC. Deux entrées : les organes nationaux (Bureau national,
- * secrétariats nationaux, AFEC, structures spécialisées, Bureau d'études) et les secrétariats
- * provinciaux exécutifs (provinces, districts de Kinshasa) — chacun présenté avec son siège,
- * ses responsables, puis ses sections (commune, territoire, secteur), leurs cellules (quartier,
- * avenue, rue) et leurs places de résistance. L'état vit dans l'adresse
+ * Annuaire des structures en RDC, selon les statuts du parti. Trois entrées : les organes nationaux
+ * (Congrès, Conseil national, Bureau national et ses secrétariats nationaux, Bureau d'études), les
+ * secrétariats provinciaux exécutifs (provinces, districts de Kinshasa) — chacun présenté avec son
+ * siège, ses responsables, puis ses sections (commune, territoire, secteur), leurs sous-sections,
+ * leurs cellules (quartier, avenue, rue) et leurs noyaux — et les organisations affiliées (AFEC,
+ * Ligue des Jeunes, structures spécialisées). L'état vit dans l'adresse
  * (#niveau=provincial&province=Kinshasa – Funa), ce qui permet les liens « Près de chez vous ».
  */
 export default function CadresDirectory({ data, locale }: { data: CadresData; locale: Locale }) {
@@ -69,12 +87,15 @@ export default function CadresDirectory({ data, locale }: { data: CadresData; lo
   const organeLabel = (organe: string) => data.organes?.[organe] || organe;
   const contactUrl = localePath(locale, data.contactUrl);
 
-  const NIVEAUX = [
-    { id: "national" as const, label: t("Organes nationaux"), icon: "fa-landmark", hint: t("Le Bureau national, les secrétariats nationaux, l'AFEC, les structures spécialisées et le Bureau d'études.") },
-    { id: "provincial" as const, label: t("Secrétariats provinciaux"), icon: "fa-map-location-dot", hint: t("Choisissez une province ou un district de Kinshasa : le siège du secrétariat provincial exécutif, ses responsables, puis les sections, cellules et noyaux avec leurs coordonnées.") },
+  const NIVEAUX: { id: Niveau; label: string; icon: string; hint: string }[] = [
+    { id: "national", label: t("Organes nationaux"), icon: "fa-landmark", hint: t("Le Congrès, le Conseil national, le Bureau national et ses secrétariats nationaux, le Bureau d'études.") },
+    { id: "provincial", label: t("Secrétariats provinciaux"), icon: "fa-map-location-dot", hint: t("Choisissez une province ou un district de Kinshasa : le siège du secrétariat provincial exécutif, ses responsables, puis les sections, sous-sections, cellules et noyaux avec leurs coordonnées.") },
+    { id: "affilie", label: t("Organisations affiliées"), icon: "fa-people-group", hint: t("L'Association des Femmes de l'ECiDé (AFEC), la Ligue des Jeunes et les structures spécialisées du parti.") },
   ];
-  const CATEGORIES: Record<string, string> = { direction: t("Bureau national"), secretariats: t("Secrétariats nationaux"), afe: t("AFEC"), specialisees: t("Structures spécialisées"), etudes: t("Bureau d'études"), communication: t("Communication"), finances: t("Finances"), federations: t("Secrétariats provinciaux"), ligues: t("Ligues"), cellules: t("Sections & cellules") };
-  const NIVEAU_LABEL: Record<string, string> = { national: t("National"), provincial: t("Secrétariat provincial exécutif"), section: t("Section"), cellule: t("Cellule"), place: t("Noyau") };
+  const CATEGORIES: Record<string, string> = { congres: t("Congrès"), conseil: t("Conseil national"), direction: t("Bureau national"), secretariats: t("Secrétariats nationaux"), etudes: t("Bureau d'études"), communication: t("Communication"), finances: t("Finances"), afe: t("AFEC"), ligues: t("Ligue des Jeunes"), specialisees: t("Structures spécialisées"), federations: t("Secrétariats provinciaux"), cellules: t("Sections, cellules et noyaux") };
+  const NIVEAU_LABEL: Record<string, string> = { national: t("National"), affilie: t("Organisation affiliée"), provincial: t("Secrétariat provincial exécutif"), section: t("Section"), soussection: t("Sous-section"), cellule: t("Cellule"), place: t("Noyau") };
+  const isLocal = (n: string): n is LocalLevel => (LOCAL_LEVELS as string[]).includes(n);
+  const niveauOfCadre = (c: Cadre): Niveau => (c.niveau === "national" ? "national" : c.niveau === "affilie" ? "affilie" : "provincial");
 
   /* ---------- Secrétariats provinciaux exécutifs : provinces, siège, sections ---------- */
 
@@ -89,56 +110,61 @@ export default function CadresDirectory({ data, locale }: { data: CadresData; lo
     Object.values(contacts).find((c) => c.type === "spe" && c.province === province)?.organe ||
     `Secrétariat Provincial Exécutif de ${province}`;
 
-  /** Sections d'un secrétariat provincial, avec leurs cellules et places de résistance. */
+  /** Sections d'un secrétariat provincial, avec leurs sous-sections, cellules et noyaux imbriqués. */
   const sectionsOf = (province: string): Unit[] => {
     const units = new Map<string, Unit>();
-    const add = (organe: string, niveau: Unit["niveau"], lieu: string) => {
+    const add = (organe: string, niveau: LocalLevel, lieu: string) => {
       if (!units.has(organe)) units.set(organe, { organe, label: organeLabel(organe), niveau, lieu, contact: contacts[organe] || { organe }, cadres: [], children: [] });
       return units.get(organe)!;
     };
-    const niveauOf = (c: { niveau?: string; type?: string }): Unit["niveau"] | null => {
-      const n = c.niveau || c.type || "";
-      return n === "section" || n === "cellule" || n === "place" ? n : null;
-    };
+    const lieuOf = (niveau: LocalLevel, commune: string, quartier: string) => (niveau === "section" ? commune : quartier || commune);
     data.cadres.forEach((c) => {
-      const n = niveauOf(c);
-      if (n && c.province === province) add(c.organe, n, n === "section" ? c.commune : c.quartier || c.commune).cadres.push(c);
+      if (isLocal(c.niveau) && c.province === province) add(c.organe, c.niveau, lieuOf(c.niveau, c.commune, c.quartier)).cadres.push(c);
     });
     Object.values(contacts).forEach((c) => {
-      const n = niveauOf(c);
-      if (n && c.province === province) add(c.organe, n, n === "section" ? c.ville || "" : c.quartier || c.ville || "");
+      const n = c.type || "";
+      if (isLocal(n) && c.province === province) add(c.organe, n, lieuOf(n, c.ville || "", c.quartier || ""));
     });
-    // Rattachement : cellule → section de sa commune, place → cellule de son quartier (sinon section)
-    const bySection = new Map<string, Unit>();
-    const byQuartier = new Map<string, Unit>();
     const all = [...units.values()];
-    all.filter((u) => u.niveau === "section").forEach((u) => bySection.set(fold(u.lieu), u));
-    all.filter((u) => u.niveau === "cellule").forEach((u) => byQuartier.set(fold(u.lieu), u));
-    const parentSection = (u: Unit) => {
-      const commune = u.cadres[0]?.commune || (u.contact.ville ?? "");
-      return bySection.get(fold(commune)) || bySection.get(fold(u.contact.via || "")) || [...bySection.values()].find((s) => fold(u.contact.via || "") === fold(s.organe));
+    const byLevel = (n: LocalLevel) => all.filter((u) => u.niveau === n);
+    const byVia = (u: Unit) => (u.contact.via ? all.find((p) => fold(p.organe) === fold(u.contact.via || "")) : undefined);
+    const communeOf = (u: Unit) => u.cadres[0]?.commune || (u.contact.ville ?? "");
+    const sectionOf = (u: Unit) => byLevel("section").find((s) => fold(s.lieu) === fold(communeOf(u)));
+    const sameLieu = (n: LocalLevel, u: Unit) => byLevel(n).find((p) => p !== u && fold(p.lieu) === fold(u.lieu) && fold(communeOf(p)) === fold(communeOf(u)));
+    // Rattachement : sous-section → section de sa commune ; cellule → sous-section de son quartier, sinon section ;
+    // noyau → cellule de son quartier, sinon sous-section, sinon section. La structure de rattachement déclarée prime.
+    const parentOf = (u: Unit): Unit | undefined => {
+      const declared = byVia(u);
+      if (declared && declared !== u) return declared;
+      if (u.niveau === "soussection") return sectionOf(u);
+      if (u.niveau === "cellule") return sameLieu("soussection", u) || sectionOf(u);
+      if (u.niveau === "place") return sameLieu("cellule", u) || sameLieu("soussection", u) || sectionOf(u);
+      return undefined;
     };
-    all.filter((u) => u.niveau === "cellule").forEach((u) => parentSection(u)?.children.push(u));
-    all.filter((u) => u.niveau === "place").forEach((u) => {
-      const cell = byQuartier.get(fold(u.lieu)) || [...byQuartier.values()].find((c) => fold(u.contact.via || "") === fold(c.organe));
-      (cell || parentSection(u))?.children.push(u);
-    });
-    const byName = (a: Unit, b: Unit) => (a.lieu || a.label).localeCompare(b.lieu || b.label, "fr");
     const attached = new Set<Unit>();
-    all.forEach((u) => u.children.forEach((c) => attached.add(c)));
+    (["soussection", "cellule", "place"] as LocalLevel[]).forEach((n) =>
+      byLevel(n).forEach((u) => {
+        const p = parentOf(u);
+        if (p) {
+          p.children.push(u);
+          attached.add(u);
+        }
+      })
+    );
+    const byName = (a: Unit, b: Unit) => (a.lieu || a.label).localeCompare(b.lieu || b.label, "fr");
     all.forEach((u) => u.children.sort(byName));
     return all.filter((u) => u.niveau === "section" || !attached.has(u)).sort(byName);
   };
 
-  /* ---------- Recherche et organes nationaux ---------- */
+  /* ---------- Recherche, organes nationaux et organisations affiliées ---------- */
 
   const searching = state.q.trim().length > 0;
   const list = useMemo(() => {
     const q = fold(state.q.trim());
     return data.cadres.filter((c) => {
-      if (!searching && state.niveau === "national" && c.niveau !== "national") return false;
-      if (!searching && state.niveau === "provincial" && c.niveau === "national") return false;
-      if (state.niveau === "national" && state.categorie !== "all" && c.categorie !== state.categorie) return false;
+      if (!searching && niveauOfCadre(c) !== state.niveau) return false;
+      if (state.niveau !== "provincial" && state.categorie !== "all" && c.categorie !== state.categorie) return false;
+      if (state.organe && fold(c.organe) !== fold(state.organe)) return false;
       if (state.province && c.province !== state.province) return false;
       if (state.commune && c.commune !== state.commune) return false;
       if (searching) {
@@ -148,9 +174,11 @@ export default function CadresDirectory({ data, locale }: { data: CadresData; lo
       return true;
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, state.niveau, state.categorie, state.province, state.commune, state.q, searching]);
+  }, [data, state.niveau, state.categorie, state.organe, state.province, state.commune, state.q, searching]);
 
-  const present = new Set(data.cadres.filter((c) => c.niveau === "national").map((c) => c.categorie));
+  const showGroups = searching || state.niveau !== "provincial";
+  const typeOfNiveau: Record<Niveau, string> = { national: "national", affilie: "affilie", provincial: "spe" };
+  const present = new Set(data.cadres.filter((c) => niveauOfCadre(c) === state.niveau).map((c) => c.categorie));
   const cats = Object.keys(CATEGORIES).filter((k) => present.has(k));
   const isProvincial = state.niveau === "provincial";
   const communes = isProvincial && state.province ? data.communes?.[state.province] || [] : [];
@@ -158,23 +186,31 @@ export default function CadresDirectory({ data, locale }: { data: CadresData; lo
   const niveauLabel = (id: string) => NIVEAUX.find((n) => n.id === id)?.label || id;
   const crumbs = [
     niveauLabel(state.niveau),
-    ...(state.niveau === "national" && state.categorie !== "all" && CATEGORIES[state.categorie] ? [CATEGORIES[state.categorie]] : []),
+    ...(!isProvincial && state.categorie !== "all" && CATEGORIES[state.categorie] ? [CATEGORIES[state.categorie]] : []),
+    ...(state.organe ? [organeLabel(state.organe)] : []),
     ...(state.province ? [organeLabel(speOrgane(state.province))] : []),
     ...(state.commune ? [state.commune] : []),
     ...(state.q.trim() ? [`« ${state.q.trim()} »`] : []),
   ];
   const placeholder = isProvincial ? t("Rechercher une province, une section, une cellule, un responsable…") : t("Rechercher un cadre ou un organe…");
 
-  // Résultats en grille (recherche et organes nationaux), groupés par structure avec ses coordonnées
+  // Résultats en grille (recherche, organes nationaux, organisations affiliées), groupés par structure avec
+  // ses coordonnées ; une structure publiée sans responsable (le Congrès, par exemple) apparaît aussi
   const groups: { organe: string; items: Cadre[] }[] = [];
   list.slice(0, 200).forEach((c) => {
     let g = groups.find((x) => x.organe === c.organe);
     if (!g) groups.push((g = { organe: c.organe, items: [] }));
     g.items.push(c);
   });
-  const showGroups = searching || state.niveau === "national";
+  if (!searching && showGroups && state.categorie === "all") {
+    Object.values(contacts)
+      .filter((c) => c.type === typeOfNiveau[state.niveau] && (!state.organe || fold(c.organe) === fold(state.organe)) && !groups.some((g) => g.organe === c.organe))
+      .forEach((c) => groups.push({ organe: c.organe, items: [] }));
+  }
+  const order = state.niveau === "affilie" ? AFFILIE_ORDER : NATIONAL_ORDER;
+  if (!searching) groups.sort((a, b) => orderIndex(order, a.organe) - orderIndex(order, b.organe) || organeLabel(a.organe).localeCompare(organeLabel(b.organe), "fr"));
   const countLabel = showGroups
-    ? list.length === 0
+    ? list.length === 0 && groups.length === 0
       ? t("Aucun résultat")
       : list.length === 1
         ? t("1 cadre")
@@ -185,7 +221,7 @@ export default function CadresDirectory({ data, locale }: { data: CadresData; lo
         : t(":n sections", { n: sections.length })
       : t(":n secrétariats provinciaux", { n: provinces.length });
 
-  const setNiveau = (id: State["niveau"]) => setState({ ...state, niveau: id, categorie: "all", commune: "", province: id === "national" ? "" : state.province });
+  const setNiveau = (id: Niveau) => setState({ ...state, niveau: id, categorie: "all", organe: "", commune: "", province: id === "provincial" ? state.province : "" });
   const selectCls = "w-full p-3 bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-ecideBlue";
 
   return (
@@ -239,9 +275,9 @@ export default function CadresDirectory({ data, locale }: { data: CadresData; lo
         )}
         {!isProvincial && cats.length >= 2 && (
           <div className="flex flex-wrap gap-2" aria-label={t("Catégorie")}>
-            <button type="button" onClick={() => setState({ ...state, categorie: "all" })} className={`chip px-4 py-2 text-sm ${state.categorie === "all" ? "is-active" : ""}`} aria-pressed={state.categorie === "all"}>{t("Toutes")}</button>
+            <button type="button" onClick={() => setState({ ...state, categorie: "all", organe: "" })} className={`chip px-4 py-2 text-sm ${state.categorie === "all" && !state.organe ? "is-active" : ""}`} aria-pressed={state.categorie === "all" && !state.organe}>{t("Toutes")}</button>
             {cats.map((k) => (
-              <button type="button" key={k} onClick={() => setState({ ...state, categorie: k })} className={`chip px-4 py-2 text-sm ${state.categorie === k ? "is-active" : ""}`} aria-pressed={state.categorie === k}>{CATEGORIES[k]}</button>
+              <button type="button" key={k} onClick={() => setState({ ...state, categorie: k, organe: "" })} className={`chip px-4 py-2 text-sm ${state.categorie === k ? "is-active" : ""}`} aria-pressed={state.categorie === k}>{CATEGORIES[k]}</button>
             ))}
           </div>
         )}
@@ -258,7 +294,7 @@ export default function CadresDirectory({ data, locale }: { data: CadresData; lo
         </p>
         <p className="flex items-center gap-4">
           <span className="font-bold text-gray-900">{countLabel}</span>
-          <button type="button" onClick={() => setState({ niveau: "national", categorie: "all", province: "", commune: "", q: "" })} className="text-ecideBlue font-bold hover:text-ecideDarkBlue"><i className="fa-solid fa-rotate-left mr-1" aria-hidden="true"></i>{t("Réinitialiser")}</button>
+          <button type="button" onClick={() => setState({ niveau: "national", categorie: "all", organe: "", province: "", commune: "", q: "" })} className="text-ecideBlue font-bold hover:text-ecideDarkBlue"><i className="fa-solid fa-rotate-left mr-1" aria-hidden="true"></i>{t("Réinitialiser")}</button>
         </p>
       </div>
 
@@ -267,6 +303,7 @@ export default function CadresDirectory({ data, locale }: { data: CadresData; lo
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" aria-live="polite">
             {groups.map((g) => (
               <ContactStrip key={g.organe} organe={g.organe} label={organeLabel(g.organe)} organes={data.organes || {}} contacts={contacts} contactUrl={contactUrl} onVia={(via) => setState({ ...state, q: via })}>
+                {g.items.length === 0 && <p className="col-span-full text-sm text-gray-500 italic -mt-2">{t("Membres à confirmer : la composition sera publiée après validation par le Secrétariat Général.")}</p>}
                 {g.items.map((c) => (
                   <CadreCard key={c.id} c={c} niveauLabel={NIVEAU_LABEL[c.niveau] || c.niveau} catLabel={CATEGORIES[c.categorie] || c.categorie} />
                 ))}
@@ -274,7 +311,7 @@ export default function CadresDirectory({ data, locale }: { data: CadresData; lo
             ))}
             {list.length > 200 && <p className="col-span-full text-center text-sm text-gray-500">{t("Affinez votre recherche pour voir les :n autres résultats.", { n: list.length - 200 })}</p>}
           </div>
-          {list.length === 0 && (
+          {list.length === 0 && groups.length === 0 && (
             <div className="text-center py-16 space-y-3">
               <i className="fa-solid fa-magnifying-glass text-4xl text-gray-300" aria-hidden="true"></i>
               <p className="text-lg font-bold text-gray-900">{t("Aucun cadre ne correspond à votre recherche.")}</p>
@@ -379,11 +416,11 @@ function ProvinceView({ province, organe, label, contact: c, leaders, sections, 
         </div>
       </div>
 
-      {/* Sections, cellules et places de résistance */}
+      {/* Sections, sous-sections, cellules et noyaux */}
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
           <div>
-            <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Sections, cellules et noyaux")}</span>
+            <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Sections, sous-sections, cellules et noyaux")}</span>
             <h3 className="text-3xl text-ecideDarkBlue">{communeFilter ? t("Section de :commune", { commune: communeFilter }) : t("Les sections du secrétariat provincial")}</h3>
           </div>
           {communeFilter && <button type="button" onClick={onAllSections} className="text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue">{t("Toutes les sections")}</button>}
@@ -402,18 +439,20 @@ function ProvinceView({ province, organe, label, contact: c, leaders, sections, 
   );
 }
 
-/** Carte d'une section (avec ses cellules et places de résistance imbriquées), d'une cellule ou d'une place. */
+/** Carte d'une section (avec ses sous-sections, cellules et noyaux imbriqués), d'une sous-section, d'une cellule ou d'un noyau. */
 function UnitCard({ unit, contactUrl, nested = false }: { unit: Unit; contactUrl: string; nested?: boolean }) {
   const { t } = useI18n();
   const c = unit.contact;
   const row = "flex items-center gap-2 text-gray-800 hover:text-ecideBlue";
-  const kind = unit.niveau === "section" ? t("Section") : unit.niveau === "cellule" ? t("Cellule") : t("Noyau");
-  const lieuLabel = unit.niveau === "section" ? t("Commune, territoire ou secteur : :lieu", { lieu: unit.lieu }) : t("Quartier, avenue ou rue : :lieu", { lieu: unit.lieu });
+  const KIND: Record<LocalLevel, string> = { section: t("Section"), soussection: t("Sous-section"), cellule: t("Cellule"), place: t("Noyau") };
+  const KIND_TONE: Record<LocalLevel, string> = { section: "text-ecideGreen", soussection: "text-ecideGreen", cellule: "text-ecideBlue", place: "text-ecideYellow-700" };
+  const CHILDREN: Record<LocalLevel, string> = { section: t("Sous-sections, cellules et noyaux"), soussection: t("Cellules et noyaux"), cellule: t("Noyaux"), place: "" };
+  const lieuLabel = unit.niveau === "section" ? t("Commune, territoire ou secteur : :lieu", { lieu: unit.lieu }) : unit.niveau === "soussection" ? t("Groupement, quartier ou localité : :lieu", { lieu: unit.lieu }) : t("Quartier, avenue ou rue : :lieu", { lieu: unit.lieu });
   const Heading = nested ? "h5" : "h4";
   return (
     <article className={nested ? "panel panel--white p-4 space-y-3" : "panel p-6 space-y-4"}>
       <header>
-        <span className={`block text-[11px] font-bold uppercase tracking-widest ${unit.niveau === "section" ? "text-ecideGreen" : unit.niveau === "cellule" ? "text-ecideBlue" : "text-ecideYellow-700"}`}>{kind}</span>
+        <span className={`block text-[11px] font-bold uppercase tracking-widest ${KIND_TONE[unit.niveau]}`}>{KIND[unit.niveau]}</span>
         <Heading className={`font-display text-ecideDarkBlue leading-tight ${nested ? "text-xl" : "text-2xl"}`}>{unit.label}</Heading>
         {unit.lieu && <p className="text-sm text-gray-500 mt-1"><i className="fa-solid fa-location-dot text-gray-400 mr-1" aria-hidden="true"></i>{lieuLabel}</p>}
       </header>
@@ -443,7 +482,7 @@ function UnitCard({ unit, contactUrl, nested = false }: { unit: Unit; contactUrl
       </div>
       {unit.children.length > 0 && (
         <div className="border-t border-gray-100 pt-3 space-y-3">
-          <p className="text-[11px] font-bold uppercase tracking-widest text-gray-500">{unit.niveau === "section" ? t("Cellules et places de résistance") : t("Places de résistance")}</p>
+          <p className="text-[11px] font-bold uppercase tracking-widest text-gray-500">{CHILDREN[unit.niveau]}</p>
           {unit.children.map((child) => (
             <UnitCard key={child.organe} unit={child} contactUrl={contactUrl} nested />
           ))}
@@ -475,7 +514,7 @@ function LeaderRow({ c, tone, tag, light = false }: { c: Cadre; tone: "blue" | "
   );
 }
 
-/* ---------- Cartes et bandeau de coordonnées (organes nationaux, résultats de recherche) ---------- */
+/* ---------- Cartes et bandeau de coordonnées (organes nationaux, organisations affiliées, résultats de recherche) ---------- */
 
 function CadreCard({ c, niveauLabel, catLabel }: { c: Cadre; niveauLabel: string; catLabel: string }) {
   const { t } = useI18n();
@@ -497,7 +536,7 @@ function CadreCard({ c, niveauLabel, catLabel }: { c: Cadre; niveauLabel: string
       <p className={pending ? "text-gray-400 italic" : "text-gray-800 font-semibold"}>{pending ? t(PENDING) : c.nom}</p>
       <div className="flex flex-wrap justify-center gap-2 text-[11px] font-bold uppercase tracking-wider">
         <span className="px-2 py-0.5 bg-gray-100 text-gray-600">{niveauLabel}</span>
-        {c.niveau === "national" && <span className="px-2 py-0.5 bg-gray-100 text-gray-600">{catLabel}</span>}
+        {(c.niveau === "national" || c.niveau === "affilie") && <span className="px-2 py-0.5 bg-gray-100 text-gray-600">{catLabel}</span>}
       </div>
       {lieu.length > 0 && (
         <p className="text-sm text-gray-500">

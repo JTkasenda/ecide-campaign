@@ -270,8 +270,8 @@ export interface StructureContact {
 export interface CadresData {
   /** Présentation en tête de page (Autres pages › Cadres) */
   page: Record<string, string>;
-  /** Chiffres calculés par l'API */
-  stats: { nationaux: number; spe: number; sections: number; cellules: number; places: number };
+  /** Chiffres calculés par l'API : organes nationaux, organisations affiliées, SEP, sections, sous-sections, cellules, noyaux */
+  stats: { nationaux: number; affilies?: number; spe: number; sections: number; soussections?: number; cellules: number; places: number };
   cadres: Cadre[];
   provinces: string[];
   communes: Record<string, string[]>;
@@ -286,6 +286,10 @@ export interface DiasporaEntry {
   fonction: string;
   organe: string;
   organeLabel: string;
+  /** Niveau : secrétariat provincial exécutif (pays), section (ville), sous-section, cellule, noyau */
+  type?: "spe" | "section" | "soussection" | "cellule" | "place";
+  /** Représentation de rattachement (le secrétariat du pays pour une section) */
+  via?: string;
   continent: string;
   pays: string;
   ville: string;

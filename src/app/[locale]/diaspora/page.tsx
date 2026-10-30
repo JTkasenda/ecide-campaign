@@ -19,7 +19,7 @@ export default async function DiasporaPage({ params }: PageParams) {
   const s = (k: string) => (typeof dp[k] === "string" ? (dp[k] as string) : "");
   const entries = data.data.entries;
   const nbPays = new Set(entries.map((e) => e.pays)).size;
-  const nbVilles = new Set(entries.filter((e) => e.ville).map((e) => e.pays + "/" + e.ville)).size;
+  const nbVilles = new Set(entries.filter((e) => (e.type || (e.ville ? "section" : "spe")) === "section").map((e) => e.pays + "/" + e.ville)).size;
 
   return (
     <main id="main" className="flex-grow">
@@ -28,7 +28,7 @@ export default async function DiasporaPage({ params }: PageParams) {
       </PageBanner>
       <section className="py-12 lg:py-16 px-6 max-w-7xl mx-auto space-y-8">
         <DiasporaDirectory data={data.data} locale={locale} />
-        <p className="text-center text-sm text-gray-500 italic relative">{t("Les noms et profils publics des responsables sont publiés après validation par la Coordination de la Diaspora ; leurs numéros personnels ne sont jamais affichés : utilisez les coordonnées de la fédération ou de la section. « À confirmer » signale un poste dont le titulaire n'est pas encore renseigné.")}</p>
+        <p className="text-center text-sm text-gray-500 italic relative">{t("Les noms et profils publics des responsables sont publiés après validation par la Coordination de la Diaspora ; leurs numéros personnels ne sont jamais affichés : utilisez les coordonnées du secrétariat provincial exécutif ou de la section. « À confirmer » signale un poste dont le titulaire n'est pas encore renseigné.")}</p>
       </section>
 
       <section id="rejoindre" className="scroll-mt-24 py-20 lg:py-24 px-6 bg-ecideDarkBlue text-white diag">

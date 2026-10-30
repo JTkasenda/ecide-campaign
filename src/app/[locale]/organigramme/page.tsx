@@ -31,12 +31,17 @@ export default async function OrganigrammePage({ params }: PageParams) {
   ].filter((g) => g.items.length > 0);
 
   const orgCard = (o: { titre: string; texte: string; icone: string }, tone: string) => {
-    const low = o.titre.toLowerCase();
+    const low = o.titre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const cadres = localePath(locale, "/cadres");
+    const link = (href: string, label: string) => <Link href={href} className="text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue">{label} →</Link>;
     let extra = null;
-    if (low.includes("diaspora")) extra = <Link href={localePath(locale, "/diaspora")} className="text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue">{t("Voir la diaspora")} →</Link>;
-    if (low.includes("bureau national")) extra = <Link href={`${localePath(locale, "/cadres")}#niveau=national`} className="text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue">{t("Voir les membres du Bureau national")} →</Link>;
-    if (low.includes("provinci")) extra = <Link href={`${localePath(locale, "/cadres")}#niveau=provincial`} className="text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue">{t("Voir les secrétariats provinciaux")} →</Link>;
-    if (low.includes("section") || low.includes("cellule") || low.includes("noyau")) extra = <Link href={`${localePath(locale, "/cadres")}#niveau=provincial`} className="text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue">{t("Trouver ma section")} →</Link>;
+    if (low.includes("diaspora")) extra = link(localePath(locale, "/diaspora"), t("Voir la diaspora"));
+    else if (low.includes("congres")) extra = link(`${cadres}#niveau=national&organe=${encodeURIComponent("Congrès")}`, t("Voir le Congrès"));
+    else if (low.includes("conseil national")) extra = link(`${cadres}#niveau=national&organe=${encodeURIComponent("Conseil national")}`, t("Voir le Conseil national"));
+    else if (low.includes("bureau national")) extra = link(`${cadres}#niveau=national`, t("Voir les membres du Bureau national"));
+    else if (low.includes("femmes") || low.includes("afec") || low.includes("jeunes") || low.includes("ligue") || low.includes("affili")) extra = link(`${cadres}#niveau=affilie`, t("Voir les organisations affiliées"));
+    else if (low.includes("provinci")) extra = link(`${cadres}#niveau=provincial`, t("Voir les secrétariats provinciaux"));
+    else if (low.includes("section") || low.includes("cellule") || low.includes("noyau")) extra = link(`${cadres}#niveau=provincial`, t("Trouver ma section"));
     return (
       <div className={`org-card org-card--${tone}`}>
         <i className={`fa-solid ${o.icone}`} aria-hidden="true"></i>

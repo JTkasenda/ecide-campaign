@@ -15,7 +15,7 @@ interface Labels {
   submit: string;
 }
 
-/** Demande de rejoindre ou créer une fédération de la diaspora. */
+/** Demande de rejoindre ou créer un secrétariat provincial exécutif de la diaspora (un par pays). */
 export default function FederationForm({ choix, confirmation, labels }: { choix: string[]; confirmation: string; labels: Labels }) {
   const { t, locale } = useI18n();
   const [form, setForm] = useState({ nom: "", pays: "", ville: "", contact: "", souhait: choix[0] || "" });

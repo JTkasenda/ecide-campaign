@@ -10,7 +10,7 @@ import PageBanner, { BannerStats } from "@/components/PageBanner";
 export async function generateMetadata({ params }: PageParams): Promise<Metadata> {
   const locale = await pageLocale(params);
   const [t, data] = await Promise.all([getT(locale), getCadres(locale)]);
-  return pageMetadata(locale, "/cadres", { title: data.page?.titre || t("Cadres du parti"), description: data.page?.texte || t("Organes nationaux, secrétariats provinciaux exécutifs, sections et cellules, province par province. Trouvez la structure la plus proche de chez vous et ses coordonnées.") });
+  return pageMetadata(locale, "/cadres", { title: data.page?.titre || t("Cadres du parti"), description: data.page?.texte || t("Congrès, Conseil national et Bureau national ; secrétariats provinciaux exécutifs, sections, sous-sections, cellules et noyaux, province par province ; organisations affiliées. Trouvez la structure la plus proche de chez vous et ses coordonnées.") });
 }
 
 export default async function CadresPage({ params }: PageParams) {
@@ -18,12 +18,13 @@ export default async function CadresPage({ params }: PageParams) {
   const [data, t] = await Promise.all([getCadres(locale), getT(locale)]);
 
   const page = data.page || {};
-  const stats = data.stats || { nationaux: 0, spe: 0, sections: 0, cellules: 0 };
+  const stats = data.stats || { nationaux: 0, spe: 0, sections: 0, cellules: 0, places: 0 };
+  const locales = stats.sections + (stats.soussections || 0) + stats.cellules + (stats.places || 0);
 
   return (
     <main id="main" className="flex-grow">
-      <PageBanner eyebrow={page.surtitre || t("Sur le territoire national")} title={page.titre || t("L'ECiDé en République démocratique du Congo")} text={page.texte || t("Organes nationaux, secrétariats provinciaux exécutifs, sections et cellules, province par province. Trouvez la structure la plus proche de chez vous et ses coordonnées.")}>
-        <BannerStats items={[[stats.spe, t("secrétariats provinciaux")], [stats.sections, t("sections")], [stats.cellules, t("cellules")]]} />
+      <PageBanner eyebrow={page.surtitre || t("Sur le territoire national")} title={page.titre || t("L'ECiDé en République démocratique du Congo")} text={page.texte || t("Congrès, Conseil national et Bureau national ; secrétariats provinciaux exécutifs, sections, sous-sections, cellules et noyaux, province par province ; organisations affiliées. Trouvez la structure la plus proche de chez vous et ses coordonnées.")}>
+        <BannerStats items={[[stats.spe, t("secrétariats provinciaux")], [stats.sections, t("sections")], [locales, t("structures locales")]]} />
       </PageBanner>
       <section className="py-12 lg:py-16 px-6 max-w-7xl mx-auto space-y-8">
         <CadresDirectory data={data} locale={locale} />
