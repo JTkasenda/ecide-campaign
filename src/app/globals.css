@@ -286,6 +286,19 @@ textarea:focus-visible {
   outline: 3px solid var(--ecide-yellow);
   outline-offset: 2px;
 }
+/* Le <select> invisible qui recouvre la pastille hérite du blanc de l'en-tête : Chrome dessinerait alors
+   la liste déroulante en blanc sur blanc. Couleurs explicites pour la liste et ses options. */
+.lang-switch select,
+.lang-switch select option,
+#langSelectMobile,
+#langSelectMobile option {
+  color: var(--ecide-dark);
+  background-color: #fff;
+  color-scheme: light;
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  font-weight: 600;
+}
 
 /* Navigation : rangée de liens sous le logo, lien courant en bleu avec un trait jaune */
 .nav-link {
