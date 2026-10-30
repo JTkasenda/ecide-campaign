@@ -37,6 +37,8 @@ export interface TickerItem {
 
 export interface SiteParams {
   nom?: string;
+  /** Emblème téléversé dans l'administration (Paramètres › Identité) ; l'API le sert dans assets */
+  logo?: string;
   slogan?: string;
   nomLong?: string;
   description?: string;

@@ -20,7 +20,7 @@ export default async function Footer({ site, locale }: { site: Site; locale: Loc
       <div className="max-w-7xl mx-auto px-6 pt-16 pb-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
         <div className="lg:col-span-4 space-y-6">
           <Link href={localePath(locale, "/")} className="flex items-center gap-3">
-            <img src="/assets/img/logo-160.png" alt="" width={56} height={56} loading="lazy" className="w-14 h-14 rounded-full" />
+            <img src={site.assets.logo || "/assets/img/logo-160.png"} alt="" width={56} height={56} loading="lazy" className="w-14 h-14 rounded-full object-cover" />
             <span>
               <span className="font-display font-black text-3xl block leading-none">{p.nom || "ECiDé"}</span>
               <span className="eyebrow text-[10px] mt-1 block">{p.slogan || "C'est possible"}</span>

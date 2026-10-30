@@ -5,7 +5,7 @@ import "../globals.css";
 import { getI18n, getSite } from "@/lib/api";
 import { siteTextVars } from "@/lib/format";
 import { I18nProvider } from "@/lib/i18n";
-import { DEFAULT_LOCALE, LOCALES, isLocale } from "@/lib/locales";
+import { LOCALES, isLocale } from "@/lib/locales";
 import { getT, SITE_AUTHOR, SITE_URL } from "@/lib/server";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     authors: [SITE_AUTHOR],
     creator: SITE_AUTHOR.name,
     publisher: site.params.nom || "ECiDé",
-    icons: { icon: "/assets/img/favicon-64.png", apple: "/assets/img/logo-160.png" },
+    icons: { icon: site.assets.favicon || "/assets/img/favicon-64.png", apple: site.assets.logo || "/assets/img/logo-160.png" },
   };
 }
 
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function LocaleLayout({ children, params }: { children: ReactNode; params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const [site, t, i18n] = await Promise.all([getSite(locale), getT(locale), locale === DEFAULT_LOCALE ? Promise.resolve({ strings: {} }) : getI18n(locale)]);
+  const [site, t, i18n] = await Promise.all([getSite(locale), getT(locale), getI18n(locale)]);
 
   return (
     // suppressHydrationWarning : les extensions de navigateur (gestionnaires de mots de passe,

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getParti } from "@/lib/api";
+import { getParti, getSite } from "@/lib/api";
 import { pad2, safeUrl } from "@/lib/format";
 import { localePath } from "@/lib/locales";
 import { pageLocale, type PageParams } from "@/lib/page";
@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
 
 export default async function PartiPage({ params }: PageParams) {
   const locale = await pageLocale(params);
-  const [data, t] = await Promise.all([getParti(locale), getT(locale)]);
+  const [data, site, t] = await Promise.all([getParti(locale), getSite(locale), getT(locale)]);
   const { parti, page: pp, chiffres, valeurs, etapes, documents } = data;
   const missions = data.missions || [];
   const projetAxes = data.projetAxes || [];
@@ -29,7 +29,7 @@ export default async function PartiPage({ params }: PageParams) {
       <h1 className="sr-only">{t("Le Parti")}</h1>
       {/* IDENTITÉ DU PARTI */}
       <section className="bg-ecideDarkBlue text-white relative overflow-hidden flex items-center lg:min-h-[32rem] diag">
-        <img src="/assets/img/logo-512.png" alt="" aria-hidden="true" className="hidden lg:block absolute -right-20 -bottom-24 w-[26rem] opacity-[0.08] pointer-events-none select-none" />
+        <img src={site.assets.logo512 || "/assets/img/logo-512.png"} alt="" aria-hidden="true" className="hidden lg:block absolute -right-20 -bottom-24 w-[26rem] opacity-[0.08] pointer-events-none select-none" />
         <div className="max-w-7xl mx-auto w-full px-6 py-14 lg:py-20 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center relative">
           <div className="lg:col-span-7 space-y-6">
             {parti.badge && <span className="pill pill--yellow">{parti.badge}</span>}

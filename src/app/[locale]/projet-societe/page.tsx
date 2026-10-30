@@ -11,7 +11,7 @@ import PdfDocument, { DocumentButtons } from "@/components/PdfDocument";
 export async function generateMetadata({ params }: PageParams): Promise<Metadata> {
   const locale = await pageLocale(params);
   const [t, data] = await Promise.all([getT(locale), getParti(locale)]);
-  return pageMetadata(locale, "/projet-societe", { title: t("Projet de société"), description: data.parti.projetIntro || data.parti.intro });
+  return pageMetadata(locale, "/projet-societe", { title: data.page.projetTitre || t("Projet de société"), description: data.parti.projetIntro || data.parti.intro });
 }
 
 /**
@@ -21,23 +21,23 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
 export default async function ProjetSocietePage({ params }: PageParams) {
   const locale = await pageLocale(params);
   const [data, t] = await Promise.all([getParti(locale), getT(locale)]);
-  const { parti, projet } = data;
+  const { parti, projet, page: pp } = data;
   const projetAxes = data.projetAxes || [];
   return (
     <main id="main" className="flex-grow">
-      <PageBanner eyebrow={t("Projet de société")} title={t("Notre projet de société")} text={parti.projetIntro || ""}>
+      <PageBanner eyebrow={pp.projetSurtitre || t("Projet de société")} title={pp.projetTitre || t("Notre projet de société")} text={parti.projetIntro || ""}>
         <DocumentButtons doc={projet} t={t} back={{ href: localePath(locale, "/parti"), label: t("Le Parti") }} />
       </PageBanner>
 
-      <PdfDocument doc={projet} title={t("Projet de société")} t={t} />
+      <PdfDocument doc={projet} title={pp.projetSurtitre || t("Projet de société")} t={t} />
 
       {/* LES AXES */}
       {projetAxes.length > 0 && (
         <section id="axes" className="bg-ecideBlue-50 py-20 lg:py-24 px-6 scroll-mt-32">
           <div className="max-w-6xl mx-auto space-y-12">
             <div className="space-y-4 reveal">
-              <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Projet de société")}</span>
-              <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue">{t("Les axes du projet")}</h2>
+              <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{pp.projetSurtitre || t("Projet de société")}</span>
+              <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue">{pp.axesTitre || t("Les axes du projet")}</h2>
             </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {projetAxes.map((a, i) => (

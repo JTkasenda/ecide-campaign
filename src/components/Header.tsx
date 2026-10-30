@@ -85,7 +85,7 @@ export default function Header({ site, locale }: { site: Site; locale: Locale })
       <nav aria-label={t("Navigation principale")}>
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center gap-6 h-16 xl:h-20">
           <Link href={localePath(locale, "/")} className="flex items-center gap-3 min-w-0 shrink" aria-label={`${p.nom || "ECiDé"}, ${t("retour à l'accueil")}`}>
-            <img src="/assets/img/logo-160.png" alt="" width={44} height={44} className="w-11 h-11 shrink-0 rounded-full" />
+            <img src={site.assets.logo || "/assets/img/logo-160.png"} alt="" width={44} height={44} className="w-11 h-11 shrink-0 rounded-full object-cover" />
             <span className="min-w-0 leading-none">
               <span className="font-display font-black text-2xl block leading-none truncate">{p.nom || "ECiDé"}</span>
               <span className="eyebrow text-[9px] tracking-[0.3em] mt-1 hidden sm:block truncate">{p.slogan || "C'est possible"}</span>

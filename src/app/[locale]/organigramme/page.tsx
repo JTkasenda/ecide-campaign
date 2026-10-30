@@ -10,7 +10,7 @@ import PageBanner from "@/components/PageBanner";
 export async function generateMetadata({ params }: PageParams): Promise<Metadata> {
   const locale = await pageLocale(params);
   const [t, data] = await Promise.all([getT(locale), getParti(locale)]);
-  return pageMetadata(locale, "/organigramme", { title: t("Organigramme"), description: data.page.orgaTexte || data.parti.intro });
+  return pageMetadata(locale, "/organigramme", { title: data.page.orgaTitre || t("Organigramme"), description: data.page.orgaTexte || data.parti.intro });
 }
 
 /**
@@ -52,7 +52,7 @@ export default async function OrganigrammePage({ params }: PageParams) {
 
   return (
     <main id="main" className="flex-grow">
-      <PageBanner eyebrow={t("Structure")} title={t("Organigramme")} text={pp.orgaTexte || ""}>
+      <PageBanner eyebrow={pp.orgaSurtitre || t("Structure")} title={pp.orgaTitre || t("Organigramme")} text={pp.orgaTexte || ""}>
         <div className="flex flex-wrap gap-3 shrink-0">
           <Link href={localePath(locale, "/cadres")} className="btn btn--primary">{t("Annuaire des cadres")}</Link>
           <Link href={localePath(locale, "/parti")} className="btn btn--outline-white">{t("Le Parti")}</Link>
@@ -63,13 +63,13 @@ export default async function OrganigrammePage({ params }: PageParams) {
       <section id="organisation" className="bg-ecideBlue-50 py-20 lg:py-24 px-6 scroll-mt-32">
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           <div className="lg:col-span-4 space-y-5 reveal lg:sticky lg:top-32">
-            <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue">{t("Les organes du parti")}</h2>
+            <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue">{pp.orgaSousTitre || t("Les organes du parti")}</h2>
             <ul className="space-y-2 text-sm text-gray-600">
               <li className="flex items-center gap-3"><span className="w-3 h-3 bg-ecideBlue" aria-hidden="true"></span>{t("Niveau national")}</li>
               <li className="flex items-center gap-3"><span className="w-3 h-3 bg-ecideYellow" aria-hidden="true"></span>{t("Niveau provincial et local")}</li>
               <li className="flex items-center gap-3"><span className="w-3 h-3 bg-ecideGreen" aria-hidden="true"></span>{t("Organisations affiliées")}</li>
             </ul>
-            <p className="text-sm text-gray-600">{t("Congrès, Conseil national et Bureau national ; secrétariats exécutifs provinciaux, sections, sous-sections, cellules et noyaux ; organisations affiliées.")}</p>
+            <p className="text-sm text-gray-600">{pp.orgaLegende || t("Congrès, Conseil national et Bureau national ; secrétariats exécutifs provinciaux, sections, sous-sections, cellules et noyaux ; organisations affiliées.")}</p>
             <Link href={localePath(locale, "/cadres")} className="arrow-link">{t("Consulter l'annuaire des cadres")}</Link>
           </div>
           <div className="lg:col-span-8 space-y-12 reveal">
@@ -96,9 +96,9 @@ export default async function OrganigrammePage({ params }: PageParams) {
         <span id="membres" className="block scroll-mt-32" aria-hidden="true"></span>
           <div className="max-w-6xl mx-auto space-y-12">
             <div className="max-w-2xl space-y-3 reveal">
-              <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Membres")}</span>
-              <h3 className="text-3xl text-ecideDarkBlue">{t("Les membres du parti")}</h3>
-              <p className="text-lg text-gray-600">{t("Qui peut être membre de l'ECiDé, et à quel titre.")}</p>
+              <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{pp.membresSurtitre || t("Membres")}</span>
+              <h3 className="text-3xl text-ecideDarkBlue">{pp.membresTitre || t("Les membres du parti")}</h3>
+              <p className="text-lg text-gray-600">{pp.membresTexte || t("Qui peut être membre de l'ECiDé, et à quel titre.")}</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
               {membres.map((m, i) => {

@@ -5,9 +5,11 @@ import { getI18n, getSite } from "./api";
 import { makeT, type T } from "./t";
 import { DEFAULT_LOCALE, LOCALES, OG_LOCALES, localePath, type Locale } from "./locales";
 
-/** Fonction de traduction côté serveur, dédoublonnée par rendu. */
+/**
+ * Fonction de traduction côté serveur, dédoublonnée par rendu. Le français lit aussi son
+ * dictionnaire : il ne contient que les textes d'interface corrigés dans l'administration.
+ */
 export const getT = cache(async (locale: Locale): Promise<T> => {
-  if (locale === DEFAULT_LOCALE) return makeT({});
   const { strings } = await getI18n(locale);
   return makeT(strings);
 });
@@ -64,6 +66,6 @@ export async function pageMetadata(locale: Locale, path: string, opts: { title?:
         : {}),
     },
     twitter: { card: "summary_large_image", site: site.params.x ? `@${site.params.x.replace(/^@/, "")}` : undefined, title: shortTitle, description, images: [image] },
-    icons: { icon: "/assets/img/favicon-64.png", apple: "/assets/img/logo-160.png" },
+    icons: { icon: site.assets.favicon || "/assets/img/favicon-64.png", apple: site.assets.logo || "/assets/img/logo-160.png" },
   };
 }

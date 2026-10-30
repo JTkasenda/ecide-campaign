@@ -11,7 +11,7 @@ import PdfDocument, { DocumentButtons } from "@/components/PdfDocument";
 export async function generateMetadata({ params }: PageParams): Promise<Metadata> {
   const locale = await pageLocale(params);
   const [t, data] = await Promise.all([getT(locale), getParti(locale)]);
-  return pageMetadata(locale, "/charte-valeurs", { title: t("Charte des valeurs"), description: data.page.charteTexte || data.page.docsTexte || data.parti.intro });
+  return pageMetadata(locale, "/charte-valeurs", { title: data.page.charteTitre || t("Charte des valeurs"), description: data.page.charteTexte || data.page.docsTexte || data.parti.intro });
 }
 
 /**
@@ -24,19 +24,19 @@ export default async function CharteValeursPage({ params }: PageParams) {
   const { page: pp, valeurs, engagements, charte } = data;
   return (
     <main id="main" className="flex-grow">
-      <PageBanner eyebrow={t("Textes fondateurs")} title={t("Charte des valeurs")} text={pp.charteTexte || pp.docsTexte || ""}>
+      <PageBanner eyebrow={pp.charteSurtitre || t("Textes fondateurs")} title={pp.charteTitre || t("Charte des valeurs")} text={pp.charteTexte || pp.docsTexte || ""}>
         <DocumentButtons doc={charte} t={t} back={{ href: localePath(locale, "/parti"), label: t("Le Parti") }} />
       </PageBanner>
 
-      <PdfDocument doc={charte} title={t("Charte des valeurs")} t={t} />
+      <PdfDocument doc={charte} title={pp.charteTitre || t("Charte des valeurs")} t={t} />
 
       {/* LES VALEURS */}
       {valeurs.length > 0 && (
         <section id="valeurs" className="bg-ecideBlue-50 py-20 lg:py-24 px-6 scroll-mt-32">
           <div className="max-w-6xl mx-auto space-y-14">
             <div className="space-y-4 reveal">
-              <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Textes fondateurs")}</span>
-              <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue">{valeurs.length === 13 ? t("Les 13 valeurs de l'ECiDé") : t("Nos valeurs")}</h2>
+              <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{pp.charteSurtitre || t("Textes fondateurs")}</span>
+              <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue">{pp.valeursTitre || (valeurs.length === 13 ? t("Les 13 valeurs de l'ECiDé") : t("Nos valeurs"))}</h2>
             </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {valeurs.map((v, i) => {
@@ -60,8 +60,8 @@ export default async function CharteValeursPage({ params }: PageParams) {
         <section id="engagements" className="bg-ecideDarkBlue text-white py-20 lg:py-24 px-6 scroll-mt-32 diag">
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-16 items-start">
             <div className="lg:col-span-2 space-y-5 reveal">
-              <span className="eyebrow">{t("Textes fondateurs")}</span>
-              <h2 className="text-4xl">{t("Les engagements de la charte")}</h2>
+              <span className="eyebrow">{pp.charteSurtitre || t("Textes fondateurs")}</span>
+              <h2 className="text-4xl">{pp.engagementsTitre || t("Les engagements de la charte")}</h2>
               <div className="flex flex-wrap gap-3 pt-2">
                 <Link href={localePath(locale, "/adherer")} className="btn btn--primary">{t("Rejoindre le parti")}</Link>
                 <Link href={localePath(locale, "/parti")} className="btn btn--outline-white">{t("Le Parti")}</Link>
