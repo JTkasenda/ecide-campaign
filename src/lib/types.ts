@@ -14,7 +14,7 @@ export interface NavItem {
   libelle: string;
   url: string;
   key: string;
-  /** Page secondaire (sous « Le Parti ») : organigramme, charte des valeurs, projet de société. */
+  /** Sous-page (case « Sous-page » de l'administration) : pied de page seulement, pas l'en-tête. */
   sub?: boolean;
 }
 
@@ -165,6 +165,8 @@ export interface HomePage {
     presidentUrl2: string;
     presidentSuivre: boolean;
     actuNombre: number;
+    /** Bandeau jaune d'appel au don (accueil) : affiché ou non */
+    donActif: boolean;
   };
   president: { nom: string; portrait: string; x: string; facebook: string };
   news: { featured: NewsItem | null; latest: NewsItem[] };
@@ -192,7 +194,8 @@ export interface PartiPage {
   projetAxes: { titre: string; texte: string; icone: string }[];
   valeurs: { titre: string; texte: string; icone: string; couleur: Couleur }[];
   etapes: { repere: string; titre: string; texte: string }[];
-  organes: { titre: string; texte: string; icone: string; niveau?: "national" | "provincial" | "affilie" }[];
+  /** lien / url : lien de la carte sur la page Organigramme, réglé dans l'administration (vide : lien automatique) */
+  organes: { titre: string; texte: string; icone: string; niveau?: "national" | "provincial" | "affilie"; lien?: string; url?: string }[];
   membres: { titre: string; texte: string; icone: string; couleur: Couleur }[];
   documents: ({ nom: string } & PartyDocument)[];
   charte: PartyDocument | null;

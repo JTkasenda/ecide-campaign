@@ -30,12 +30,14 @@ export default async function OrganigrammePage({ params }: PageParams) {
     { key: "affilie", title: t("Organisations affiliées"), tone: "green", items: organes.filter((o) => niveau(o) === "affilie") },
   ].filter((g) => g.items.length > 0);
 
-  const orgCard = (o: { titre: string; texte: string; icone: string }, tone: string) => {
+  const orgCard = (o: { titre: string; texte: string; icone: string; lien?: string; url?: string }, tone: string) => {
     const low = o.titre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     const cadres = localePath(locale, "/cadres");
     const link = (href: string, label: string) => <Link href={href} className="text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue">{label} →</Link>;
     let extra = null;
-    if (low.includes("diaspora")) extra = link(localePath(locale, "/diaspora"), t("Voir la diaspora"));
+    // Lien réglé dans l'administration (Le Parti › Organisation), sinon lien automatique selon l'organe
+    if (o.url && o.url !== "#") extra = link(/^https?:/i.test(o.url) ? o.url : localePath(locale, o.url), o.lien || t("En savoir plus"));
+    else if (low.includes("diaspora")) extra = link(localePath(locale, "/diaspora"), t("Voir la diaspora"));
     else if (low.includes("congres")) extra = link(`${cadres}#niveau=national&organe=${encodeURIComponent("Congrès")}`, t("Voir le Congrès"));
     else if (low.includes("conseil national")) extra = link(`${cadres}#niveau=national&organe=${encodeURIComponent("Conseil national")}`, t("Voir le Conseil national"));
     else if (low.includes("bureau national")) extra = link(`${cadres}#niveau=national`, t("Voir les membres du Bureau national"));

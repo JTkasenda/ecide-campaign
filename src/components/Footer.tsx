@@ -13,7 +13,7 @@ import NewsletterForm from "./NewsletterForm";
 export default async function Footer({ site, locale }: { site: Site; locale: Locale }) {
   const t = await getT(locale);
   const p = site.params;
-  const navLinks = siteNav(site, t).filter((n) => n.key !== "home");
+  const navLinks = siteNav(site).filter((n) => n.key !== "home");
 
   return (
     <footer className="bg-ecideDarkBlue text-white text-sm diag">
@@ -48,9 +48,6 @@ export default async function Footer({ site, locale }: { site: Site; locale: Loc
                 <Link href={localePath(locale, n.url)} className="hover:text-ecideYellow">{n.libelle}</Link>
               </li>
             ))}
-            <li>
-              <Link href={localePath(locale, "/adherer")} className="hover:text-ecideYellow">{t("Adhésion & Don")}</Link>
-            </li>
           </ul>
         </div>
 

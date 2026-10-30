@@ -23,7 +23,7 @@ export default function Header({ site, locale }: { site: Site; locale: Locale })
   const p = site.params;
   // Menu minimaliste : les pages principales seulement ; les sous-pages (organigramme, charte, projet,
   // biographie) restent accessibles depuis leur page parente et le pied de page
-  const nav = siteNav(site, t).filter((n) => n.key !== "home" && !n.sub);
+  const nav = siteNav(site).filter((n) => n.key !== "home" && !n.sub);
   const donUrl = p.don && /^https?:\/\//i.test(p.don) ? p.don : localePath(locale, "/don");
   const donExternal = /^https?:/i.test(donUrl);
 

@@ -25,7 +25,11 @@ export default async function AdhererPage({ params }: PageParams) {
 
   return (
     <main id="main" className="flex-grow">
-      <PageBanner eyebrow={t("Agir")} title={t("Adhésion & Contribution Financière")} text={t("Rejoignez le parti via la plateforme officielle des membres et soutenez-le dès :min FC par Mobile Money, ou en dollars par PayPal et virement.", { min: formatNumber(data.paiement.cdf.min, locale) })} />
+      <PageBanner
+        eyebrow={s("banniereSurtitre") || t("Agir")}
+        title={s("banniereTitre") || t("Adhésion & Contribution Financière")}
+        text={s("banniereTexte") ? s("banniereTexte").replace(/:min/g, formatNumber(data.paiement.cdf.min, locale)) : t("Rejoignez le parti via la plateforme officielle des membres et soutenez-le dès :min FC par Mobile Money, ou en dollars par PayPal et virement.", { min: formatNumber(data.paiement.cdf.min, locale) })}
+      />
 
       {atouts.length > 0 && (
         <section className="bg-ecideBlue-50 py-12 px-6">

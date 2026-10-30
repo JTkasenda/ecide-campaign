@@ -28,14 +28,14 @@ export default async function CadresPage({ params }: PageParams) {
       </PageBanner>
       <section className="py-12 lg:py-16 px-6 max-w-7xl mx-auto space-y-8">
         <CadresDirectory data={data} locale={locale} />
-        <p className="text-center text-sm text-gray-500 italic">{t("Les noms et profils publics des cadres sont publiés après validation par le Secrétariat Général ; leurs numéros personnels ne sont jamais affichés : pour joindre un cadre, contactez sa structure. « À confirmer » signale un poste dont le titulaire n'est pas encore renseigné.")}</p>
+        <p className="text-center text-sm text-gray-500 italic">{page.avertissement || t("Les noms et profils publics des cadres sont publiés après validation par le Secrétariat Général ; leurs numéros personnels ne sont jamais affichés : pour joindre un cadre, contactez sa structure. « À confirmer » signale un poste dont le titulaire n'est pas encore renseigné.")}</p>
       </section>
 
       <section className="bg-ecideDarkBlue text-white py-20 px-6 diag">
         <div className="max-w-4xl mx-auto space-y-6 reveal">
-          <h2 className="text-4xl lg:text-5xl">{t("Vous êtes cadre ou responsable de structure ?")}</h2>
-          <p className="text-blue-100 text-lg">{t("Transmettez vos coordonnées officielles au Secrétariat Général pour figurer dans l'annuaire du parti.")}</p>
-          <Link href={localePath(locale, "/contact")} className="btn btn--primary btn--lg">{t("Contacter le Secrétariat")}</Link>
+          <h2 className="text-4xl lg:text-5xl">{page.appelTitre || t("Vous êtes cadre ou responsable de structure ?")}</h2>
+          <p className="text-blue-100 text-lg">{page.appelTexte || t("Transmettez vos coordonnées officielles au Secrétariat Général pour figurer dans l'annuaire du parti.")}</p>
+          <Link href={localePath(locale, "/contact")} className="btn btn--primary btn--lg">{page.appelBouton || t("Contacter le Secrétariat")}</Link>
         </div>
       </section>
     </main>

@@ -1,20 +1,21 @@
 # ECiDé — site « campagne » (Next.js)
 
-Seconde version du site public du parti, rendue à partir de la même API Laravel
-(`../ecide-laravel`) que `../ecide-next` : même contenu, mêmes couleurs, mais une mise en
-page façon site de campagne : structure inspirée de warnockforgeorgia.com (angles droits,
+Site public du parti, rendu à partir de l'API Laravel (`../ecide-laravel`), qui ne sert plus que
+ce site (l'ancien `../ecide-next` n'y est plus branché) : une mise en page façon site de campagne : structure inspirée de warnockforgeorgia.com (angles droits,
 en-tête et sections bleu nuit, panneaux blancs, bandeau d'appel au don jaune avec les montants,
 photo plein écran avec le formulaire d'inscription sur l'accueil) et typographie inspirée
 d'obama.org (titres, menu et boutons en condensé gras — Barlow Condensed —, texte courant en
 serif — Source Serif 4 —, filets épais au-dessus des titres, liens fléchés). Le contenu, les traductions et les
-formulaires passent par l'API ; l'administration est commune aux deux sites.
+formulaires passent par l'API : tout ce que le site affiche se règle dans l'administration Laravel (`/admin`),
+y compris le menu, le bandeau d'appel au don de l'accueil et les titres des pages propres à ce site.
 
 Le site tourne sur le port 3002 (`-p 3002` dans `package.json`) pour cohabiter avec
 `ecide-next` sur le port 3000. Les styles propres à cette version sont regroupés dans
 `src/app/globals.css` (`.btn`, `.pill`, `.eyebrow`, `.panel`, `.rule-title`, `.arrow-link`, `.icon-tile`, `.diag`), et chaque page intérieure
 commence par le bandeau bleu nuit de `src/components/PageBanner.tsx`. Trois pages propres à ce site
-complètent la page Le Parti et sont insérées après elle (pied de page ; le menu hamburger ne liste que les
-pages principales, et la photo d'accueil ne porte aucun menu) par `siteNav()` : l'organigramme
+complètent la page Le Parti et la suivent dans le menu de l'administration (Paramètres › Navigation & pied de page),
+cochées « Sous-page » : pied de page seulement (le menu hamburger ne liste que les pages principales, et la photo
+d'accueil ne porte aucun menu ; `siteNav()` écarte seulement les pages retirées) : l'organigramme
 (`/organigramme`), la charte des valeurs (`/charte-valeurs`), le projet de société (`/projet-societe`) et la page
 Faire un don (`/don`, sous « Adhésion » : carte bancaire Visa / Mastercard via la page sécurisée du prestataire,
 Airtel Money, Orange Money, M-Pesa, Afrimoney, PayPal / banque ; le formulaire du pied de page accepte un e-mail,

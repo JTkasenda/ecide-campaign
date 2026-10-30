@@ -57,8 +57,8 @@ export default async function ProjetSocietePage({ params }: PageParams) {
       <section className="bg-ecideDarkBlue text-white py-16 lg:py-20 px-6 diag">
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center justify-between gap-8 reveal">
           <div className="space-y-3 max-w-2xl">
-            <span className="eyebrow">{t("Agir")}</span>
-            <h2 className="text-4xl no-bar">{t("Rejoindre le parti")}</h2>
+            <span className="eyebrow">{pp.rejoindreSurtitre || t("Agir")}</span>
+            <h2 className="text-4xl no-bar">{pp.rejoindreTitre || t("Rejoindre le parti")}</h2>
           </div>
           <div className="flex flex-wrap gap-3 shrink-0">
             <Link href={localePath(locale, parti.url1 || "/adherer")} className="btn btn--primary btn--lg">{parti.bouton1 || t("Rejoindre le parti")}</Link>

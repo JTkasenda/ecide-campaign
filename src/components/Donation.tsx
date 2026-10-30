@@ -228,7 +228,7 @@ export default function Donation({ config, title, text, warning }: { config: Adh
           <span className="absolute right-4 top-1/2 -translate-y-1/2 font-bold text-gray-500">{c.label}</span>
         </div>
         <p className="text-xs text-gray-500">
-          {t("Don minimum : :min :devise.", { min: fmt(c.min), devise: c.label })} {currency === "cdf" ? t("Les dons en dollars sont possibles à partir de 1 USD.") : t("Les dons en francs congolais sont possibles à partir de 500 FC.")}
+          {t("Don minimum : :min :devise.", { min: fmt(c.min), devise: c.label })} {currency === "cdf" ? t("Les dons en dollars sont possibles à partir de :min USD.", { min: fmt(currencies.usd.min) }) : t("Les dons en francs congolais sont possibles à partir de :min FC.", { min: fmt(currencies.cdf.min) })}
         </p>
       </div>
       <div className="space-y-4">

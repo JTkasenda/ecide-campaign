@@ -39,7 +39,7 @@ export default async function BiographiePage({ params }: PageParams) {
 
   return (
     <main id="main" className="flex-grow">
-      <PageBanner eyebrow={t("Biographie")} title={nom} text={pres.sousTitre || pres.pastille || ""}>
+      <PageBanner eyebrow={pres.bioSurtitre || t("Biographie")} title={nom} text={pres.sousTitre || pres.pastille || ""}>
         <DocumentButtons doc={biographie} t={t} back={{ href: localePath(locale, "/president"), label: t("Président Élu") }} />
       </PageBanner>
 
@@ -69,7 +69,7 @@ export default async function BiographiePage({ params }: PageParams) {
               </figure>
               {enBref.length > 0 && (
                 <aside className="panel panel--white p-7 reveal">
-                  <h3 className="text-xl text-ecideDarkBlue mb-3">{t("En bref")}</h3>
+                  <h3 className="text-xl text-ecideDarkBlue mb-3">{pres.enBrefTitre || t("En bref")}</h3>
                   <dl className="divide-y divide-gray-200">
                     {enBref.map((b, i) => (
                       <div key={i} className="py-3 grid grid-cols-1 sm:grid-cols-[8rem_minmax(0,1fr)] gap-1 sm:gap-3">
@@ -91,12 +91,12 @@ export default async function BiographiePage({ params }: PageParams) {
           <div className="max-w-7xl mx-auto panel p-6 lg:p-8 flex flex-col md:flex-row md:items-center gap-6 reveal">
             <span className="icon-tile icon-tile--dark shrink-0"><i className="fa-brands fa-wikipedia-w" aria-hidden="true"></i></span>
             <div className="flex-1 min-w-0 space-y-1">
-              <span className="text-ecideGreen font-bold uppercase tracking-widest text-xs">{t("Sur Wikipédia")}</span>
+              <span className="text-ecideGreen font-bold uppercase tracking-widest text-xs">{pres.wikiSurtitre || t("Sur Wikipédia")}</span>
               <h2 className="text-2xl text-ecideDarkBlue no-bar leading-tight">
                 {wiki?.title || nom}
                 {wiki?.description && <span className="font-serif font-normal text-lg text-gray-600"> — {wiki.description}</span>}
               </h2>
-              <p className="text-sm text-gray-500 font-sans">{t("Article de l'encyclopédie libre Wikipédia, en français.")}</p>
+              <p className="text-sm text-gray-500 font-sans">{pres.wikiTexte || t("Article de l'encyclopédie libre Wikipédia, en français.")}</p>
             </div>
             {wikiButton("btn btn--dark md:shrink-0")}
           </div>
@@ -106,7 +106,7 @@ export default async function BiographiePage({ params }: PageParams) {
       {/* LA BIOGRAPHIE OFFICIELLE EN PDF : à télécharger (pas d'aperçu dans la page) */}
       <section id="document" className={`bg-white px-6 scroll-mt-32 ${wikiUrl ? "pb-12 lg:pb-16" : "py-12 lg:py-16"}`}>
         <div className="max-w-7xl mx-auto panel p-6 lg:p-8 reveal">
-          <DocumentCard doc={biographie} title={t("Biographie officielle")} t={t} />
+          <DocumentCard doc={biographie} title={pres.bioPdfTitre || t("Biographie officielle")} t={t} />
         </div>
       </section>
 
@@ -115,8 +115,8 @@ export default async function BiographiePage({ params }: PageParams) {
         <section id="etapes" className="bg-ecideDarkBlue text-white py-16 lg:py-24 px-6 scroll-mt-32 diag">
           <div className="max-w-7xl mx-auto space-y-10">
             <div className="space-y-3 reveal">
-              <span className="eyebrow">{t("Parcours")}</span>
-              <h2 className="text-4xl">{t("Les grandes étapes")}</h2>
+              <span className="eyebrow">{pres.parcoursSurtitre || t("Parcours")}</span>
+              <h2 className="text-4xl">{pres.parcoursTitre || t("Les grandes étapes")}</h2>
             </div>
             <ol className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 reveal">
               {parcours.map((e, i) => (

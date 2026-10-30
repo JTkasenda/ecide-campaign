@@ -101,7 +101,7 @@ export default async function HomePage({ params }: PageParams) {
         {combats.length > 0 && (
           <section className="bg-ecideDarkBlue text-white py-16 lg:py-24 px-6 diag">
             <div className="max-w-7xl mx-auto space-y-10">
-              <h2 className="bar-title text-4xl lg:text-5xl reveal">{t("Les Combats Majeurs")}</h2>
+              <h2 className="bar-title text-4xl lg:text-5xl reveal">{(s.combatsTitre as string) || t("Les Combats Majeurs")}</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {combats.map((c, i) => (
                   <article key={i} className="bg-ecideBlue-50 text-gray-900 p-8 lg:p-10 space-y-4 reveal border-b-8 border-ecideYellow">
@@ -117,11 +117,12 @@ export default async function HomePage({ params }: PageParams) {
         )}
 
         {/* APPEL AU DON : bandeau jaune avec les montants (bandeau orange de warnockforgeorgia.com) */}
+        {s.donActif !== false && (
         <section className="bg-ecideYellow text-ecideDarkBlue py-12 lg:py-16 px-6">
           <div className="max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center gap-8">
             <div className="space-y-2 lg:w-1/3">
-              <span className="eyebrow eyebrow--dark font-sans">{t("Soutenir le Combat (Don)")}</span>
-              <h2 className="text-3xl md:text-4xl leading-tight no-bar">{(s.agirTitre as string) || t("Chaque contribution finance la mobilisation, la communication et la défense de la vérité des urnes.")}</h2>
+              <span className="eyebrow eyebrow--dark font-sans">{(s.donSurtitre as string) || t("Soutenir le Combat (Don)")}</span>
+              <h2 className="text-3xl md:text-4xl leading-tight no-bar">{(s.donTitre as string) || t("Chaque contribution finance la mobilisation, la communication et la défense de la vérité des urnes.")}</h2>
             </div>
             <div className="flex flex-wrap items-stretch gap-3 lg:flex-1 lg:justify-end">
               {montants.map((n) => (
@@ -130,10 +131,11 @@ export default async function HomePage({ params }: PageParams) {
                   <span className="block font-sans text-[11px] font-bold tracking-widest mt-1">{devise}</span>
                 </Link>
               ))}
-              {donButton("btn btn--dark btn--lg", t("Faire un don"))}
+              {donButton("btn btn--dark btn--lg", (s.donBouton as string) || t("Faire un don"))}
             </div>
           </div>
         </section>
+        )}
 
         {/* LE PRÉSIDENT ÉLU : photo et panneau blanc (« Why I'm running ») */}
         <section className="bg-ecideBlue-50 px-6 py-16 lg:py-24">
@@ -259,7 +261,7 @@ export default async function HomePage({ params }: PageParams) {
               <label className="bg-white p-6 block reveal border-t-4 border-ecideYellow">
                 <span className="flex items-center gap-3 eyebrow eyebrow--dark mb-4">
                   <span className="icon-tile icon-tile--dark w-9 h-9 text-sm"><i className="fa-solid fa-map" aria-hidden="true"></i></span>
-                  {t("En RDC · ma province")}
+                  {(s.proximiteCarteProvince as string) || t("En RDC · ma province")}
                 </span>
                 <JumpSelect
                   label={t("Choisir une province")}
@@ -271,7 +273,7 @@ export default async function HomePage({ params }: PageParams) {
               <label className="bg-white p-6 block reveal border-t-4 border-ecideGreen">
                 <span className="flex items-center gap-3 eyebrow eyebrow--dark mb-4">
                   <span className="icon-tile icon-tile--green w-9 h-9 text-sm"><i className="fa-solid fa-earth-africa" aria-hidden="true"></i></span>
-                  {t("À l'étranger · mon pays")}
+                  {(s.proximiteCartePays as string) || t("À l'étranger · mon pays")}
                 </span>
                 <JumpSelect
                   label={t("Choisir un pays")}
