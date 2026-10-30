@@ -3,7 +3,6 @@ import Link from "next/link";
 import { getAdherer, getHome, getSite } from "@/lib/api";
 import { formatNumber, safeUrl, textStyle } from "@/lib/format";
 import { localePath } from "@/lib/locales";
-import { siteNav } from "@/lib/nav";
 import { pageLocale, type PageParams } from "@/lib/page";
 import { getT, pageMetadata } from "@/lib/server";
 import Chyron from "@/components/Chyron";
@@ -20,8 +19,8 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
 }
 
 /**
- * Page d'accueil façon warnockforgeorgia.com : photo plein écran avec le titre en serif, le
- * formulaire d'inscription et, au pied de la photo, une ligne d'accès rapide aux pages ; panneau blanc du manifeste qui chevauche la section bleu nuit des
+ * Page d'accueil façon warnockforgeorgia.com : photo plein écran avec le titre en serif et le
+ * formulaire d'inscription (aucun menu sur la photo : la navigation passe par le hamburger), panneau blanc du manifeste qui chevauche la section bleu nuit des
  * combats, bandeau jaune d'appel au don avec les montants, président, positions, actualités
  * « dans la presse », fils officiels, « près de chez vous », appels à agir.
  * Tout le contenu vient de l'API ; chaque texte garde sa taille réglée dans l'administration.
@@ -34,8 +33,6 @@ export default async function HomePage({ params }: PageParams) {
   const featured = news.featured;
   const donUrl = site.params.don || `${localePath(locale, "/adherer")}#don`;
   const donExternal = /^https?:/i.test(donUrl);
-  // Accès rapide aux pages principales, au pied de la photo (la page d'accueil n'a pas de barre de menu)
-  const pages = siteNav(site, t).filter((n) => n.key !== "home" && !n.sub);
   const paiement = adherer?.paiement;
   const devise = paiement ? (paiement.deviseDefaut === "usd" ? "USD" : "FC") : "";
   const montants = paiement ? (paiement.deviseDefaut === "usd" ? paiement.usd.amounts : paiement.cdf.amounts).slice(0, 4) : [];
@@ -52,10 +49,10 @@ export default async function HomePage({ params }: PageParams) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(home.jsonld).replace(/</g, "\\u003c") }} />
       <main id="main" className="flex-grow">
         {/* HERO : photo plein écran, étiquette, titre en serif, formulaire d'inscription */}
-        <section className="hero-photo text-white relative overflow-hidden flex flex-col min-h-[36rem] lg:min-h-[calc(100svh-5rem)]">
+        <section className="hero-photo text-white relative overflow-hidden flex items-center min-h-[36rem] lg:min-h-[calc(100svh-5rem)]">
           <img src={hero.image} alt="" fetchPriority="high" className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: `center ${hero.cadrage}%` }} aria-hidden="true" />
           <div className="hero-overlay absolute inset-0" style={{ opacity: Math.min(1, Math.max(0.6, hero.voile / 60)) }} aria-hidden="true"></div>
-          <div className="max-w-7xl mx-auto w-full px-6 py-16 lg:py-20 relative flex-1 flex items-center">
+          <div className="max-w-7xl mx-auto w-full px-6 py-16 lg:py-20 relative">
             <div className="max-w-2xl space-y-8">
               {hero.slogan && <p className="eyebrow text-xl" style={textStyle(hero.tailleSlogan)}>{hero.slogan}</p>}
               <h1 className="hero-titre leading-[1.02]" style={textStyle(hero.tailleTitre)}>{hero.titre}</h1>
@@ -72,18 +69,6 @@ export default async function HomePage({ params }: PageParams) {
               )}
             </div>
           </div>
-          {/* ACCÈS RAPIDE : une ligne discrète au pied de la photo, les pages principales en un clic */}
-          {pages.length > 0 && (
-            <nav className="hero-links relative" aria-label={t("Explorer le site")}>
-              <ul className="max-w-7xl mx-auto px-6 flex items-center gap-x-7 lg:gap-x-9 h-12 overflow-x-auto">
-                {pages.map((n) => (
-                  <li key={n.id || n.url} className="shrink-0">
-                    <Link href={localePath(locale, n.url)}>{n.libelle}</Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          )}
         </section>
         <Chyron site={site} locale={locale} label={t("Fil d'actualité")} />
 

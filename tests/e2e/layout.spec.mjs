@@ -80,8 +80,8 @@ test("le menu (hamburger) est présent sur toutes les pages et à toutes les lar
       }
     }
     await page.goto(url("fr", "/"));
-    const cards = await page.evaluate(`document.querySelectorAll('main .hero-links a').length`);
-    assert(cards >= 4, "les pages du site doivent être présentées sur l'accueil : " + cards);
+    const heroNav = await page.evaluate(`document.querySelectorAll('main .hero-photo nav, main .hero-photo a[href$="/parti"]').length`);
+    assert(heroNav === 0, "la photo d'accueil ne porte aucun menu : " + heroNav);
   } finally {
     await page.close();
   }
