@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getContact } from "@/lib/api";
+import { getContact, getHome } from "@/lib/api";
 import { telHref, safeUrl } from "@/lib/format";
 import { localePath } from "@/lib/locales";
 import { pageLocale, type PageParams } from "@/lib/page";
 import { getT, pageMetadata } from "@/lib/server";
 import ContactForm from "@/components/ContactForm";
+import JumpSelect from "@/components/JumpSelect";
 import PageBanner from "@/components/PageBanner";
 
 export async function generateMetadata({ params }: PageParams): Promise<Metadata> {
@@ -16,8 +17,10 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
 
 export default async function ContactPage({ params }: PageParams) {
   const locale = await pageLocale(params);
-  const [data, t] = await Promise.all([getContact(locale), getT(locale)]);
+  const [data, t, home] = await Promise.all([getContact(locale), getT(locale), getHome(locale).catch(() => null)]);
   const { page: cp, params: p, whatsapp, destinataires } = data;
+  // Contacts locaux : la province ou le pays ouvre directement l'annuaire au bon endroit (mêmes listes que l'accueil)
+  const proximite = home?.proximite;
 
   return (
     <main id="main" className="flex-grow">
@@ -43,13 +46,39 @@ export default async function ContactPage({ params }: PageParams) {
           </div>
           <div className="p-2 space-y-3 reveal">
             <span className="icon-tile icon-tile--green" aria-hidden="true"><i className="fa-brands fa-whatsapp"></i></span>
-            <h2 className="text-2xl text-gray-900">WhatsApp</h2>
+            <h2 className="text-2xl text-gray-900">{t("WhatsApp")}</h2>
             <p className="text-gray-600 text-sm">
               {whatsapp ? <a href={safeUrl(whatsapp)} target="_blank" rel="noopener" className="hover:text-ecideBlue">{cp.whatsappLibelle || t("Rejoindre la chaîne officielle")}</a> : <span className="text-gray-400">{t("Chaîne à venir")}</span>}
             </p>
           </div>
         </div>
       </section>
+
+      {proximite && (proximite.provinces.length > 0 || proximite.pays.length > 0) && (
+        <section className="px-6 pb-14 max-w-7xl mx-auto" aria-labelledby="contactLocal">
+          <div className="bg-ecideBlue-50 p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+            <div>
+              <h2 id="contactLocal" className="text-2xl text-ecideDarkBlue no-bar">{t("Un contact près de chez vous")}</h2>
+              <p className="text-sm text-gray-600 mt-1">{t("Choisissez votre province ou votre pays : les responsables locaux et leurs coordonnées s'affichent.")}</p>
+            </div>
+            <label className="block">
+              <span className="flex items-center gap-2 eyebrow eyebrow--dark text-xs mb-2"><i className="fa-solid fa-map text-ecideBlue" aria-hidden="true"></i>{t("En RDC · ma province")}</span>
+              <JumpSelect label={t("Choisir une province")} placeholder={t("Choisir une province…")} options={proximite.provinces.map((prov) => ({ value: `${localePath(locale, "/cadres")}#niveau=provincial&province=${encodeURIComponent(prov)}`, label: prov }))} />
+            </label>
+            <label className="block">
+              <span className="flex items-center gap-2 eyebrow eyebrow--dark text-xs mb-2"><i className="fa-solid fa-earth-africa text-ecideGreen" aria-hidden="true"></i>{t("À l'étranger · mon pays")}</span>
+              <JumpSelect
+                label={t("Choisir un pays")}
+                placeholder={t("Choisir un pays…")}
+                options={[
+                  ...proximite.pays.map((c) => ({ value: `${localePath(locale, "/diaspora")}#continent=${c.continent}&pays=${encodeURIComponent(c.nom)}`, label: c.nom })),
+                  { value: `${localePath(locale, "/diaspora")}#rejoindre`, label: t("Mon pays n'est pas dans la liste") },
+                ]}
+              />
+            </label>
+          </div>
+        </section>
+      )}
 
       <section className="pb-24 px-6 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-start">

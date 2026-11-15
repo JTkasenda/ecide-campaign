@@ -7,6 +7,12 @@ import type { NextConfig } from "next";
  */
 const RESERVED = "en|ln|sw|tsh|kik|fr|api|_next|assets|uploads|favicon\\.ico|robots\\.txt|sitemap\\.xml|icon\\.png";
 const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "");
+// Administration (aperçu de la typographie) : en local, localhost et 127.0.0.1 sont équivalents
+const ADMIN_ORIGINS = (() => {
+  const u = new URL(API_URL);
+  const twin = u.hostname === "localhost" ? "127.0.0.1" : u.hostname === "127.0.0.1" ? "localhost" : "";
+  return [u.origin].concat(twin ? [`${u.protocol}//${twin}${u.port ? `:${u.port}` : ""}`] : []);
+})();
 
 const nextConfig: NextConfig = {
   async rewrites() {
@@ -37,14 +43,15 @@ const nextConfig: NextConfig = {
     ];
   },
   images: { unoptimized: true },
-  // En-têtes de sécurité : pas de détection de type, pas d'affichage dans un cadre tiers, référent limité
+  // En-têtes de sécurité : pas de détection de type, pas d'affichage dans un cadre tiers (sauf l'administration), référent limité
   async headers() {
     return [
       {
         source: "/(.*)",
         headers: [
           { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          // Affichage dans un cadre : le site lui-même et l'administration (aperçu de la typographie) seulement
+          { key: "Content-Security-Policy", value: `frame-ancestors 'self' ${ADMIN_ORIGINS.join(" ")}` },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=()" },
           { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },

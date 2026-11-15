@@ -10,22 +10,25 @@ import { SocialLinks, fold, useHashParams } from "./directory";
 
 const PENDING = "À confirmer";
 
-type Level = "spe" | "section" | "soussection" | "cellule" | "place";
-const LEVELS: Level[] = ["spe", "section", "soussection", "cellule", "place"];
+/** Niveaux de la diaspora : fédération (pays) → secrétariat provincial exécutif (province du pays) → section (ville) → subdivisions. */
+type Level = "federation" | "spe" | "section" | "soussection" | "cellule" | "place";
+const LEVELS: Level[] = ["federation", "spe", "section", "soussection", "cellule", "place"];
 
 interface State {
   continent: string;
   pays: string;
+  province: string;
   ville: string;
   q: string;
 }
 
-/** Représentation (un secrétariat provincial exécutif, une section, une subdivision) : ses responsables, ses coordonnées, ses sous-structures. */
+/** Représentation (fédération, secrétariat, section, subdivision) : ses responsables, ses coordonnées, ses sous-structures. */
 interface Node {
   organe: string;
   label: string;
   niveau: Level;
   pays: string;
+  province: string;
   ville: string;
   continent: string;
   contact: StructureContact;
@@ -33,46 +36,61 @@ interface Node {
   children: Node[];
 }
 
-/** Pays : son secrétariat provincial exécutif, puis ses sections (villes) et leurs subdivisions. */
+/** Pays : sa fédération, ses secrétariats provinciaux exécutifs (avec leurs sections) et les sections sans province. */
 interface Country {
   pays: string;
   continent: string;
-  spe: Node;
+  federation: Node;
+  provinces: Node[];
   sections: Node[];
 }
 
-const levelOf = (e: { type?: string; ville?: string }): Level => (e.type && (LEVELS as string[]).includes(e.type) ? (e.type as Level) : e.ville ? "section" : "spe");
+const levelOf = (e: { type?: string; ville?: string }): Level => (e.type && (LEVELS as string[]).includes(e.type) ? (e.type as Level) : e.ville ? "section" : "federation");
+
+/* Nom d'une fédération qui n'a pas encore de fiche (mêmes règles que le serveur) */
+const MASC = ["Canada", "Royaume-Uni", "Congo-Brazzaville", "Congo", "Portugal", "Japon", "Brésil", "Sénégal", "Cameroun", "Gabon", "Bénin", "Burundi", "Rwanda", "Kenya", "Nigeria", "Ghana", "Mali", "Maroc", "Luxembourg", "Danemark", "Mozambique", "Zimbabwe", "Malawi", "Togo", "Tchad", "Niger", "Liban", "Qatar", "Koweït", "Mexique", "Chili", "Pérou", "Venezuela", "Vietnam", "Cap-Vert", "Soudan", "Soudan du Sud", "Botswana", "Lesotho", "Burkina Faso"];
+const PLUR = ["États-Unis", "Émirats arabes unis", "Pays-Bas", "Comores", "Seychelles", "Philippines"];
+const fedName = (pays: string) => "Fédération " + (MASC.includes(pays) ? `du ${pays}` : PLUR.includes(pays) ? `des ${pays}` : /^[aeiouyàâäéèêëîïôöûüœh]/i.test(pays) ? `d'${pays}` : `de ${pays}`);
+
+/** Toutes les sections d'un pays (dans ses provinces et sans province). */
+const sectionsOf = (c: Country) => [...c.provinces.flatMap((p) => p.children.filter((n) => n.niveau === "section")), ...c.sections];
 
 /**
- * Annuaire de la diaspora, selon la structure du parti : par continent et par pays, le secrétariat
- * provincial exécutif du pays (ses responsables et ses coordonnées), puis ses sections (villes) et,
- * le cas échéant, leurs sous-sections, cellules et noyaux. La recherche parcourt toutes les
- * représentations ; l'état vit dans l'adresse (#continent=…&pays=…).
+ * Annuaire de la diaspora, selon la structure du parti : par continent et par pays, la fédération
+ * du pays (ses responsables et ses coordonnées), puis ses secrétariats provinciaux exécutifs, un par
+ * province ou région, avec leurs sections (villes) et, le cas échéant, leurs sous-sections, cellules
+ * et noyaux. La recherche parcourt toutes les représentations ; l'état vit dans l'adresse
+ * (#continent=…&pays=…&province=…).
  */
 export default function DiasporaDirectory({ data, locale }: { data: DiasporaData; locale: Locale }) {
   const { t } = useI18n();
   const [hash, setHash] = useHashParams();
   const continentOf = (id: string) => data.continents.find((c) => c.id === id);
   const c0 = hash.get("continent");
-  const state: State = { continent: c0 && continentOf(c0) ? c0 : "all", pays: hash.get("pays") || "", ville: hash.get("ville") || "", q: hash.get("q") || "" };
+  const state: State = { continent: c0 && continentOf(c0) ? c0 : "all", pays: hash.get("pays") || "", province: hash.get("province") || "", ville: hash.get("ville") || "", q: hash.get("q") || "" };
   const setState = (s: State) => {
     const h = new URLSearchParams();
     if (s.continent !== "all") h.set("continent", s.continent);
     if (s.pays) h.set("pays", s.pays);
+    if (s.province) h.set("province", s.province);
     if (s.ville) h.set("ville", s.ville);
     if (s.q) h.set("q", s.q);
     setHash(h);
   };
-  const organeLabel = (organe: string) => data.organes?.[organe] || organe;
+  // Libellé traduit fourni par l'API ; à défaut, le nom construit ici se traduit par le dictionnaire
+  const organeLabel = (organe: string) => {
+    if (data.organes?.[organe]) return data.organes[organe];
+    const spe = organe.match(/^Secrétariat Provincial Exécutif (?:de |d')(.+)$/);
+    return spe ? t("Secrétariat Provincial Exécutif de :lieu", { lieu: spe[1] }) : organe;
+  };
   const contactUrl = localePath(locale, data.contactUrl);
-  const speName = (pays: string) => `Secrétariat Provincial Exécutif de ${pays}`;
 
-  /* ---------- Arbre : continent → pays → SEP → sections → subdivisions ---------- */
+  /* ---------- Arbre : continent → pays → fédération → secrétariats provinciaux → sections → subdivisions ---------- */
 
   const countries = useMemo(() => {
     const nodes = new Map<string, Node>();
-    const node = (organe: string, niveau: Level, e: { pays: string; ville?: string; continent: string }) => {
-      if (!nodes.has(organe)) nodes.set(organe, { organe, label: organeLabel(organe), niveau, pays: e.pays, ville: e.ville || "", continent: e.continent, contact: data.contacts?.[organe] || { organe }, responsables: [], children: [] });
+    const node = (organe: string, niveau: Level, e: { pays: string; province?: string; ville?: string; continent: string }) => {
+      if (!nodes.has(organe)) nodes.set(organe, { organe, label: organeLabel(organe), niveau, pays: e.pays, province: e.province || "", ville: e.ville || "", continent: e.continent, contact: data.contacts?.[organe] || { organe }, responsables: [], children: [] });
       return nodes.get(organe)!;
     };
     data.entries.forEach((e) => node(e.organe, levelOf(e), e).responsables.push(e));
@@ -81,31 +99,39 @@ export default function DiasporaDirectory({ data, locale }: { data: DiasporaData
       const niveau = (c.type || "").replace(/^diaspora-/, "");
       if (c.pays && (LEVELS as string[]).includes(niveau)) {
         const e = data.entries.find((x) => x.pays === c.pays);
-        node(c.organe, niveau as Level, { pays: c.pays, ville: c.ville || "", continent: e?.continent || "europe" });
+        node(c.organe, niveau as Level, { pays: c.pays, province: c.province || "", ville: c.ville || "", continent: c.continent || e?.continent || "europe" });
       }
     });
-    const byPays = new Map<string, Country>();
+    // Un pays sans fédération déclarée a quand même une entrée, « à confirmer »
+    [...nodes.values()].forEach((n) => {
+      if (![...nodes.values()].some((f) => f.niveau === "federation" && f.pays === n.pays)) node(fedName(n.pays), "federation", { pays: n.pays, continent: n.continent });
+    });
     const all = [...nodes.values()];
-    all.filter((n) => n.niveau === "spe").forEach((n) => byPays.set(n.pays, { pays: n.pays, continent: n.continent, spe: n, sections: [] }));
-    // Un pays sans secrétariat déclaré a quand même une entrée, « à confirmer »
-    all.filter((n) => n.niveau !== "spe" && !byPays.has(n.pays)).forEach((n) => byPays.set(n.pays, { pays: n.pays, continent: n.continent, spe: node(speName(n.pays), "spe", { pays: n.pays, continent: n.continent }), sections: [] }));
-    const viaOf = (n: Node) => {
-      const via = n.responsables[0]?.via || n.contact.via || "";
-      return via ? all.find((p) => fold(p.organe) === fold(via)) : undefined;
-    };
-    // Rattachement : la structure déclarée, sinon la section de la même ville, sinon le secrétariat du pays
-    const attached = new Set<Node>();
-    all.filter((n) => n.niveau !== "spe" && n.niveau !== "section").forEach((n) => {
-      const parent = viaOf(n) || all.find((p) => p.niveau === "section" && p.pays === n.pays && fold(p.ville) === fold(n.ville)) || all.find((p) => p.niveau === "section" && p.pays === n.pays);
-      if (parent && parent !== n) {
-        parent.children.push(n);
-        attached.add(n);
-      }
+    const byPays = new Map<string, Country>();
+    all.filter((n) => n.niveau === "federation").forEach((n) => byPays.set(n.pays, { pays: n.pays, continent: n.continent, federation: n, provinces: [], sections: [] }));
+    const find = (organe: string) => (organe ? all.find((p) => fold(p.organe) === fold(organe)) : undefined);
+    const viaOf = (n: Node) => find(n.responsables[0]?.via || n.contact.via || "");
+    all.filter((n) => n.niveau === "spe").forEach((n) => byPays.get(n.pays)?.provinces.push(n));
+    // Sections : sous le secrétariat de leur province ; sinon, « sans province » dans le pays
+    all.filter((n) => n.niveau === "section").forEach((n) => {
+      const via = viaOf(n);
+      const parent = via && via.niveau === "spe" ? via : n.province ? all.find((p) => p.niveau === "spe" && p.pays === n.pays && fold(p.province) === fold(n.province)) : undefined;
+      if (parent) parent.children.push(n);
+      else byPays.get(n.pays)?.sections.push(n);
     });
-    all.filter((n) => n.niveau === "section" || (n.niveau !== "spe" && !attached.has(n))).forEach((n) => byPays.get(n.pays)?.sections.push(n));
-    const byName = (a: Node, b: Node) => (a.ville || a.label).localeCompare(b.ville || b.label, "fr");
+    // Subdivisions : sous la structure déclarée, sinon la section de la même ville
+    all.filter((n) => !["federation", "spe", "section"].includes(n.niveau)).forEach((n) => {
+      const via = viaOf(n);
+      const parent = (via && !["federation", "spe"].includes(via.niveau) ? via : undefined) || all.find((p) => p.niveau === "section" && p.pays === n.pays && fold(p.ville) === fold(n.ville));
+      if (parent && parent !== n) parent.children.push(n);
+      else byPays.get(n.pays)?.sections.push(n);
+    });
+    const byName = (a: Node, b: Node) => (a.province || a.ville || a.label).localeCompare(b.province || b.ville || b.label, "fr");
     all.forEach((n) => n.children.sort(byName));
-    byPays.forEach((c) => c.sections.sort(byName));
+    byPays.forEach((c) => {
+      c.provinces.sort(byName);
+      c.sections.sort(byName);
+    });
     return [...byPays.values()].sort((a, b) => a.pays.localeCompare(b.pays, "fr"));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
@@ -119,7 +145,7 @@ export default function DiasporaDirectory({ data, locale }: { data: DiasporaData
     return data.entries.filter((e) => {
       if (state.continent !== "all" && e.continent !== state.continent) return false;
       if (state.pays && e.pays !== state.pays) return false;
-      const hay = fold([e.nom, e.fonction, e.organe, organeLabel(e.organe), e.pays, e.ville, e.via || "", continentOf(e.continent)?.label || ""].join(" "));
+      const hay = fold([e.nom, e.fonction, e.organe, organeLabel(e.organe), e.pays, e.province || "", e.ville, e.via || "", continentOf(e.continent)?.label || ""].join(" "));
       return q.split(/\s+/).every((w) => hay.includes(w));
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -128,14 +154,15 @@ export default function DiasporaDirectory({ data, locale }: { data: DiasporaData
   const visible = countries.filter((c) => state.continent === "all" || c.continent === state.continent);
   const paysList = visible.map((c) => c.pays);
   const country = state.pays ? countries.find((c) => c.pays === state.pays) : undefined;
-  const villes = country ? country.sections.map((s) => s.ville).filter(Boolean) : [];
+  const provinceNames = country ? country.provinces.map((p) => p.province).filter(Boolean) : [];
+  const villes = country ? sectionsOf(country).filter((s) => !state.province || fold(s.province) === fold(state.province)).map((s) => s.ville).filter(Boolean) : [];
   const cur = continentOf(state.continent);
-  const crumbs = [state.continent === "all" ? t("Diaspora") : cur?.label || "", ...(state.pays ? [state.pays] : []), ...(state.ville ? [state.ville] : []), ...(state.q.trim() ? [`« ${state.q.trim()} »`] : [])];
+  const crumbs = [state.continent === "all" ? t("Diaspora") : cur?.label || "", ...(state.pays ? [state.pays] : []), ...(state.province ? [state.province] : []), ...(state.ville ? [state.ville] : []), ...(state.q.trim() ? [`« ${state.q.trim()} »`] : [])];
   const selectCls = "w-full p-3 bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-ecideBlue";
   const countLabel = searching
     ? list.length === 0 ? t("Aucun résultat") : list.length === 1 ? t("1 représentation") : t(":n représentations", { n: list.length })
     : country
-      ? country.sections.length === 1 ? t("1 section") : t(":n sections", { n: country.sections.length })
+      ? country.provinces.length === 1 ? t("1 province") : t(":n provinces", { n: country.provinces.length })
       : visible.length === 1 ? t("1 pays") : t(":n pays", { n: visible.length });
 
   return (
@@ -144,19 +171,19 @@ export default function DiasporaDirectory({ data, locale }: { data: DiasporaData
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Continent")}</span>
           <div role="tablist" aria-label={t("Continent")} className="flex flex-wrap gap-2 sm:gap-3 min-w-0">
-            <button type="button" role="tab" aria-selected={state.continent === "all"} onClick={() => setState({ ...state, continent: "all", pays: "", ville: "" })} className={`chip px-5 py-3 flex items-center gap-2 ${state.continent === "all" ? "is-active" : ""}`}>
+            <button type="button" role="tab" aria-selected={state.continent === "all"} onClick={() => setState({ ...state, continent: "all", pays: "", province: "", ville: "" })} className={`chip px-5 py-3 flex items-center gap-2 ${state.continent === "all" ? "is-active" : ""}`}>
               <i className="fa-solid fa-globe" aria-hidden="true"></i>
               {t("Tous")}
             </button>
             {data.continents.map((c) => (
-              <button type="button" key={c.id} role="tab" aria-selected={state.continent === c.id} onClick={() => setState({ ...state, continent: c.id, pays: "", ville: "" })} className={`chip px-5 py-3 flex items-center gap-2 ${state.continent === c.id ? "is-active" : ""}`}>
+              <button type="button" key={c.id} role="tab" aria-selected={state.continent === c.id} onClick={() => setState({ ...state, continent: c.id, pays: "", province: "", ville: "" })} className={`chip px-5 py-3 flex items-center gap-2 ${state.continent === c.id ? "is-active" : ""}`}>
                 <i className={`fa-solid ${c.icon}`} aria-hidden="true"></i>
                 {c.label}
               </button>
             ))}
           </div>
         </div>
-        <p className="text-sm text-gray-500">{cur ? cur.hint : t("Un secrétariat provincial exécutif par pays, puis ses sections locales : toutes les représentations de l'ECiDé à l'étranger.")}</p>
+        <p className="text-sm text-gray-500">{cur ? cur.hint : t("Une fédération par pays, ses secrétariats provinciaux exécutifs et leurs sections locales : toutes les représentations de l'ECiDé à l'étranger.")}</p>
       </div>
 
       <div className="bg-ecideBlue-50 p-5 lg:p-6 space-y-5 relative">
@@ -164,19 +191,30 @@ export default function DiasporaDirectory({ data, locale }: { data: DiasporaData
           <span className="sr-only">{t("Rechercher une représentation")}</span>
           <span className="relative block">
             <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true"></i>
-            <input type="search" autoComplete="off" value={state.q} onChange={(e) => setState({ ...state, q: e.target.value })} placeholder={state.pays ? t("Rechercher une ville, une section, un responsable…") : t("Rechercher un pays, un secrétariat provincial exécutif, un responsable…")} className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-200 text-lg focus:ring-2 focus:ring-ecideBlue" />
+            <input type="search" autoComplete="off" value={state.q} onChange={(e) => setState({ ...state, q: e.target.value })} placeholder={state.pays ? t("Rechercher une province, une ville, une section, un responsable…") : t("Rechercher un pays, une fédération, une province, un responsable…")} className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-200 text-lg focus:ring-2 focus:ring-ecideBlue" />
           </span>
         </label>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <label className="block">
             <span className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">{t("Pays")}</span>
-            <select value={state.pays} onChange={(e) => setState({ ...state, pays: e.target.value, ville: "" })} className={selectCls}>
+            <select value={state.pays} onChange={(e) => setState({ ...state, pays: e.target.value, province: "", ville: "" })} className={selectCls}>
               <option value="">{t("Tous les pays")}</option>
               {paysList.map((p) => (
                 <option key={p} value={p}>{p}</option>
               ))}
             </select>
           </label>
+          {state.pays && provinceNames.length > 0 && (
+            <label className="block">
+              <span className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">{t("Province")}</span>
+              <select value={state.province} onChange={(e) => setState({ ...state, province: e.target.value, ville: "" })} className={selectCls}>
+                <option value="">{t("Toutes les provinces")}</option>
+                {provinceNames.map((v) => (
+                  <option key={v} value={v}>{v}</option>
+                ))}
+              </select>
+            </label>
+          )}
           {state.pays && villes.length > 0 && (
             <label className="block">
               <span className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">{t("Ville / section locale")}</span>
@@ -202,7 +240,7 @@ export default function DiasporaDirectory({ data, locale }: { data: DiasporaData
         </p>
         <p className="flex items-center gap-4">
           <span className="font-bold text-gray-900">{countLabel}</span>
-          <button type="button" onClick={() => setState({ continent: "all", pays: "", ville: "", q: "" })} className="text-ecideBlue font-bold hover:text-ecideDarkBlue"><i className="fa-solid fa-rotate-left mr-1" aria-hidden="true"></i>{t("Réinitialiser")}</button>
+          <button type="button" onClick={() => setState({ continent: "all", pays: "", province: "", ville: "", q: "" })} className="text-ecideBlue font-bold hover:text-ecideDarkBlue"><i className="fa-solid fa-rotate-left mr-1" aria-hidden="true"></i>{t("Réinitialiser")}</button>
         </p>
       </div>
 
@@ -218,23 +256,23 @@ export default function DiasporaDirectory({ data, locale }: { data: DiasporaData
             <div className="text-center py-16 space-y-3 relative">
               <i className="fa-solid fa-magnifying-glass text-4xl text-gray-300" aria-hidden="true"></i>
               <p className="text-lg font-bold text-gray-900">{t("Aucune représentation ne correspond à votre recherche.")}</p>
-              <p className="text-gray-500">{t("Votre pays n'apparaît pas ? Proposez la création d'un secrétariat provincial exécutif ci-dessous.")}</p>
+              <p className="text-gray-500">{t("Votre pays n'apparaît pas ? Proposez la création d'une fédération ci-dessous.")}</p>
             </div>
           )}
         </>
       )}
 
-      {/* Pays : un secrétariat provincial exécutif par pays */}
+      {/* Pays : une fédération par pays */}
       {!searching && !country && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 relative" aria-live="polite">
           {visible.map((c) => {
             const tone = TONE[continentOf(c.continent)?.color || "blue"];
-            const k = c.spe.contact;
-            const nResp = c.spe.responsables.length;
+            const k = c.federation.contact;
+            const nSections = sectionsOf(c).length;
             return (
-              <button type="button" key={c.pays} onClick={() => setState({ ...state, pays: c.pays, ville: "" })} className="text-left panel p-6 space-y-3 hover:bg-white transition">
+              <button type="button" key={c.pays} onClick={() => setState({ ...state, pays: c.pays, province: "", ville: "" })} className="text-left panel p-6 space-y-3 hover:bg-white transition">
                 <span className={`block text-[11px] font-bold uppercase tracking-widest ${tone.tag}`}>{c.pays} · {continentOf(c.continent)?.label}</span>
-                <span className="block font-display text-2xl text-ecideDarkBlue leading-tight">{c.spe.label}</span>
+                <span className="block font-display text-2xl text-ecideDarkBlue leading-tight">{c.federation.label}</span>
                 <span className="block text-sm text-gray-600">
                   {k.telephone || k.whatsapp ? (
                     <><i className="fa-solid fa-phone text-ecideBlue mr-1" aria-hidden="true"></i>{k.telephone || k.whatsapp}</>
@@ -245,10 +283,10 @@ export default function DiasporaDirectory({ data, locale }: { data: DiasporaData
                   )}
                 </span>
                 <span className="flex flex-wrap gap-2 text-[11px] font-bold uppercase tracking-wider">
-                  <span className="px-2 py-0.5 bg-gray-100 text-gray-600">{c.sections.length === 1 ? t("1 section") : t(":n sections", { n: c.sections.length })}</span>
-                  <span className="px-2 py-0.5 bg-gray-100 text-gray-600">{nResp === 1 ? t("1 responsable") : t(":n responsables", { n: nResp })}</span>
+                  <span className="px-2 py-0.5 bg-gray-100 text-gray-600">{c.provinces.length === 1 ? t("1 province") : t(":n provinces", { n: c.provinces.length })}</span>
+                  <span className="px-2 py-0.5 bg-gray-100 text-gray-600">{nSections === 1 ? t("1 section") : t(":n sections", { n: nSections })}</span>
                 </span>
-                <span className="inline-flex items-center gap-2 text-sm font-bold text-ecideBlue">{t("Voir le secrétariat provincial exécutif")} <i className="fa-solid fa-arrow-right text-xs" aria-hidden="true"></i></span>
+                <span className="inline-flex items-center gap-2 text-sm font-bold text-ecideBlue">{t("Voir la fédération")} <i className="fa-solid fa-arrow-right text-xs" aria-hidden="true"></i></span>
               </button>
             );
           })}
@@ -256,27 +294,29 @@ export default function DiasporaDirectory({ data, locale }: { data: DiasporaData
             <div className="col-span-full text-center py-16 space-y-3">
               <i className="fa-solid fa-earth-africa text-4xl text-gray-300" aria-hidden="true"></i>
               <p className="text-lg font-bold text-gray-900">{t("Aucune représentation sur ce continent pour le moment.")}</p>
-              <p className="text-gray-500">{t("Votre pays n'apparaît pas ? Proposez la création d'un secrétariat provincial exécutif ci-dessous.")}</p>
+              <p className="text-gray-500">{t("Votre pays n'apparaît pas ? Proposez la création d'une fédération ci-dessous.")}</p>
             </div>
           )}
         </div>
       )}
 
       {!searching && country && (
-        <CountryView country={country} continentLabel={continentOf(country.continent)?.label || ""} villeFilter={state.ville} organes={data.organes || {}} contactUrl={contactUrl} onAllSections={() => setState({ ...state, ville: "" })} onBack={() => setState({ ...state, pays: "", ville: "" })} onVia={(via) => setState({ ...state, q: via })} />
+        <CountryView country={country} continentLabel={continentOf(country.continent)?.label || ""} provinceFilter={state.province} villeFilter={state.ville} organes={data.organes || {}} contactUrl={contactUrl} onAll={() => setState({ ...state, province: "", ville: "" })} onBack={() => setState({ ...state, pays: "", province: "", ville: "" })} onVia={(via) => setState({ ...state, q: via })} />
       )}
     </>
   );
 }
 
-/* ---------- Un pays : son secrétariat provincial exécutif, puis ses sections ---------- */
+/* ---------- Un pays : sa fédération, puis ses secrétariats provinciaux exécutifs et leurs sections ---------- */
 
-function CountryView({ country, continentLabel, villeFilter, organes, contactUrl, onAllSections, onBack, onVia }: { country: Country; continentLabel: string; villeFilter: string; organes: Record<string, string>; contactUrl: string; onAllSections: () => void; onBack: () => void; onVia: (via: string) => void }) {
+function CountryView({ country, continentLabel, provinceFilter, villeFilter, organes, contactUrl, onAll, onBack, onVia }: { country: Country; continentLabel: string; provinceFilter: string; villeFilter: string; organes: Record<string, string>; contactUrl: string; onAll: () => void; onBack: () => void; onVia: (via: string) => void }) {
   const { t } = useI18n();
-  const spe = country.spe;
-  const c = spe.contact;
+  const fed = country.federation;
+  const c = fed.contact;
   const chip = "inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 font-semibold text-gray-800 hover:border-ecideBlue hover:text-ecideBlue transition";
-  const sections = country.sections.filter((s) => !villeFilter || fold(s.ville) === fold(villeFilter));
+  const provinces = country.provinces.filter((p) => !provinceFilter || fold(p.province) === fold(provinceFilter));
+  const villeSections = villeFilter ? sectionsOf(country).filter((s) => fold(s.ville) === fold(villeFilter)) : [];
+  const orphans = provinceFilter ? [] : country.sections;
   return (
     <section className="space-y-8 relative" aria-live="polite">
       <button type="button" onClick={onBack} className="inline-flex items-center gap-2 text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue"><i className="fa-solid fa-arrow-left text-xs" aria-hidden="true"></i>{t("Tous les pays")}</button>
@@ -284,8 +324,8 @@ function CountryView({ country, continentLabel, villeFilter, organes, contactUrl
       <div className="bg-ecideDarkBlue text-white diag p-6 lg:p-8 space-y-6">
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
           <div className="min-w-0">
-            <span className="block text-[11px] font-bold uppercase tracking-widest text-ecideGreen">{t("Secrétariat provincial exécutif")}</span>
-            <h2 className="text-3xl lg:text-4xl text-white no-bar">{spe.label}</h2>
+            <span className="block text-[11px] font-bold uppercase tracking-widest text-ecideGreen">{t("Fédération")}</span>
+            <h2 className="text-3xl lg:text-4xl text-white no-bar">{fed.label}</h2>
             <p className="text-sm text-blue-200 mt-1"><i className="fa-solid fa-earth-africa text-gray-400 mr-1" aria-hidden="true"></i>{country.pays} · {continentLabel}</p>
           </div>
           <div className="flex flex-wrap gap-2 text-sm md:justify-end">
@@ -293,7 +333,7 @@ function CountryView({ country, continentLabel, villeFilter, organes, contactUrl
             {c.whatsapp && <a href={waLink(c.whatsapp)} target="_blank" rel="noopener" className={chip}><i className="fa-brands fa-whatsapp text-ecideGreen" aria-hidden="true"></i>{t("WhatsApp")}</a>}
             {c.email && <a href={`mailto:${c.email}`} className={chip}><i className="fa-solid fa-envelope text-ecideBlue" aria-hidden="true"></i>{c.email}</a>}
             {c.canal && <a href={safeUrl(c.canal)} target="_blank" rel="noopener" className={chip}><i className="fa-solid fa-bullhorn text-ecideYellow-700" aria-hidden="true"></i>{t("Chaîne officielle")}</a>}
-            <Link href={`${contactUrl}?structure=${encodeURIComponent(spe.organe)}`} className="btn btn--primary btn--sm"><i className="fa-solid fa-paper-plane" aria-hidden="true"></i>{t("Écrire")}</Link>
+            <Link href={`${contactUrl}?structure=${encodeURIComponent(fed.organe)}`} className="btn btn--primary btn--sm"><i className="fa-solid fa-paper-plane" aria-hidden="true"></i>{t("Écrire")}</Link>
           </div>
         </div>
         <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-blue-100">
@@ -308,12 +348,12 @@ function CountryView({ country, continentLabel, villeFilter, organes, contactUrl
           )}
         </div>
         <div className="space-y-3">
-          <h3 className="text-xl text-white">{t("Responsables du secrétariat provincial exécutif")}</h3>
-          {spe.responsables.length === 0 ? (
+          <h3 className="text-xl text-white">{t("Responsables de la fédération")}</h3>
+          {fed.responsables.length === 0 ? (
             <p className="text-sm text-blue-200 italic">{t("Responsables à confirmer.")}</p>
           ) : (
             <ul className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-3">
-              {spe.responsables.map((r) => (
+              {fed.responsables.map((r) => (
                 <PersonRow key={r.id} e={r} light />
               ))}
             </ul>
@@ -321,24 +361,53 @@ function CountryView({ country, continentLabel, villeFilter, organes, contactUrl
         </div>
       </div>
 
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-          <div>
-            <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Sections, sous-sections, cellules et noyaux")}</span>
-            <h3 className="text-3xl text-ecideDarkBlue">{villeFilter ? t("Section de :commune", { commune: villeFilter }) : t("Les sections du pays")}</h3>
+      {villeFilter ? (
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+            <h3 className="text-3xl text-ecideDarkBlue">{t("Section de :commune", { commune: villeFilter })}</h3>
+            <button type="button" onClick={onAll} className="text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue">{t("Toutes les provinces")}</button>
           </div>
-          {villeFilter && <button type="button" onClick={onAllSections} className="text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue">{t("Toutes les sections")}</button>}
-        </div>
-        {sections.length === 0 ? (
-          <p className="text-gray-500 italic">{t("Aucune section renseignée pour ce pays pour le moment.")}</p>
-        ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {sections.map((s) => (
+            {villeSections.map((s) => (
               <NodeCard key={s.organe} node={s} contactUrl={contactUrl} />
             ))}
           </div>
-        )}
-      </div>
+        </div>
+      ) : (
+        <>
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+              <div>
+                <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Provinces et sections")}</span>
+                <h3 className="text-3xl text-ecideDarkBlue">{provinceFilter ? provinceFilter : t("Les secrétariats provinciaux exécutifs")}</h3>
+              </div>
+              {provinceFilter && <button type="button" onClick={onAll} className="text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue">{t("Toutes les provinces")}</button>}
+            </div>
+            {provinces.length === 0 ? (
+              <p className="text-gray-500 italic">{t("Aucun secrétariat provincial exécutif renseigné pour ce pays pour le moment.")}</p>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {provinces.map((p) => (
+                  <NodeCard key={p.organe} node={p} contactUrl={contactUrl} />
+                ))}
+              </div>
+            )}
+          </div>
+          {orphans.length > 0 && (
+            <div className="space-y-4">
+              <div>
+                <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Sections")}</span>
+                <h3 className="text-3xl text-ecideDarkBlue">{t("Sections rattachées directement à la fédération")}</h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {orphans.map((s) => (
+                  <NodeCard key={s.organe} node={s} contactUrl={contactUrl} />
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      )}
     </section>
   );
 }
@@ -349,16 +418,16 @@ function NodeCard({ node, contactUrl, nested = false }: { node: Node; contactUrl
   // Rattachement : celui des coordonnées publiées, sinon celui déclaré sur la fiche du responsable
   const c: StructureContact = { ...node.contact, via: node.contact.via || node.responsables[0]?.via || "" };
   const row = "flex items-center gap-2 text-gray-800 hover:text-ecideBlue";
-  const KIND: Record<Level, string> = { spe: t("Secrétariat provincial exécutif"), section: t("Section locale"), soussection: t("Sous-section"), cellule: t("Cellule"), place: t("Noyau") };
-  const KIND_TONE: Record<Level, string> = { spe: "text-ecideBlue", section: "text-ecideGreen", soussection: "text-ecideGreen", cellule: "text-ecideBlue", place: "text-ecideYellow-700" };
-  const CHILDREN: Record<Level, string> = { spe: t("Sections"), section: t("Sous-sections, cellules et noyaux"), soussection: t("Cellules et noyaux"), cellule: t("Noyaux"), place: "" };
+  const KIND: Record<Level, string> = { federation: t("Fédération"), spe: t("Secrétariat provincial exécutif"), section: t("Section locale"), soussection: t("Sous-section"), cellule: t("Cellule"), place: t("Noyau") };
+  const KIND_TONE: Record<Level, string> = { federation: "text-ecideBlue", spe: "text-ecideBlue", section: "text-ecideGreen", soussection: "text-ecideGreen", cellule: "text-ecideBlue", place: "text-ecideYellow-700" };
+  const CHILDREN: Record<Level, string> = { federation: t("Secrétariats provinciaux exécutifs"), spe: t("Sections"), section: t("Sous-sections, cellules et noyaux"), soussection: t("Cellules et noyaux"), cellule: t("Noyaux"), place: "" };
   const Heading = nested ? "h5" : "h4";
   return (
     <article className={nested ? "panel panel--white p-4 space-y-3" : "panel p-6 space-y-4"}>
       <header>
         <span className={`block text-[11px] font-bold uppercase tracking-widest ${KIND_TONE[node.niveau]}`}>{KIND[node.niveau]}</span>
         <Heading className={`font-display text-ecideDarkBlue leading-tight ${nested ? "text-xl" : "text-2xl"}`}>{node.label}</Heading>
-        {node.ville && <p className="text-sm text-gray-500 mt-1"><i className="fa-solid fa-location-dot text-gray-400 mr-1" aria-hidden="true"></i>{node.ville}, {node.pays}</p>}
+        {(node.ville || node.province) && <p className="text-sm text-gray-500 mt-1"><i className="fa-solid fa-location-dot text-gray-400 mr-1" aria-hidden="true"></i>{[node.ville, node.niveau === "spe" ? node.province : "", node.pays].filter(Boolean).join(", ")}</p>}
       </header>
       <div className="space-y-1.5 text-sm">
         {c.email && <a href={`mailto:${c.email}`} className={`${row} break-all`}><i className="fa-solid fa-envelope w-4 text-ecideBlue" aria-hidden="true"></i>{c.email}</a>}
@@ -420,9 +489,9 @@ function EntryCard({ e, continentLabel, color, contacts, organes, contactUrl, on
   const tone = TONE[color];
   const pending = e.nom === PENDING;
   const niveau = levelOf(e);
-  const KIND: Record<Level, string> = { spe: t("Secrétariat provincial exécutif"), section: t("Section locale"), soussection: t("Sous-section"), cellule: t("Cellule"), place: t("Noyau") };
-  const ICON: Record<Level, string> = { spe: "fa-flag", section: "fa-city", soussection: "fa-building", cellule: "fa-house-user", place: "fa-circle-nodes" };
-  const lieu = [e.ville ? `${e.ville}, ${e.pays}` : e.pays, continentLabel].join(" · ");
+  const KIND: Record<Level, string> = { federation: t("Fédération"), spe: t("Secrétariat provincial exécutif"), section: t("Section locale"), soussection: t("Sous-section"), cellule: t("Cellule"), place: t("Noyau") };
+  const ICON: Record<Level, string> = { federation: "fa-flag", spe: "fa-map-location-dot", section: "fa-city", soussection: "fa-building", cellule: "fa-house-user", place: "fa-circle-nodes" };
+  const lieu = [[e.ville, e.province, e.pays].filter(Boolean).join(", "), continentLabel].join(" · ");
   const c = contacts[e.organe] || ({} as StructureContact);
   const row = "flex items-center gap-2 text-gray-800 hover:text-ecideBlue";
   return (

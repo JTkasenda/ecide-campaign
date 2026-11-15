@@ -74,8 +74,8 @@ const orderIndex = (order: string[], organe: string) => {
  * (Congrès, Conseil national, Bureau national et ses secrétariats nationaux, Bureau d'études), les
  * secrétariats provinciaux exécutifs (provinces, districts de Kinshasa) — chacun présenté avec son
  * siège, ses responsables, puis ses sections (commune, territoire, secteur), leurs sous-sections,
- * leurs cellules (quartier, avenue, rue) et leurs noyaux — et les organisations affiliées (AFEC,
- * Ligue des Jeunes, structures spécialisées). L'état vit dans l'adresse
+ * leurs cellules (quartier, avenue, rue) et leurs noyaux — et les structures spécialisées (AFEC,
+ * Ligue des Jeunes…). L'état vit dans l'adresse
  * (#niveau=provincial&province=Kinshasa – Funa), ce qui permet les liens « Près de chez vous ».
  */
 export default function CadresDirectory({ data, locale }: { data: CadresData; locale: Locale }) {
@@ -84,16 +84,21 @@ export default function CadresDirectory({ data, locale }: { data: CadresData; lo
   const state = parse(hash);
   const setState = (s: State) => setHash(serialize(s));
   const contacts = useMemo(() => data.contacts || {}, [data]);
-  const organeLabel = (organe: string) => data.organes?.[organe] || organe;
+  // Libellé traduit fourni par l'API ; à défaut, le nom de secrétariat construit ici se traduit par le dictionnaire
+  const organeLabel = (organe: string) => {
+    if (data.organes?.[organe]) return data.organes[organe];
+    const spe = organe.match(/^Secrétariat Provincial Exécutif de (.+)$/);
+    return spe ? t("Secrétariat Provincial Exécutif de :lieu", { lieu: spe[1] }) : organe;
+  };
   const contactUrl = localePath(locale, data.contactUrl);
 
   const NIVEAUX: { id: Niveau; label: string; icon: string; hint: string }[] = [
     { id: "national", label: t("Organes nationaux"), icon: "fa-landmark", hint: t("Le Congrès, le Conseil national, le Bureau national et ses secrétariats nationaux, le Bureau d'études.") },
     { id: "provincial", label: t("Secrétariats provinciaux"), icon: "fa-map-location-dot", hint: t("Choisissez une province ou un district de Kinshasa : le siège du secrétariat provincial exécutif, ses responsables, puis les sections, sous-sections, cellules et noyaux avec leurs coordonnées.") },
-    { id: "affilie", label: t("Organisations affiliées"), icon: "fa-people-group", hint: t("L'Association des Femmes de l'ECiDé (AFEC), la Ligue des Jeunes et les structures spécialisées du parti.") },
+    { id: "affilie", label: t("Structures spécialisées"), icon: "fa-people-group", hint: t("L'Association des Femmes de l'ECiDé (AFEC), la Ligue des Jeunes et les autres structures spécialisées du parti.") },
   ];
   const CATEGORIES: Record<string, string> = { congres: t("Congrès"), conseil: t("Conseil national"), direction: t("Bureau national"), secretariats: t("Secrétariats nationaux"), etudes: t("Bureau d'études"), communication: t("Communication"), finances: t("Finances"), afe: t("AFEC"), ligues: t("Ligue des Jeunes"), specialisees: t("Structures spécialisées"), federations: t("Secrétariats provinciaux"), cellules: t("Sections, cellules et noyaux") };
-  const NIVEAU_LABEL: Record<string, string> = { national: t("National"), affilie: t("Organisation affiliée"), provincial: t("Secrétariat provincial exécutif"), section: t("Section"), soussection: t("Sous-section"), cellule: t("Cellule"), place: t("Noyau") };
+  const NIVEAU_LABEL: Record<string, string> = { national: t("National"), affilie: t("Structure spécialisée"), provincial: t("Secrétariat provincial exécutif"), section: t("Section"), soussection: t("Sous-section"), cellule: t("Cellule"), place: t("Noyau") };
   const isLocal = (n: string): n is LocalLevel => (LOCAL_LEVELS as string[]).includes(n);
   const niveauOfCadre = (c: Cadre): Niveau => (c.niveau === "national" ? "national" : c.niveau === "affilie" ? "affilie" : "provincial");
 
@@ -156,7 +161,7 @@ export default function CadresDirectory({ data, locale }: { data: CadresData; lo
     return all.filter((u) => u.niveau === "section" || !attached.has(u)).sort(byName);
   };
 
-  /* ---------- Recherche, organes nationaux et organisations affiliées ---------- */
+  /* ---------- Recherche, organes nationaux et structures spécialisées ---------- */
 
   const searching = state.q.trim().length > 0;
   const list = useMemo(() => {
@@ -194,7 +199,7 @@ export default function CadresDirectory({ data, locale }: { data: CadresData; lo
   ];
   const placeholder = isProvincial ? t("Rechercher une province, une section, une cellule, un responsable…") : t("Rechercher un cadre ou un organe…");
 
-  // Résultats en grille (recherche, organes nationaux, organisations affiliées), groupés par structure avec
+  // Résultats en grille (recherche, organes nationaux, structures spécialisées), groupés par structure avec
   // ses coordonnées ; une structure publiée sans responsable (le Congrès, par exemple) apparaît aussi
   const groups: { organe: string; items: Cadre[] }[] = [];
   list.slice(0, 200).forEach((c) => {
@@ -514,7 +519,7 @@ function LeaderRow({ c, tone, tag, light = false }: { c: Cadre; tone: "blue" | "
   );
 }
 
-/* ---------- Cartes et bandeau de coordonnées (organes nationaux, organisations affiliées, résultats de recherche) ---------- */
+/* ---------- Cartes et bandeau de coordonnées (organes nationaux, structures spécialisées, résultats de recherche) ---------- */
 
 function CadreCard({ c, niveauLabel, catLabel }: { c: Cadre; niveauLabel: string; catLabel: string }) {
   const { t } = useI18n();

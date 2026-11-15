@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getAdherer, getHome, getSite } from "@/lib/api";
+import type { HomePage as HomePageData } from "@/lib/types";
 import { formatNumber, safeUrl, textStyle } from "@/lib/format";
-import { localePath } from "@/lib/locales";
+import { localePath, type Locale } from "@/lib/locales";
 import { pageLocale, type PageParams } from "@/lib/page";
 import { getT, pageMetadata } from "@/lib/server";
 import Chyron from "@/components/Chyron";
@@ -27,7 +28,16 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
  */
 export default async function HomePage({ params }: PageParams) {
   const locale = await pageLocale(params);
-  const [site, home, adherer, t] = await Promise.all([getSite(locale), getHome(locale), getAdherer(locale).catch(() => null), getT(locale)]);
+  return <HomeView locale={locale} home={await getHome(locale)} />;
+}
+
+/**
+ * Contenu de la page d'accueil, à partir des données de l'API. Sert aussi à l'aperçu de
+ * l'administration (apercu-accueil/[jeton]) avec les modifications pas encore enregistrées ;
+ * chaque section porte data-apercu pour que l'aperçu puisse s'y rendre.
+ */
+export async function HomeView({ locale, home }: { locale: Locale; home: HomePageData }) {
+  const [site, adherer, t] = await Promise.all([getSite(locale), getAdherer(locale).catch(() => null), getT(locale)]);
   const { hero, chiffres, manifeste: m, combats, positions, sections: s, president: pres, news, fils, proximite, agir } = home;
   const nom = site.params.nom || "ECiDé";
   const featured = news.featured;
@@ -49,7 +59,7 @@ export default async function HomePage({ params }: PageParams) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(home.jsonld).replace(/</g, "\\u003c") }} />
       <main id="main" className="flex-grow">
         {/* HERO : photo plein écran, étiquette, titre en serif, formulaire d'inscription */}
-        <section className="hero-photo text-white relative overflow-hidden flex items-center min-h-[36rem] lg:min-h-[calc(100svh-5rem)]">
+        <section data-apercu="hero" className="hero-photo text-white relative overflow-hidden flex items-center min-h-[36rem] lg:min-h-[calc(100svh-5rem)]">
           <img src={hero.image} alt="" fetchPriority="high" className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: `center ${hero.cadrage}%` }} aria-hidden="true" />
           <div className="hero-overlay absolute inset-0" style={{ opacity: Math.min(1, Math.max(0.6, hero.voile / 60)) }} aria-hidden="true"></div>
           <div className="max-w-7xl mx-auto w-full px-6 py-16 lg:py-20 relative">
@@ -60,7 +70,7 @@ export default async function HomePage({ params }: PageParams) {
               {site.params.newsletter ? (
                 <NewsletterForm
                   variant="hero"
-                  labels={{ title: t("Recevoir les communiqués"), placeholder: t("Votre e-mail"), name: t("Votre prénom (facultatif)"), submit: t("S'abonner"), success: t("Merci ! Vous recevrez nos communiqués officiels."), note: t("Nous personnalisons chaque envoi : vos communiqués arrivent dans la langue de cette page.") }}
+                  labels={{ title: t("Recevoir les communiqués"), placeholder: t("Votre e-mail"), name: t("Prénom (facultatif)"), submit: t("S'abonner"), success: t("Merci ! Vous recevrez nos communiqués officiels."), note: t("Nous personnalisons chaque envoi : vos communiqués arrivent dans la langue de cette page.") }}
                 />
               ) : (
                 <div className="flex flex-wrap gap-3">
@@ -73,7 +83,7 @@ export default async function HomePage({ params }: PageParams) {
         <Chyron site={site} locale={locale} label={t("Fil d'actualité")} />
 
         {/* MANIFESTE : panneau blanc qui chevauche la section bleu nuit des combats */}
-        <section className="bg-white px-6 pt-16 lg:pt-20">
+        <section data-apercu="manifeste" className="bg-white px-6 pt-16 lg:pt-20">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-end">
             <div className="lg:col-span-7 bg-white lg:pr-16 pb-10 lg:pb-16 space-y-6 reveal relative z-10">
               <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm" style={textStyle(m.tailleSurtitre)}>{m.surtitre || t("Qui sommes-nous")}</span>
@@ -99,7 +109,7 @@ export default async function HomePage({ params }: PageParams) {
 
         {/* COMBATS MAJEURS : section bleu nuit, cartes gris-bleu (« On the issues ») */}
         {combats.length > 0 && (
-          <section className="bg-ecideDarkBlue text-white py-16 lg:py-24 px-6 diag">
+          <section data-apercu="combats" className="bg-ecideDarkBlue text-white py-16 lg:py-24 px-6 diag">
             <div className="max-w-7xl mx-auto space-y-10">
               <h2 className="bar-title text-4xl lg:text-5xl reveal">{(s.combatsTitre as string) || t("Les Combats Majeurs")}</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -118,7 +128,7 @@ export default async function HomePage({ params }: PageParams) {
 
         {/* APPEL AU DON : bandeau jaune avec les montants (bandeau orange de warnockforgeorgia.com) */}
         {s.donActif !== false && (
-        <section className="bg-ecideYellow text-ecideDarkBlue py-12 lg:py-16 px-6">
+        <section data-apercu="don" className="bg-ecideYellow text-ecideDarkBlue py-12 lg:py-16 px-6">
           <div className="max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center gap-8">
             <div className="space-y-2 lg:w-1/3">
               <span className="eyebrow eyebrow--dark font-sans">{(s.donSurtitre as string) || t("Soutenir le Combat (Don)")}</span>
@@ -138,7 +148,7 @@ export default async function HomePage({ params }: PageParams) {
         )}
 
         {/* LE PRÉSIDENT ÉLU : photo et panneau blanc (« Why I'm running ») */}
-        <section className="bg-ecideBlue-50 px-6 py-16 lg:py-24">
+        <section data-apercu="president" className="bg-ecideBlue-50 px-6 py-16 lg:py-24">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 items-center">
             <figure className="lg:col-span-6 relative h-80 sm:h-[26rem] lg:h-[34rem] reveal">
               <img src={pres.portrait} alt={`${t("Portrait officiel de")} ${pres.nom}`} loading="lazy" className="absolute inset-0 w-full h-full object-cover object-[50%_20%]" />
@@ -164,7 +174,7 @@ export default async function HomePage({ params }: PageParams) {
         </section>
 
         {/* POSITIONS OFFICIELLES */}
-        <section className="bg-white py-16 lg:py-24 px-6">
+        <section data-apercu="positions" className="bg-white py-16 lg:py-24 px-6">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
             <div className="lg:col-span-5 space-y-6 reveal">
               <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm" style={textStyle(s.positionsTailleSurtitre)}>{(s.positionsSurtitre as string) || t("Positions officielles")}</span>
@@ -193,7 +203,7 @@ export default async function HomePage({ params }: PageParams) {
 
         {/* ACTUALITÉS : « dans la presse », cartes blanches sur bleu nuit */}
         {newsItems.length > 0 && (
-          <section className="bg-ecideDarkBlue text-white py-16 lg:py-24 px-6 diag">
+          <section data-apercu="actu" className="bg-ecideDarkBlue text-white py-16 lg:py-24 px-6 diag">
             <div className="max-w-7xl mx-auto space-y-10">
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 reveal">
                 <div className="space-y-3">
@@ -230,7 +240,7 @@ export default async function HomePage({ params }: PageParams) {
 
         {/* FILS OFFICIELS DU PARTI */}
         {fils.actif && (fils.x || fils.facebook) && (
-          <section id="fils" className="bg-white py-16 lg:py-24 px-6 border-b border-gray-200">
+          <section data-apercu="fils" id="fils" className="bg-white py-16 lg:py-24 px-6 border-b border-gray-200">
             <div className="max-w-7xl mx-auto space-y-10">
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 reveal">
                 <div className="space-y-3 max-w-2xl">
@@ -250,7 +260,7 @@ export default async function HomePage({ params }: PageParams) {
         )}
 
         {/* PRÈS DE CHEZ VOUS */}
-        <section className="bg-ecideBlue-50 py-16 lg:py-24 px-6">
+        <section data-apercu="proximite" className="bg-ecideBlue-50 py-16 lg:py-24 px-6">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             <div className="lg:col-span-5 space-y-4 reveal">
               <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm" style={textStyle(s.proximiteTailleSurtitre)}>{(s.proximiteSurtitre as string) || t("Près de chez vous")}</span>
@@ -291,7 +301,7 @@ export default async function HomePage({ params }: PageParams) {
 
         {/* AGIR : trois panneaux */}
         {agir.length > 0 && (
-          <section className="bg-white px-6 py-16 lg:py-24">
+          <section data-apercu="agir" className="bg-white px-6 py-16 lg:py-24">
             <div className="max-w-7xl mx-auto space-y-10">
               <div className="space-y-3 reveal">
                 <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm" style={textStyle(s.agirTailleSurtitre)}>{(s.agirSurtitre as string) || t("Agir")}</span>

@@ -88,7 +88,7 @@ export default function Header({ site, locale }: { site: Site; locale: Locale })
             <img src={site.assets.logo || "/assets/img/logo-160.png"} alt="" width={44} height={44} className="w-11 h-11 shrink-0 rounded-full object-cover" />
             <span className="min-w-0 leading-none">
               <span className="font-display font-black text-2xl block leading-none truncate">{p.nom || "ECiDé"}</span>
-              <span className="eyebrow text-[9px] tracking-[0.3em] mt-1 hidden sm:block truncate">{p.slogan || "C'est possible"}</span>
+              <span className="eyebrow text-[9px] tracking-[0.3em] mt-1 hidden sm:block truncate">{p.slogan}</span>
             </span>
           </Link>
 
@@ -99,6 +99,10 @@ export default function Header({ site, locale }: { site: Site; locale: Locale })
               <i className="fa-solid fa-chevron-down text-[9px] text-ecideYellow" aria-hidden="true"></i>
               {langSelect("langSelect", "absolute inset-0 w-full h-full opacity-0 cursor-pointer")}
             </label>
+            <Link href={localePath(locale, "/espace-membre")} className="hidden sm:inline-flex items-center gap-2 text-white border border-white/50 hover:border-white hover:bg-white/10 px-3 py-2 text-xs font-sans font-bold tracking-widest transition shrink-0" aria-label={t("Espace membre")} title={t("Espace membre")} aria-current={pathname.includes("/espace-membre") ? "page" : undefined}>
+              <i className="fa-regular fa-circle-user text-ecideYellow text-sm" aria-hidden="true"></i>
+              <span className="hidden xl:inline uppercase">{t("Espace membre")}</span>
+            </Link>
             <Link href={localePath(locale, site.cta.url)} className="btn btn--outline-white btn--sm min-w-0 hidden md:inline-flex">
               <span className="truncate">{site.cta.label}</span>
             </Link>
@@ -119,6 +123,10 @@ export default function Header({ site, locale }: { site: Site; locale: Locale })
             {n.libelle}
           </Link>
         ))}
+        <Link href={localePath(locale, "/espace-membre")} onClick={() => setOpen(false)} className="mobile-link flex items-center gap-3 py-3 border-t text-gray-700" aria-current={pathname.includes("/espace-membre") ? "page" : undefined}>
+          <i className="fa-regular fa-circle-user text-ecideBlue" aria-hidden="true"></i>
+          {t("Espace membre")}
+        </Link>
         <label className="sm:hidden flex items-center gap-3 py-3 border-t text-sm font-sans font-semibold text-gray-700">
           <i className="fa-solid fa-globe text-ecideBlue" aria-hidden="true"></i>
           <span>{t("Langue")}</span>

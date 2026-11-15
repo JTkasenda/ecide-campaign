@@ -23,7 +23,7 @@ export default async function Footer({ site, locale }: { site: Site; locale: Loc
             <img src={site.assets.logo || "/assets/img/logo-160.png"} alt="" width={56} height={56} loading="lazy" className="w-14 h-14 rounded-full object-cover" />
             <span>
               <span className="font-display font-black text-3xl block leading-none">{p.nom || "ECiDé"}</span>
-              <span className="eyebrow text-[10px] mt-1 block">{p.slogan || "C'est possible"}</span>
+              <span className="eyebrow text-[10px] mt-1 block">{p.slogan}</span>
             </span>
           </Link>
           <p className="text-blue-100 leading-relaxed max-w-sm">{p.footerTexte || ""}</p>

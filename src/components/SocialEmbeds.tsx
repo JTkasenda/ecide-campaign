@@ -8,6 +8,8 @@ import { useI18n } from "@/lib/i18n";
 export default function SocialEmbeds({ x, facebook, name, height = 600 }: { x?: string; facebook?: string; name: string; height?: number }) {
   const { t, locale } = useI18n();
   const dataLang = locale === "en" ? "en" : "fr";
+  // Facebook affiche son widget en anglais ou en swahili ; lingala, tshiluba et kikongo restent en français
+  const fbLocale = locale === "en" ? "en_GB" : locale === "sw" ? "sw_KE" : "fr_FR";
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {x && (
@@ -49,7 +51,7 @@ export default function SocialEmbeds({ x, facebook, name, height = 600 }: { x?: 
           <div className="social-embed flex-1">
             <iframe
               title="Facebook"
-              src={`https://www.facebook.com/plugins/page.php?href=${encodeURIComponent(facebook)}&tabs=timeline&width=500&height=${height}&small_header=true&adapt_container_width=true&hide_cover=true&show_facepile=false&locale=fr_FR`}
+              src={`https://www.facebook.com/plugins/page.php?href=${encodeURIComponent(facebook)}&tabs=timeline&width=500&height=${height}&small_header=true&adapt_container_width=true&hide_cover=true&show_facepile=false&locale=${fbLocale}`}
               width="100%"
               height={height}
               style={{ border: "none", overflow: "hidden" }}

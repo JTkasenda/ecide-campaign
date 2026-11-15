@@ -18,6 +18,18 @@ import type {
 /** Adresse de l'API Laravel (voir .env.local). */
 export const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "");
 
+/**
+ * Origines de l'administration (même serveur que l'API) : en local, « localhost » et « 127.0.0.1 »
+ * désignent la même machine, l'administration peut être ouverte sous l'une ou l'autre.
+ */
+export function adminOrigins(apiUrl: string = API_URL): string[] {
+  const u = new URL(apiUrl);
+  const out = [u.origin];
+  const twin = u.hostname === "localhost" ? "127.0.0.1" : u.hostname === "127.0.0.1" ? "localhost" : "";
+  if (twin) out.push(`${u.protocol}//${twin}${u.port ? `:${u.port}` : ""}`);
+  return out;
+}
+
 /** Étiquette de cache commune : Laravel la rafraîchit via /api/revalidate à chaque enregistrement. */
 export const CACHE_TAG = "ecide";
 
@@ -44,6 +56,9 @@ async function request<T>(path: string, locale: Locale, init?: RequestInit): Pro
 export const getSite = cache((locale: Locale) => request<Site>("/site", locale));
 export const getI18n = cache((locale: Locale) => request<I18n>(`/i18n/${locale}`, locale));
 export const getHome = cache((locale: Locale) => request<HomePage>("/pages/home", locale));
+/** Page d'accueil avec les brouillons de l'administration (aperçu) : jamais mise en cache. */
+export const getHomePreview = (locale: Locale, token: string) =>
+  request<HomePage>(`/pages/home?apercu=${encodeURIComponent(token)}`, locale, { cache: "no-store", next: undefined });
 export const getParti = cache((locale: Locale) => request<PartiPage>("/pages/parti", locale));
 export const getPresident = cache((locale: Locale) => request<PresidentPage>("/pages/president", locale));
 export const getActualites = cache((locale: Locale) => request<ActualitesPage>("/pages/actualites", locale));

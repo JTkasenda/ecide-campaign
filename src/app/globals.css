@@ -504,6 +504,8 @@ footer :is(a, button)[class*="bg-ecide"][class*="font-black"] {
 .hero-titre {
   font-size: calc(2.5rem * var(--ts-all));
   letter-spacing: 0;
+  /* Police large choisie dans l'administration (Poppins, Montserrat…) : un mot trop long se coupe avec un trait d'union */
+  hyphens: auto;
 }
 .hero-texte {
   font-size: calc(1.125rem * var(--ts-all));
@@ -1850,5 +1852,163 @@ main .text-white :is(.panel, .panel--white, [class~="bg-white"], [class~="bg-eci
       height: 80vh;
       min-height: 32rem;
     }
+  }
+}
+
+/* Espace membre : impression de la carte (recto et verso seuls, couleurs conservées) */
+@media print {
+  @page {
+    margin: 12mm;
+  }
+  body:has(.card-print) header,
+  body:has(.card-print) footer,
+  body:has(.card-print) #toast,
+  body:has(.card-print) .back-to-top {
+    display: none !important;
+  }
+  body:has(.card-print) main {
+    background: #fff !important;
+    padding: 0 !important;
+  }
+}
+.card-print-face,
+.member-card {
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+/* En-tête des blocs de l'espace membre : reflet discret de la carte du pays */
+.member-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 140% at 100% 0%, rgb(0 51 153 / 0.85), transparent 60%);
+  pointer-events: none;
+}
+.member-hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Espace membre : navigation défilante sans barre visible */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Espace membre : thème sombre (choisi par le membre, retenu dans son navigateur) */
+.member-dark {
+  --md-bg: #070f24;
+  --md-surface: #0f1a36;
+  --md-surface-2: #16234a;
+  --md-border: #24345f;
+  --md-text: #e7ecf7;
+  --md-muted: #a6b1cc;
+  --md-faint: #7c88a6;
+  background-color: var(--md-bg) !important;
+  color: var(--md-text);
+  color-scheme: dark;
+}
+.member-dark .member-box,
+.member-dark .bg-white {
+  background-color: var(--md-surface) !important;
+  border-color: var(--md-border) !important;
+  color: var(--md-text);
+}
+.member-dark .bg-gray-50,
+.member-dark .bg-gray-100 {
+  background-color: var(--md-surface-2) !important;
+}
+.member-dark .bg-ecideBlue-50,
+.member-dark .hover\:bg-ecideBlue-50:hover {
+  background-color: var(--md-surface-2) !important;
+}
+.member-dark .border-gray-100,
+.member-dark .border-gray-200,
+.member-dark .border-gray-300,
+.member-dark .divide-gray-100 > * + * {
+  border-color: var(--md-border) !important;
+}
+.member-dark .text-gray-900,
+.member-dark .text-gray-800,
+.member-dark .text-gray-700,
+.member-dark .text-ecideDarkBlue {
+  color: var(--md-text) !important;
+}
+.member-dark .text-gray-600,
+.member-dark .text-gray-500 {
+  color: var(--md-muted) !important;
+}
+.member-dark .text-gray-400,
+.member-dark .text-gray-300 {
+  color: var(--md-faint) !important;
+}
+.member-dark .text-ecideBlue {
+  color: #8fb0ff !important;
+}
+.member-dark input,
+.member-dark select,
+.member-dark textarea {
+  background-color: var(--md-bg) !important;
+  border-color: var(--md-border) !important;
+  color: var(--md-text) !important;
+}
+.member-dark .btn--outline {
+  color: var(--md-text);
+  border-color: var(--md-border);
+}
+.member-dark .member-hero {
+  background-color: #04102e;
+}
+/* Thème sombre : le texte reste bleu nuit sur les fonds jaunes (onglet actif, boutons jaunes) */
+.member-dark .bg-ecideYellow,
+.member-dark .bg-ecideYellow .text-ecideDarkBlue,
+.member-dark .bg-ecideYellow.text-ecideDarkBlue,
+.member-dark .btn--yellow {
+  color: #001b52 !important;
+}
+/* Thème sombre : fonds pâles (succès, alerte, erreur) rendus translucides, texte clair lisible */
+.member-dark .bg-ecideGreen-50,
+.member-dark .bg-ecideGreen-50\/50 {
+  background-color: rgb(31 122 62 / 0.22) !important;
+}
+.member-dark .bg-red-50 {
+  background-color: rgb(220 38 38 / 0.18) !important;
+}
+.member-dark .text-red-800,
+.member-dark .text-red-700,
+.member-dark .text-red-600 {
+  color: #fca5a5 !important;
+}
+.member-dark .text-ecideGreen {
+  color: #6fd394 !important;
+}
+.member-dark .bg-ecideYellow\/15,
+.member-dark .bg-ecideYellow\/20 {
+  background-color: rgb(255 204 0 / 0.14) !important;
+}
+.member-dark .text-ecideYellow-700 {
+  color: #ffd84d !important;
+}
+.member-dark mark {
+  color: #001b52 !important;
+}
+/* Thème sombre : choix sélectionné (sexe, devise, moyen de paiement) bien distinct */
+.member-dark .member-choice-on {
+  background-color: #003399 !important;
+  border-color: #8fb0ff !important;
+  color: #fff !important;
+}
+.member-dark .bg-gray-200 {
+  background-color: var(--md-border) !important;
+}
+.member-dark .border-ecideDarkBlue {
+  border-color: #8fb0ff !important;
+}
+/* Espace membre sur téléphone : la barre d'onglets s'estompe sur les bords pour montrer qu'elle défile */
+@media (max-width: 1023px) {
+  .member-nav nav {
+    mask-image: linear-gradient(to right, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
   }
 }

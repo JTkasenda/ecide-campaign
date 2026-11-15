@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
 /**
  * Organigramme du parti, par niveau : national (Congrès, Conseil national, Bureau national),
  * provincial et local (secrétariat exécutif provincial, sections, sous-sections, cellules,
- * noyaux), organisations affiliées (AFEC, Ligue des Jeunes) ; puis les catégories de membres.
+ * noyaux), structures spécialisées (AFEC, Ligue des Jeunes) ; puis les catégories de membres.
  * Les organes et leur niveau viennent de l'administration (écran Le Parti, onglet Organisation).
  */
 export default async function OrganigrammePage({ params }: PageParams) {
@@ -27,7 +27,7 @@ export default async function OrganigrammePage({ params }: PageParams) {
   const groupes = [
     { key: "national", title: t("Niveau national"), tone: "blue", items: organes.filter((o) => niveau(o) === "national") },
     { key: "provincial", title: t("Niveau provincial et local"), tone: "yellow", items: organes.filter((o) => niveau(o) === "provincial") },
-    { key: "affilie", title: t("Organisations affiliées"), tone: "green", items: organes.filter((o) => niveau(o) === "affilie") },
+    { key: "affilie", title: t("Structures spécialisées"), tone: "green", items: organes.filter((o) => niveau(o) === "affilie") },
   ].filter((g) => g.items.length > 0);
 
   const orgCard = (o: { titre: string; texte: string; icone: string; lien?: string; url?: string }, tone: string) => {
@@ -41,7 +41,7 @@ export default async function OrganigrammePage({ params }: PageParams) {
     else if (low.includes("congres")) extra = link(`${cadres}#niveau=national&organe=${encodeURIComponent("Congrès")}`, t("Voir le Congrès"));
     else if (low.includes("conseil national")) extra = link(`${cadres}#niveau=national&organe=${encodeURIComponent("Conseil national")}`, t("Voir le Conseil national"));
     else if (low.includes("bureau national")) extra = link(`${cadres}#niveau=national`, t("Voir les membres du Bureau national"));
-    else if (low.includes("femmes") || low.includes("afec") || low.includes("jeunes") || low.includes("ligue") || low.includes("affili")) extra = link(`${cadres}#niveau=affilie`, t("Voir les organisations affiliées"));
+    else if (low.includes("femmes") || low.includes("afec") || low.includes("jeunes") || low.includes("ligue") || low.includes("affili")) extra = link(`${cadres}#niveau=affilie`, t("Voir les structures spécialisées"));
     else if (low.includes("provinci")) extra = link(`${cadres}#niveau=provincial`, t("Voir les secrétariats provinciaux"));
     else if (low.includes("section") || low.includes("cellule") || low.includes("noyau")) extra = link(`${cadres}#niveau=provincial`, t("Trouver ma section"));
     return (
@@ -74,9 +74,9 @@ export default async function OrganigrammePage({ params }: PageParams) {
             <ul className="space-y-2 text-sm text-gray-600">
               <li className="flex items-center gap-3"><span className="w-3 h-3 bg-ecideBlue" aria-hidden="true"></span>{t("Niveau national")}</li>
               <li className="flex items-center gap-3"><span className="w-3 h-3 bg-ecideYellow" aria-hidden="true"></span>{t("Niveau provincial et local")}</li>
-              <li className="flex items-center gap-3"><span className="w-3 h-3 bg-ecideGreen" aria-hidden="true"></span>{t("Organisations affiliées")}</li>
+              <li className="flex items-center gap-3"><span className="w-3 h-3 bg-ecideGreen" aria-hidden="true"></span>{t("Structures spécialisées")}</li>
             </ul>
-            <p className="text-sm text-gray-600">{pp.orgaLegende || t("Congrès, Conseil national et Bureau national ; secrétariats exécutifs provinciaux, sections, sous-sections, cellules et noyaux ; organisations affiliées.")}</p>
+            <p className="text-sm text-gray-600">{pp.orgaLegende || t("Congrès, Conseil national et Bureau national ; secrétariats exécutifs provinciaux, sections, sous-sections, cellules et noyaux ; structures spécialisées.")}</p>
             <Link href={localePath(locale, "/cadres")} className="arrow-link">{t("Consulter l'annuaire des cadres")}</Link>
           </div>
           <div className="lg:col-span-8 space-y-12 reveal">

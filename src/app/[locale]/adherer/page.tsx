@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getAdherer } from "@/lib/api";
-import { formatNumber, safeUrl } from "@/lib/format";
+import { formatNumber } from "@/lib/format";
 import { localePath } from "@/lib/locales";
 import { pageLocale, type PageParams } from "@/lib/page";
 import { getT, pageMetadata } from "@/lib/server";
@@ -28,8 +28,20 @@ export default async function AdhererPage({ params }: PageParams) {
       <PageBanner
         eyebrow={s("banniereSurtitre") || t("Agir")}
         title={s("banniereTitre") || t("Adhésion & Contribution Financière")}
-        text={s("banniereTexte") ? s("banniereTexte").replace(/:min/g, formatNumber(data.paiement.cdf.min, locale)) : t("Rejoignez le parti via la plateforme officielle des membres et soutenez-le dès :min FC par Mobile Money, ou en dollars par PayPal et virement.", { min: formatNumber(data.paiement.cdf.min, locale) })}
-      />
+        text={s("banniereTexte") ? s("banniereTexte").replace(/:min\b/g, formatNumber(data.paiement.cdf.min, locale)) : t("Rejoignez le parti via la plateforme officielle des membres et soutenez-le dès :min FC par Mobile Money, ou en dollars par PayPal et virement.", { min: formatNumber(data.paiement.cdf.min, locale) })}
+      >
+        {/* Les deux actions dès l'arrivée sur la page, sans faire défiler jusqu'aux blocs */}
+        <div className="flex flex-wrap gap-3 shrink-0">
+          <Link href={localePath(locale, "/espace-membre")} className="btn btn--primary">
+            <i className="fa-solid fa-id-card" aria-hidden="true"></i>
+            {s("plateformeBouton") || t("Adhérer en ligne")}
+          </Link>
+          <Link href={localePath(locale, "/don")} className="btn btn--outline-white">
+            <i className="fa-solid fa-hand-holding-heart text-sm" aria-hidden="true"></i>
+            {t("Faire un don")}
+          </Link>
+        </div>
+      </PageBanner>
 
       {atouts.length > 0 && (
         <section className="bg-ecideBlue-50 py-12 px-6">
@@ -70,15 +82,13 @@ export default async function AdhererPage({ params }: PageParams) {
                 ))}
               </ol>
             )}
-            <a href={safeUrl(ad.plateformeUrl)} target="_blank" rel="noopener" className="btn btn--dark btn--lg w-full">
+            <Link href={localePath(locale, "/espace-membre")} className="btn btn--dark btn--lg w-full">
               <i className="fa-solid fa-id-card" aria-hidden="true"></i>
-              {s("plateformeBouton") || t("Adhérer sur la plateforme")} <i className="fa-solid fa-arrow-up-right-from-square text-sm opacity-80" aria-hidden="true"></i>
-            </a>
-            {s("espaceLibelle") && (
-              <p className="text-sm text-gray-600 text-center">
-                {t("Déjà membre ?")} <a href={safeUrl(ad.espaceUrl)} target="_blank" rel="noopener" className="font-semibold text-ecideDarkBlue underline decoration-ecideYellow decoration-2 underline-offset-4 hover:text-ecideBlue">{s("espaceLibelle")}</a>
-              </p>
-            )}
+              {s("plateformeBouton") || t("Adhérer en ligne")}
+            </Link>
+            <p className="text-sm text-gray-600 text-center">
+              {t("Déjà membre ?")} <Link href={localePath(locale, "/espace-membre")} className="font-semibold text-ecideDarkBlue underline decoration-ecideYellow decoration-2 underline-offset-4 hover:text-ecideBlue">{s("espaceLibelle") || t("Accéder à mon espace membre")}</Link>
+            </p>
             {s("avertissement") && (
               <div className="bg-white border-l-4 border-ecideYellow p-5 text-sm text-gray-700 flex gap-3">
                 <i className="fa-solid fa-shield-halved text-ecideYellow-700 mt-0.5" aria-hidden="true"></i>

@@ -75,6 +75,8 @@ export interface SiteParams {
   tailleEntete: number;
   taillePied: number;
   tailleFil: number;
+  /** Polices choisies dans Paramètres › Typographie : variables CSS (--font-display…) et feuille Google Fonts */
+  polices?: { theme: string; ids: Record<string, string>; equilibre?: boolean; vars: Record<string, string>; url: string };
 }
 
 export interface Site {
@@ -154,6 +156,8 @@ export interface Video {
 }
 
 export interface HomePage {
+  /** Vrai quand la page montre les brouillons de l'administration (aperçu) */
+  apercu?: boolean;
   hero: { titre: string; slogan: string; texte: string; image: string; cadrage: number; voile: number; tailleTitre: number; tailleSlogan: number; tailleTexte: number; tailleChiffres: number; tailleChiffresLibelle: number };
   chiffres: { valeur: string; libelle: string; couleur: Couleur }[];
   manifeste: { surtitre: string; texte: string; lien1: string; url1: string; lien2: string; url2: string; tailleSurtitre: number; tailleTexte: number; tailleLiens: number };
@@ -257,6 +261,7 @@ export interface Cadre {
 export interface StructureContact {
   organe: string;
   type?: string;
+  continent?: string;
   province?: string;
   pays?: string;
   ville?: string;
@@ -273,7 +278,7 @@ export interface StructureContact {
 export interface CadresData {
   /** Présentation en tête de page (Autres pages › Cadres) */
   page: Record<string, string>;
-  /** Chiffres calculés par l'API : organes nationaux, organisations affiliées, SEP, sections, sous-sections, cellules, noyaux */
+  /** Chiffres calculés par l'API : organes nationaux, structures spécialisées, SEP, sections, sous-sections, cellules, noyaux */
   stats: { nationaux: number; affilies?: number; spe: number; sections: number; soussections?: number; cellules: number; places: number };
   cadres: Cadre[];
   provinces: string[];
@@ -289,12 +294,14 @@ export interface DiasporaEntry {
   fonction: string;
   organe: string;
   organeLabel: string;
-  /** Niveau : secrétariat provincial exécutif (pays), section (ville), sous-section, cellule, noyau */
-  type?: "spe" | "section" | "soussection" | "cellule" | "place";
-  /** Représentation de rattachement (le secrétariat du pays pour une section) */
+  /** Niveau : fédération (pays), secrétariat provincial exécutif (province du pays), section (ville), sous-section, cellule, noyau */
+  type?: "federation" | "spe" | "section" | "soussection" | "cellule" | "place";
+  /** Représentation de rattachement (la fédération pour un secrétariat, le secrétariat de la province pour une section) */
   via?: string;
   continent: string;
   pays: string;
+  /** Province ou région du pays (secrétariats, sections et subdivisions) */
+  province?: string;
   ville: string;
   reseaux: Reseaux | null;
 }
