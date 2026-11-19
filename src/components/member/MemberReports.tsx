@@ -98,7 +98,7 @@ export default function MemberReports() {
     return (
       <div className="space-y-6">
         {header}
-        <button type="button" onClick={() => go({ mode: "list" })} className="text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue py-2 -my-2">
+        <button type="button" onClick={() => go({ mode: "list" })} className="text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue py-1">
           <i className="fa-solid fa-arrow-left mr-2" aria-hidden="true"></i>{t("Retour à mes rapports")}
         </button>
         <h2 className="text-2xl font-bold text-ecideDarkBlue no-bar member-title">{view.id === null ? t("Nouveau rapport") : current?.modifiable === false ? current.titre : t("Modifier le rapport")}</h2>
@@ -125,9 +125,9 @@ export default function MemberReports() {
       {error && error !== "offline" && <Notice tone="error">{error === "-" ? t("Vos rapports n'ont pas pu être chargés.") : error}</Notice>}
       {!reports && !error && <p className="text-sm text-gray-500"><i className="fa-solid fa-spinner fa-spin mr-2" aria-hidden="true"></i>{t("Chargement…")}</p>}
       {reports && !reports.length && (
-        <div className="member-box bg-white border border-gray-200 p-10 text-center text-gray-500">
-          <i className="fa-regular fa-clipboard text-3xl text-gray-300 mb-3 block" aria-hidden="true"></i>
-          {t("Vous n'avez encore envoyé aucun rapport. Après chaque événement que vous organisez, rendez-en compte ici.")}
+        <div className="member-box m-card m-state">
+          <i className="fa-regular fa-clipboard" aria-hidden="true"></i>
+          <p className="max-w-md">{t("Vous n'avez encore envoyé aucun rapport. Après chaque événement que vous organisez, rendez-en compte ici.")}</p>
         </div>
       )}
       {reports && reports.length > 0 && (
@@ -137,7 +137,7 @@ export default function MemberReports() {
               <article className={`member-box bg-white border border-gray-200 p-5 sm:p-6 space-y-3 ${r.incidents ? "border-l-4 !border-l-red-600" : ""}`}>
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <p className="text-sm font-semibold text-ecideBlue">{day(r.date)} · {r.heure_debut}{r.heure_fin ? ` – ${r.heure_fin}` : ""}</p>
-                  <span className={`text-xs font-bold uppercase tracking-wide px-2 py-1 ${r.statut === "examine" ? "bg-ecideGreen-50 text-ecideGreen" : "bg-ecideYellow/20 text-gray-800"}`}>{r.statutLibelle}</span>
+                  <span className={`m-pill ${r.statut === "examine" ? "m-pill--ok" : "m-pill--warn"}`}>{r.statutLibelle}</span>
                 </div>
                 <div className="space-y-1.5">
                   <h2 className="text-xl font-bold text-gray-900 leading-tight no-bar member-title break-words">{r.titre}</h2>

@@ -137,7 +137,7 @@ export default function MemberLogin({ onLogged }: { onLogged: (data: MemberData)
         <form onSubmit={(e) => (e.preventDefault(), login(code))} className="space-y-5" noValidate>
           <p className="text-sm text-gray-600">{t("Entrez le code envoyé à")} <strong className="text-ecideDarkBlue break-all">{sent.destinataire}</strong>.</p>
           {sent.demo && sent.code && (
-            <p className="bg-ecideYellow/15 border-l-4 border-ecideYellow px-4 py-3 text-sm text-gray-700">
+            <p className="member-notice bg-ecideYellow-50 border border-ecideYellow-200 rounded-lg px-3.5 py-3 text-sm text-gray-700">
               {sent.canal === "email" ? t("Aucun e-mail n'est envoyé pendant la démonstration.") : t("Aucun SMS n'est envoyé pendant la démonstration.")} {t("Utilisez le code")} <strong className="font-mono">{sent.code}</strong>.
             </p>
           )}
@@ -154,7 +154,7 @@ export default function MemberLogin({ onLogged }: { onLogged: (data: MemberData)
               onChange={(e) => typeCode(e.target.value)}
               aria-invalid={error ? true : undefined}
               aria-describedby={error ? "mCode-error" : "mCode-help"}
-              className={`${INPUT} font-mono text-2xl tracking-[0.4em]`}
+              className={`${INPUT} font-mono !text-2xl tracking-[0.4em] text-center`}
               autoFocus
             />
             <p id="mCode-help" className="text-xs text-gray-500 mt-2">{t("6 chiffres : la connexion se fait dès le dernier chiffre.")}</p>

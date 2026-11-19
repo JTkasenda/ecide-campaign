@@ -198,14 +198,16 @@ export default function MembershipWizard({ data, setData }: { data: MemberData; 
   }
 
   const header = (
-    <ol className="grid grid-cols-6 gap-1.5 mb-8" aria-label={t("Étapes de la demande")}>
+    <ol className="m-stepper" aria-label={t("Étapes de la demande")}>
       {STEPS.map((s, i) => {
         const reachable = i <= index || done(s) || STEPS.slice(0, i).every(done);
+        // Étape franchie (avant l'étape courante, ou complète) : pastille pleine et trait bleu vers la suivante
+        const passed = s !== step && (i < index || done(s));
         return (
-          <li key={s}>
-            <button type="button" disabled={!reachable} onClick={() => go(s)} aria-current={s === step ? "step" : undefined} aria-label={`${i + 1}. ${labels[s]}${done(s) ? ` (${t("complété")})` : ""}`} className="w-full text-left group py-3 sm:py-1 disabled:cursor-not-allowed">
-              <span className={`block h-1.5 ${i < index || done(s) ? "bg-ecideDarkBlue" : s === step ? "bg-ecideYellow" : "bg-gray-200"}`}></span>
-              <span className={`hidden sm:block text-[11px] mt-2 truncate ${s === step ? "font-bold text-ecideDarkBlue" : "text-gray-500 group-enabled:group-hover:text-ecideDarkBlue"}`}>{labels[s]}</span>
+          <li key={s} data-done={passed || undefined}>
+            <button type="button" disabled={!reachable} onClick={() => go(s)} aria-current={s === step ? "step" : undefined} aria-label={`${i + 1}. ${labels[s]}${done(s) ? ` (${t("complété")})` : ""}`} className="m-step" data-done={passed || undefined}>
+              <span className="m-step__dot" aria-hidden="true">{passed ? <i className="fa-solid fa-check text-xs"></i> : i + 1}</span>
+              <span className="m-step__label" aria-hidden="true">{labels[s]}</span>
             </button>
           </li>
         );
@@ -278,8 +280,8 @@ export default function MembershipWizard({ data, setData }: { data: MemberData; 
           </div>
         )}
         {header}
-        <p className="eyebrow eyebrow--dark text-xs mb-2">{t("Étape :n sur :total", { n: index + 1, total: STEPS.length })}</p>
-        <h2 ref={titleRef} tabIndex={-1} className="text-3xl text-ecideDarkBlue no-bar mb-6 focus:outline-none">{labels[step]}</h2>
+        <p className="eyebrow eyebrow--dark text-xs mb-1">{t("Étape :n sur :total", { n: index + 1, total: STEPS.length })}</p>
+        <h2 ref={titleRef} tabIndex={-1} className="text-ecideDarkBlue mb-5 focus:outline-none">{labels[step]}</h2>
 
         {/* Entrée valide l'étape, comme le bouton « Continuer » */}
         <form onSubmit={(e) => (e.preventDefault(), onNext[step]?.())} noValidate>
@@ -539,7 +541,7 @@ function Engagement({ data, onCheck }: { data: MemberData; onCheck: () => void }
   const m = data.membre;
   return (
     <div className="space-y-5">
-      <blockquote className="bg-ecideBlue-50 border-l-4 border-ecideDarkBlue p-5 text-gray-800 leading-relaxed">{data.options.engagement}</blockquote>
+      <blockquote className="bg-ecideBlue-50 border-l-4 border-ecideBlue rounded-r-lg p-4 sm:p-5 text-gray-800 leading-relaxed">{data.options.engagement}</blockquote>
       <label className="flex items-start gap-3 p-4 border border-gray-200 cursor-pointer">
         <input id="mEngage" type="checkbox" defaultChecked={m.engagement} disabled={m.engagement} onChange={onCheck} className="w-5 h-5 mt-0.5 shrink-0" />
         <span className="text-sm text-gray-700">
@@ -551,7 +553,7 @@ function Engagement({ data, onCheck }: { data: MemberData; onCheck: () => void }
         <>
           <section aria-labelledby="mHonneurTitre" className="space-y-3 pt-2">
             <h3 id="mHonneurTitre" className="text-xl text-ecideDarkBlue">{data.options.codeHonneur.titre}</h3>
-            <div tabIndex={0} className="max-h-72 overflow-y-auto border border-gray-200 bg-white p-5 text-gray-800 leading-relaxed whitespace-pre-line focus:outline-2 focus:outline-ecideBlue">
+            <div tabIndex={0} className="max-h-72 overflow-y-auto border border-gray-200 rounded-lg bg-white p-4 sm:p-5 text-gray-800 leading-relaxed whitespace-pre-line focus:outline-2 focus:outline-ecideBlue">
               {data.options.codeHonneur.texte}
             </div>
           </section>

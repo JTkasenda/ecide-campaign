@@ -59,24 +59,24 @@ export default function MemberLibrary() {
               <li key={d.id}>
                 <MemberCardBox className="h-full flex flex-col gap-4">
                   <div className="flex items-start gap-4">
-                    <span className="w-12 h-12 shrink-0 inline-flex items-center justify-center bg-ecideDarkBlue text-ecideYellow text-xl" aria-hidden="true">
+                    <span className="m-icon !w-11 !h-11 text-lg" aria-hidden="true">
                       <i className="fa-solid fa-scale-balanced"></i>
                     </span>
                     <div className="min-w-0">
-                      <h2 className="text-lg font-bold text-ecideDarkBlue leading-snug no-bar">
+                      <h2 className="leading-snug">
                         <Link href={href} className="hover:underline">{d.titre}</Link>
                       </h2>
                       {d.sous_titre && <p className="text-sm text-gray-500 mt-1">{d.sous_titre}</p>}
-                      <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mt-2">{d.articles > 0 ? articlesLabel(d.articles, t) : t("Texte en ligne à venir")}</p>
+                      <p className="text-xs font-medium text-gray-500 mt-2">{d.articles > 0 ? articlesLabel(d.articles, t) : t("Texte en ligne à venir")}</p>
                     </div>
                   </div>
                   <div className="mt-auto flex flex-wrap gap-2">
-                    <Link href={href} className="inline-flex items-center gap-2 px-4 py-2.5 bg-ecideBlue text-white text-sm font-bold hover:bg-ecideDarkBlue">
+                    <Link href={href} className="btn btn--primary btn--sm">
                       <i className="fa-solid fa-book-open" aria-hidden="true"></i>
                       {t("Lire")}
                     </Link>
                     {d.pdf && (
-                      <a href={safeUrl(d.pdf)} download className="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-200 text-ecideDarkBlue text-sm font-bold hover:border-ecideBlue">
+                      <a href={safeUrl(d.pdf)} download className="btn btn--outline btn--sm">
                         <i className="fa-solid fa-download" aria-hidden="true"></i>
                         {t("PDF")}
                       </a>

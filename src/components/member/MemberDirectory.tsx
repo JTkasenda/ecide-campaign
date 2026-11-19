@@ -85,9 +85,9 @@ export default function MemberDirectory() {
   return (
     <div className="space-y-5">
       <MemberPageHeader title={t("Annuaire")} subtitle={t("Les responsables et les membres du parti. Les coordonnées restent réservées aux responsables.")} />
-      <div className="member-box grid grid-cols-3 gap-1 bg-white border border-gray-200 p-1" role="tablist">
+      <div className="member-box m-segmented grid grid-cols-3 gap-1 bg-white border border-gray-200 p-1" role="tablist">
         {tabs.map(([k, label]) => (
-          <button key={k} type="button" role="tab" aria-selected={view === k} onClick={() => (setView(k), setPage(1))} className={`py-2.5 px-2 text-sm font-semibold transition ${view === k ? "bg-ecideYellow text-ecideDarkBlue" : "text-gray-600 hover:text-ecideDarkBlue"}`}>{label}</button>
+          <button key={k} type="button" role="tab" aria-selected={view === k} onClick={() => (setView(k), setPage(1))} className={`py-2 px-2 text-sm font-semibold rounded-lg transition ${view === k ? "m-segmented__on" : "text-gray-600 hover:text-ecideDarkBlue"}`}>{label}</button>
         ))}
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-[1fr_auto_auto] gap-3">

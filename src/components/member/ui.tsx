@@ -1,4 +1,6 @@
 import { useEffect, useRef, type ReactNode, type RefObject } from "react";
+import type { T } from "@/lib/i18n";
+import type { MemberProfile } from "@/lib/member";
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -50,21 +52,25 @@ export function useDialog<T extends HTMLElement>(onClose: () => void, locked = f
 }
 
 /** Champs de saisie de l'espace membre. */
-export const INPUT = "w-full p-3.5 bg-gray-50 border border-gray-200 text-gray-900 focus:outline-none focus:ring-2 focus:ring-ecideBlue focus:bg-white disabled:opacity-60";
+export const INPUT = "w-full px-3.5 py-2.5 min-h-11 bg-white border border-gray-300 rounded-lg text-gray-900 text-[15px] placeholder:text-gray-400 focus:outline-none focus:border-ecideBlue focus:ring-2 focus:ring-ecideBlue/25 disabled:opacity-60";
 
-/** Bloc de l'espace membre : en-tête bleu nuit (emblème, titre, sous-titre) et contenu sur fond blanc. */
+/**
+ * Bloc de l'espace membre : carte blanche avec un en-tête (titre, sous-titre, action à droite) et
+ * son contenu. Sert aux écrans de connexion et de demande d'adhésion.
+ */
 export function MemberPanel({ title, subtitle, children, narrow, aside }: { title: string; subtitle?: string; children: ReactNode; narrow?: boolean; aside?: ReactNode }) {
   return (
-    <div className={`${narrow ? "max-w-xl" : "max-w-4xl"} mx-auto w-full`}>
-      <div className="member-hero relative overflow-hidden bg-ecideDarkBlue text-white px-6 sm:px-8 py-6 flex items-center gap-5">
-        <img src="/assets/img/logo-160.png" alt="" width={56} height={56} className="w-14 h-14 rounded-full shrink-0 ring-2 ring-white/30" />
-        <div className="min-w-0 flex-1">
-          <h1 className="text-3xl sm:text-4xl leading-tight no-bar">{title}</h1>
-          {subtitle && <p className="text-blue-100 text-sm mt-1">{subtitle}</p>}
+    <div className={`${narrow ? "max-w-md" : "max-w-3xl"} mx-auto w-full`}>
+      <div className="member-box m-card overflow-hidden">
+        <div className="px-5 sm:px-7 pt-6 pb-5 flex items-start gap-4 border-b border-gray-100">
+          <div className="min-w-0 flex-1">
+            <h1>{title}</h1>
+            {subtitle && <p className="m-page-head__sub">{subtitle}</p>}
+          </div>
+          {aside}
         </div>
-        {aside}
+        <div className="p-5 sm:p-7">{children}</div>
       </div>
-      <div className="bg-white border border-gray-200 border-t-0 p-6 sm:p-8 lg:p-10">{children}</div>
     </div>
   );
 }
@@ -72,27 +78,41 @@ export function MemberPanel({ title, subtitle, children, narrow, aside }: { titl
 /** En-tête d'une page de l'espace membre (Agenda, Annuaire…) : titre, phrase d'accueil, action à droite. */
 export function MemberPageHeader({ title, subtitle, action }: { title: string; subtitle?: string; action?: ReactNode }) {
   return (
-    <div className="member-hero relative overflow-hidden bg-ecideDarkBlue text-white px-6 sm:px-8 py-6 flex flex-wrap items-center gap-5">
-      <img src="/assets/img/logo-160.png" alt="" width={52} height={52} className="w-13 h-13 rounded-full shrink-0 ring-2 ring-white/30" />
-      <div className="min-w-0 flex-1">
-        <h1 className="text-3xl sm:text-4xl leading-tight no-bar">{title}</h1>
-        {subtitle && <p className="text-blue-100 text-sm mt-1">{subtitle}</p>}
+    <div className="m-page-head">
+      <div className="m-page-head__text">
+        <h1>{title}</h1>
+        {subtitle && <p className="m-page-head__sub">{subtitle}</p>}
       </div>
-      {action}
+      {action && <div className="shrink-0 w-full sm:w-auto">{action}</div>}
     </div>
   );
 }
 
 /** Bloc blanc de l'espace membre (passe en sombre avec le thème sombre). */
 export function MemberCardBox({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <section className={`member-box bg-white border border-gray-200 p-5 sm:p-6 ${className}`}>{children}</section>;
+  return <section className={`member-box m-card bg-white border border-gray-200 p-4 sm:p-5 ${className}`}>{children}</section>;
+}
+
+/** État de la carte du membre, pour les pastilles (barre latérale, accueil). */
+export function cardStatus(m: MemberProfile, t: T): { label: string; tone: "ok" | "warn" | "bad" | "info" } {
+  if (m.statut === "suspendu") return { label: t("Carte suspendue"), tone: "bad" };
+  if (m.carte?.valide) return { label: t("Carte valide"), tone: "ok" };
+  if (m.carte) return { label: t("Carte expirée"), tone: "bad" };
+  return { label: m.statutLibelle || t("En cours"), tone: "warn" };
+}
+
+/** Initiales du membre (pastille à la place de la photo : rien de plus à télécharger). */
+export function initials(m: MemberProfile): string {
+  const parts = [m.prenom, m.nom].filter(Boolean) as string[];
+  const src = parts.length ? parts : (m.nomComplet || "").split(/\s+/);
+  return src.slice(0, 2).map((w) => w.charAt(0).toUpperCase()).join("") || "?";
 }
 
 /** Champ avec libellé ; l'erreur éventuelle s'affiche juste dessous (id « <id>-error »). */
 export function Field({ id, label, optional, help, error, children, className = "" }: { id: string; label: string; optional?: string; help?: string; error?: string; children: ReactNode; className?: string }) {
   return (
     <div className={className}>
-      <label htmlFor={id} className="block font-bold text-gray-700 mb-2 text-sm">
+      <label htmlFor={id} className="block font-semibold text-gray-800 mb-1.5 text-sm">
         {label} {optional && <span className="font-normal text-gray-400">({optional})</span>}
       </label>
       {children}
@@ -110,14 +130,14 @@ export function Field({ id, label, optional, help, error, children, className = 
 
 export function Notice({ tone = "info", icon, children }: { tone?: "info" | "warn" | "error" | "success"; icon?: string; children: ReactNode }) {
   const styles = {
-    info: "border-ecideBlue bg-ecideBlue-50 text-gray-700",
-    warn: "border-ecideYellow bg-ecideYellow/15 text-gray-700",
-    error: "border-red-500 bg-red-50 text-red-800",
-    success: "border-ecideGreen bg-ecideGreen-50 text-gray-800",
+    info: "border-ecideBlue-100 bg-ecideBlue-50 text-gray-700 [&>i]:text-ecideBlue",
+    warn: "border-ecideYellow-200 bg-ecideYellow-50 text-gray-700 [&>i]:text-ecideYellow-800",
+    error: "border-red-200 bg-red-50 text-red-800",
+    success: "border-ecideGreen-100 bg-ecideGreen-50 text-gray-800 [&>i]:text-ecideGreen",
   }[tone];
   const fallback = { info: "fa-circle-info", warn: "fa-triangle-exclamation", error: "fa-circle-exclamation", success: "fa-circle-check" }[tone];
   return (
-    <div className={`border-l-4 px-4 py-3 text-sm flex gap-3 ${styles}`}>
+    <div className={`member-notice border rounded-lg px-3.5 py-3 text-sm flex gap-3 ${styles}`}>
       <i className={`fa-solid ${icon || fallback} mt-0.5`} aria-hidden="true"></i>
       <div className="min-w-0">{children}</div>
     </div>

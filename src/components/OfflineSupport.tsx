@@ -52,7 +52,7 @@ export default function OfflineSupport() {
 
   if (online) return null;
   return (
-    <div role="status" className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 max-w-[calc(100%-2rem)] bg-ecideDarkBlue text-white text-sm font-semibold px-4 py-2.5 shadow-card flex items-center gap-2">
+    <div role="status" data-offline-banner="" className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 max-w-[calc(100%-2rem)] bg-ecideDarkBlue text-white text-sm font-semibold px-4 py-2.5 shadow-card flex items-center gap-2">
       <i className="fa-solid fa-wifi text-ecideYellow" aria-hidden="true"></i>
       {t("Hors ligne : les pages déjà consultées restent disponibles.")}
     </div>

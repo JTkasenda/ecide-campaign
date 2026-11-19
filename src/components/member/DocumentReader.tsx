@@ -214,7 +214,7 @@ export default function DocumentReader({ id }: { id: number }) {
 
   const pdf = doc.pdf ? safeUrl(doc.pdf) : "";
   const pdfButton = pdf && (
-    <a href={pdf} download className="inline-flex items-center gap-2 px-5 py-3 bg-ecideYellow text-ecideDarkBlue font-bold text-sm hover:bg-white shrink-0">
+    <a href={pdf} download className="btn btn--outline btn--sm shrink-0">
       <i className="fa-solid fa-download" aria-hidden="true"></i>
       {t("Télécharger le PDF")}
     </a>
@@ -230,15 +230,14 @@ export default function DocumentReader({ id }: { id: number }) {
   return (
     <div className="space-y-6">
       {back}
-      <header className="member-hero relative overflow-hidden bg-ecideDarkBlue text-white px-6 sm:px-8 py-7 flex flex-wrap items-center gap-5">
-        <img src="/assets/img/logo-160.png" alt="" width={56} height={56} className="w-14 h-14 rounded-full shrink-0 ring-2 ring-white/30" />
-        <div className="min-w-0 flex-1 basis-60">
-          <h1 className="text-2xl sm:text-3xl leading-tight no-bar">{doc.titre}</h1>
-          {doc.sous_titre && <p className="text-blue-100 text-sm mt-1.5">{doc.sous_titre}</p>}
-          {doc.articles > 0 && <p className="text-ecideYellow text-xs font-bold uppercase tracking-wider mt-2">{articlesLabel(doc.articles, t)}</p>}
+      <div className="m-page-head">
+        <div className="m-page-head__text basis-60">
+          <h1>{doc.titre}</h1>
+          {doc.sous_titre && <p className="m-page-head__sub">{doc.sous_titre}</p>}
+          {doc.articles > 0 && <p className="text-xs font-semibold text-gray-500 mt-1.5">{articlesLabel(doc.articles, t)}</p>}
         </div>
         {pdfButton}
-      </header>
+      </div>
 
       {empty ? (
         <div className="member-box bg-white border border-gray-200 p-8 sm:p-10 text-center space-y-4">

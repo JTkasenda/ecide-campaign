@@ -91,7 +91,7 @@ export default function MemberDues() {
   const statusLabel = (s: Etat) => ({ paye: t("Payée"), en_attente: t("En attente"), a_payer: t("À régler") })[s];
   const date = (iso: string | null) => (iso ? new Intl.DateTimeFormat(locale === "fr" ? "fr-FR" : locale, { day: "numeric", month: "short", year: "numeric" }).format(new Date(iso)) : "");
   const both = (usd: number, cdf: number) => [usd > 0 ? amountLabel(usd, "USD", locale) : "", cdf > 0 ? amountLabel(cdf, "CDF", locale) : ""].filter(Boolean).join(" · ");
-  const pill = (cls: string, label: string) => <span className={`inline-flex items-center px-2.5 py-1 text-xs font-bold whitespace-nowrap ${PILL[cls] || PILL.annule}`}>{label}</span>;
+  const pill = (cls: string, label: string) => <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap ${PILL[cls] || PILL.annule}`}>{label}</span>;
 
   return (
     <div className="space-y-5">

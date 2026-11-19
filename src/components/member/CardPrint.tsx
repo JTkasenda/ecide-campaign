@@ -21,7 +21,7 @@ export default function CardPrint() {
   if (data === null) return <p className="text-center text-gray-500 py-20"><i className="fa-solid fa-spinner fa-spin mr-2" aria-hidden="true"></i>{t("Chargement…")}</p>;
   if (data === false) {
     return (
-      <div className="max-w-md mx-auto bg-white p-8 text-center space-y-4">
+      <div className="member-box m-card max-w-md mx-auto bg-white border border-gray-200 p-8 text-center space-y-4">
         <p className="text-gray-700">{t("Connectez-vous à votre espace membre pour imprimer votre carte.")}</p>
         <Link href={localePath(locale as Locale, "/espace-membre")} className="btn btn--primary">{t("Espace membre")}</Link>
       </div>
@@ -29,8 +29,8 @@ export default function CardPrint() {
   }
   const v = `${data.membre.carte?.numero}-${data.membre.statut}`;
   return (
-    <div className="card-print space-y-6 py-6">
-      <div className="print:hidden max-w-2xl mx-auto bg-white p-6 flex flex-wrap items-center justify-between gap-4">
+    <div className="card-print space-y-6 py-2">
+      <div className="print:hidden member-box m-card max-w-2xl mx-auto bg-white border border-gray-200 p-5 flex flex-wrap items-center justify-between gap-4">
         <p className="text-sm text-gray-600">{t("Format carte bancaire (85,6 × 54 mm). Dans la fenêtre d'impression, choisissez « Enregistrer au format PDF » pour garder une copie.")}</p>
         <button type="button" onClick={() => window.print()} className="btn btn--primary"><i className="fa-solid fa-print" aria-hidden="true"></i>{t("Imprimer ou enregistrer en PDF")}</button>
       </div>

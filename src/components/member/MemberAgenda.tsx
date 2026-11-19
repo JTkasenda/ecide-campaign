@@ -117,7 +117,7 @@ export default function MemberAgenda() {
       <article key={m.id} className={`member-box bg-white border border-gray-200 p-5 sm:p-6 space-y-4 ${cancelled || past ? "opacity-70" : ""}`}>
         <div className="flex flex-wrap items-start justify-between gap-2">
           <p className="text-sm font-semibold text-ecideBlue">{when(m.debut, past)}</p>
-          {cancelled && <span className="text-xs font-bold uppercase tracking-wide px-2 py-1 bg-red-50 text-red-700">{t("Annulée")}</span>}
+          {cancelled && <span className="m-pill m-pill--bad">{t("Annulée")}</span>}
         </div>
         <div className="space-y-1.5">
           <h2 className={`text-xl sm:text-2xl font-bold text-gray-900 leading-tight no-bar member-title ${cancelled ? "line-through" : ""}`}>{m.titre}</h2>

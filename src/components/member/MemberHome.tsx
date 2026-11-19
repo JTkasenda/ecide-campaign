@@ -7,7 +7,7 @@ import { localePath, type Locale } from "@/lib/locales";
 import { memberApi } from "@/lib/member";
 import { showToast } from "@/lib/toast";
 import { useMember } from "./MemberContext";
-import { MemberCardBox, Notice } from "./ui";
+import { MemberCardBox, Notice, cardStatus } from "./ui";
 
 interface Meeting {
   id: number;
@@ -35,9 +35,10 @@ interface PublicNews {
 }
 
 /**
- * Accueil du membre validé : salutation, raccourcis (le QR code d'entrée en premier), prochaine
- * réunion avec réponse en un geste, état des cotisations avec paiement direct, annonces et
- * communiqués (internes et publics).
+ * Accueil du membre validé, tableau de bord : salutation, actions rapides (nouveau rapport, carte,
+ * cotisation), état de la carte, prochaine réunion avec réponse en un geste, état des cotisations
+ * avec paiement direct, annonces et communiqués (internes et publics), autres raccourcis.
+ * Une seule requête (« accueil ») pour la réunion, les cotisations et les annonces.
  */
 export default function MemberHome() {
   const { t, locale } = useI18n();
@@ -74,17 +75,6 @@ export default function MemberHome() {
     setAttempt((n) => n + 1);
   };
 
-  const tiles: [string, string, string][] = [
-    ["fa-qrcode", t("QR code"), "/espace-membre/carte?qr=1"],
-    ["fa-id-card", t("Ma carte"), "/espace-membre/carte"],
-    ["fa-calendar-days", t("Agenda"), "/espace-membre/agenda"],
-    ["fa-clipboard-list", t("Mes rapports"), "/espace-membre/rapports"],
-    ["fa-wallet", t("Cotisations"), "/espace-membre/cotisations"],
-    ["fa-address-book", t("Annuaire"), "/espace-membre/annuaire"],
-    ["fa-book-open", t("Documents"), "/espace-membre/documents"],
-    ["fa-newspaper", t("Actualités"), "/espace-membre/actualites"],
-    ["fa-hand-holding-heart", t("Faire un don"), "/don"],
-  ];
   const [answering, setAnswering] = useState(false);
 
   /** Réponse à la convocation depuis l'accueil (annulée si le serveur refuse). */
@@ -110,108 +100,201 @@ export default function MemberHome() {
     ...(news?.actualites || []).map((n) => ({ key: `p${n.slug}`, href: L(`/actualites/${n.slug}`), kicker: n.categorieLibelle || t("Actualité"), date: n.date || "", titre: n.titre, texte: n.resume || "" })),
   ].slice(0, 4);
 
+  const status = cardStatus(m, t);
+  const date = (iso: string | null | undefined) => (iso ? new Date(iso).toLocaleDateString(locale, { day: "numeric", month: "long", year: "numeric" }) : "—");
+  const loading = (
+    <div className="m-state !py-6" aria-live="polite">
+      <i className="fa-solid fa-spinner fa-spin !text-base" aria-hidden="true"></i>
+      <p>{t("Chargement…")}</p>
+    </div>
+  );
+  const failed = (
+    <div className="m-state m-state--error !py-6" role="alert">
+      <i className="fa-solid fa-triangle-exclamation !text-base" aria-hidden="true"></i>
+      <p>{t("L'accueil n'a pas pu être chargé.")}</p>
+      <button type="button" onClick={retry} className="btn btn--outline btn--sm">{t("Réessayer")}</button>
+    </div>
+  );
+  const others: [string, string, string][] = [
+    ["fa-qrcode", t("QR code"), "/espace-membre/carte?qr=1"],
+    ["fa-calendar-days", t("Agenda"), "/espace-membre/agenda"],
+    ["fa-address-book", t("Annuaire"), "/espace-membre/annuaire"],
+    ["fa-book-open", t("Documents"), "/espace-membre/documents"],
+    ["fa-newspaper", t("Actualités"), "/espace-membre/actualites"],
+    ["fa-hand-holding-heart", t("Faire un don"), "/don"],
+  ];
+
   return (
-    <div className="space-y-6">
-      <div className="member-hero relative overflow-hidden bg-ecideDarkBlue text-white p-6 sm:p-8">
-        <div className="flex items-center gap-5">
-          <img src="/assets/img/logo-160.png" alt="" width={72} height={72} className="w-16 h-16 sm:w-[72px] sm:h-[72px] rounded-full shrink-0 ring-2 ring-white/30" />
-          <div className="min-w-0">
-            <p className="text-blue-100 text-sm">{t("Bonjour")}</p>
-            <h1 className="text-4xl sm:text-5xl leading-tight no-bar break-words">{m.prenom || m.nomComplet}</h1>
-            <p className="text-ecideYellow text-sm font-semibold">{m.categorieLibelle || t("Membre")}</p>
-          </div>
+    <div className="space-y-5">
+      <div className="m-page-head">
+        <div className="m-page-head__text">
+          <h1 className="break-words">{t("Bonjour")} {m.prenom || m.nomComplet}</h1>
+          <p className="m-page-head__sub">{[m.categorieLibelle || t("Membre"), m.section].filter(Boolean).join(" · ")}</p>
         </div>
-        <nav className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-2 mt-8" aria-label={t("Raccourcis de l'espace membre")}>
-          {tiles.map(([icon, label, href]) => (
-            <Link key={href} href={L(href)} className="flex flex-col items-center gap-2 py-4 px-1 bg-white/10 hover:bg-white/20 border border-white/10 text-center text-[11px] sm:text-xs font-semibold leading-tight transition min-w-0 break-words">
-              <i className={`fa-solid ${icon} text-lg text-ecideYellow`} aria-hidden="true"></i>
-              {label}
-            </Link>
-          ))}
-        </nav>
       </div>
 
       {m.statut === "suspendu" && (
         <Notice tone="error"><strong>{t("Votre adhésion est suspendue.")}</strong> {m.motif ? `${t("Motif")} : ${m.motif}` : ""}</Notice>
       )}
 
-      {active && meeting && (
-        <MemberCardBox className="space-y-4">
-          <div className="flex flex-wrap items-center gap-4">
-            <span className="w-12 h-12 shrink-0 bg-ecideYellow/20 text-ecideYellow-700 flex items-center justify-center"><i className="fa-solid fa-calendar-day text-xl" aria-hidden="true"></i></span>
+      <nav aria-label={t("Actions rapides")}>
+        <ul className="grid grid-cols-3 gap-2 sm:gap-2.5">
+          {active && (
+            <li>
+              <Link href={L("/espace-membre/rapports?nouveau=1")} className="btn btn--primary m-quick">
+                <i className="fa-solid fa-plus" aria-hidden="true"></i>{t("Nouveau rapport")}
+              </Link>
+            </li>
+          )}
+          <li>
+            <Link href={L("/espace-membre/carte")} className="btn btn--outline m-quick">
+              <i className="fa-solid fa-id-card text-[var(--m-primary-text)]" aria-hidden="true"></i>{t("Voir ma carte")}
+            </Link>
+          </li>
+          {active && (
+            <li>
+              <Link href={L(dues && !dues.aJour ? "/espace-membre/cotisations?payer=1" : "/espace-membre/cotisations")} className="btn btn--outline m-quick">
+                <i className="fa-solid fa-wallet text-[var(--m-primary-text)]" aria-hidden="true"></i>{t("Payer ma cotisation")}
+              </Link>
+            </li>
+          )}
+        </ul>
+      </nav>
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        {/* Carte de membre */}
+        <MemberCardBox className="flex flex-col gap-3">
+          <div className="flex items-center gap-3">
+            <span className={`m-icon ${status.tone === "ok" ? "m-icon--ok" : status.tone === "bad" ? "m-icon--bad" : "m-icon--warn"}`}><i className="fa-solid fa-id-card" aria-hidden="true"></i></span>
             <div className="min-w-0 flex-1">
-              <p className="text-xs text-gray-500">{t("Prochaine réunion")}</p>
-              <p className="font-bold text-gray-900 text-lg leading-tight break-words">{meeting.titre}</p>
-              <p className="text-sm text-gray-500">{when(meeting.debut)}{meeting.lieu ? ` · ${meeting.lieu}` : ""}</p>
+              <h2 className="m-tile-title">{t("Ma carte")}</h2>
+              <span className={`m-pill m-pill--${status.tone}`}>{status.label}</span>
             </div>
-            <Link href={L("/espace-membre/agenda")} className="text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue whitespace-nowrap py-2.5">
-              {t("Détails")} <i className="fa-solid fa-chevron-right text-xs" aria-hidden="true"></i>
-            </Link>
           </div>
-          {meeting.statut !== "annulee" && (
-            <div className="grid grid-cols-2 gap-3" role="group" aria-label={t("Votre réponse")}>
-              <button type="button" onClick={() => answer("present")} aria-pressed={meeting.maReponse === "present"} disabled={answering} className={`py-2.5 px-3 font-bold border-2 transition ${meeting.maReponse === "present" ? "bg-ecideDarkBlue border-ecideDarkBlue text-white" : "bg-white border-gray-200 text-gray-700 hover:border-ecideDarkBlue"}`}>
-                <i className="fa-solid fa-check mr-2" aria-hidden="true"></i>{meeting.maReponse === "present" ? t("Présence confirmée") : t("Présent")}
-              </button>
-              <button type="button" onClick={() => answer("absent")} aria-pressed={meeting.maReponse === "absent"} disabled={answering} className={`py-2.5 px-3 font-bold border-2 transition ${meeting.maReponse === "absent" ? "bg-red-50 border-red-600 text-red-700" : "bg-white border-gray-200 text-gray-700 hover:border-red-600"}`}>
-                <i className="fa-solid fa-xmark mr-2" aria-hidden="true"></i>{t("Absent")}
-              </button>
-            </div>
-          )}
-        </MemberCardBox>
-      )}
-
-      {active && dues && (
-        <MemberCardBox className="flex flex-wrap items-center gap-4">
-          <span className={`w-12 h-12 shrink-0 flex items-center justify-center ${dues.aJour ? "bg-ecideGreen-50 text-ecideGreen" : "bg-ecideYellow/20 text-ecideYellow-700"}`}><i className="fa-solid fa-wallet text-xl" aria-hidden="true"></i></span>
-          <div className="min-w-0 flex-1">
-            <p className="text-xs text-gray-500">{t("Cotisations")}</p>
-            <p className="font-bold text-gray-900">{dues.aJour ? t("Vous êtes à jour de vos cotisations.") : t(":n mois à régler", { n: dues.arrieres })}</p>
-          </div>
-          {dues.aJour ? (
-            <Link href={L("/espace-membre/cotisations")} className="text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue whitespace-nowrap py-2.5">
-              {t("Voir")} <i className="fa-solid fa-chevron-right text-xs" aria-hidden="true"></i>
-            </Link>
+          {m.carte ? (
+            <dl className="text-sm grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
+              <dt className="m-muted">{t("N° de carte")}</dt>
+              <dd className="font-mono font-semibold text-right break-all">{m.carte.numero}</dd>
+              <dt className="m-muted">{t("Valable jusqu'au")}</dt>
+              <dd className="font-semibold text-right">{date(m.carte.expireLe)}</dd>
+            </dl>
           ) : (
-            // Ouvre directement le paiement du mois à régler
-            <Link href={L("/espace-membre/cotisations?payer=1")} className="btn btn--yellow btn--sm min-h-10 whitespace-nowrap">
-              {t("Payer ma cotisation")}
-            </Link>
+            <p className="text-sm m-muted">{m.statutLibelle}</p>
           )}
-        </MemberCardBox>
-      )}
-
-      {active && (
-        <section className="space-y-3">
-          <div className="flex items-baseline justify-between gap-3">
-            <h2 className="text-2xl text-ecideDarkBlue no-bar member-title">{t("Annonces et communiqués")}</h2>
-            <Link href={L("/espace-membre/actualites")} className="text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue py-2.5">{t("Tout voir")}</Link>
+          <div className="mt-auto flex flex-wrap gap-2 pt-1">
+            <Link href={L("/espace-membre/carte?qr=1")} className="btn btn--outline btn--sm flex-1"><i className="fa-solid fa-qrcode" aria-hidden="true"></i>{t("QR code")}</Link>
+            <Link href={L("/espace-membre/carte")} className="btn btn--outline btn--sm flex-1">{t("Voir ma carte")}</Link>
           </div>
-          {load === "error" ? (
-            <p className="text-sm text-gray-600 flex flex-wrap items-center gap-x-3 gap-y-1" role="alert">
-              <span><i className="fa-solid fa-triangle-exclamation text-ecideYellow-700 mr-2" aria-hidden="true"></i>{t("L'accueil n'a pas pu être chargé.")}</span>
-              <button type="button" onClick={retry} className="font-bold text-ecideBlue hover:text-ecideDarkBlue py-2.5">{t("Réessayer")}</button>
-            </p>
-          ) : news === null ? (
-            <p className="text-sm text-gray-500"><i className="fa-solid fa-spinner fa-spin mr-2" aria-hidden="true"></i>{t("Chargement…")}</p>
-          ) : items.length ? (
-            <div className="grid sm:grid-cols-2 gap-3">
-              {items.map((n) => (
-                <Link key={n.key} href={n.href} className="member-box flex gap-3 bg-white border border-gray-200 p-4 hover:border-ecideBlue transition">
-                  <span className="w-9 h-9 shrink-0 bg-ecideBlue-50 text-ecideBlue flex items-center justify-center"><i className="fa-solid fa-bullhorn text-sm" aria-hidden="true"></i></span>
-                  <span className="min-w-0">
-                    <span className="block text-[11px] font-semibold text-ecideBlue">{n.kicker}{n.date ? ` · ${new Date(n.date).toLocaleDateString(locale)}` : ""}</span>
-                    <span className="block font-bold text-gray-900 leading-snug">{n.titre}</span>
-                    {n.texte && <span className="block text-xs text-gray-500 line-clamp-2 mt-0.5">{n.texte}</span>}
-                  </span>
+        </MemberCardBox>
+
+        {/* Prochaine réunion */}
+        {active && (
+          <MemberCardBox className="flex flex-col gap-3">
+            <div className="flex items-center gap-3">
+              <span className="m-icon"><i className="fa-solid fa-calendar-day" aria-hidden="true"></i></span>
+              <h2 className="m-tile-title flex-1">{t("Prochaine réunion")}</h2>
+              <Link href={L("/espace-membre/agenda")} className="m-link text-sm whitespace-nowrap py-1">
+                {t("Détails")} <i className="fa-solid fa-chevron-right text-[10px]" aria-hidden="true"></i>
+              </Link>
+            </div>
+            {load === "error" ? failed : meeting === undefined ? loading : meeting ? (
+              <>
+                <div className="min-w-0">
+                  <p className="font-semibold leading-snug break-words">{meeting.titre}</p>
+                  <p className="text-sm m-muted mt-0.5">{when(meeting.debut)}{meeting.lieu ? ` · ${meeting.lieu}` : ""}</p>
+                </div>
+                {meeting.statut !== "annulee" && (
+                  <div className="mt-auto grid grid-cols-2 gap-2" role="group" aria-label={t("Votre réponse")}>
+                    <button type="button" onClick={() => answer("present")} aria-pressed={meeting.maReponse === "present"} disabled={answering} className={`btn btn--sm ${meeting.maReponse === "present" ? "btn--green" : "btn--outline"}`}>
+                      <i className="fa-solid fa-check" aria-hidden="true"></i>{meeting.maReponse === "present" ? t("Présence confirmée") : t("Présent")}
+                    </button>
+                    <button type="button" onClick={() => answer("absent")} aria-pressed={meeting.maReponse === "absent"} disabled={answering} className={`btn btn--sm btn--outline ${meeting.maReponse === "absent" ? "m-btn-absent" : ""}`}>
+                      <i className="fa-solid fa-xmark" aria-hidden="true"></i>{t("Absent")}
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <p className="text-sm m-muted">{t("Aucune réunion prévue.")}</p>
+            )}
+          </MemberCardBox>
+        )}
+
+        {/* Cotisations */}
+        {active && (
+          <MemberCardBox className="flex flex-col gap-3">
+            <div className="flex items-center gap-3">
+              <span className={`m-icon ${dues ? (dues.aJour ? "m-icon--ok" : "m-icon--warn") : ""}`}><i className="fa-solid fa-wallet" aria-hidden="true"></i></span>
+              <div className="min-w-0 flex-1">
+                <h2 className="m-tile-title">{t("Cotisations")}</h2>
+                {dues && <span className={`m-pill ${dues.aJour ? "m-pill--ok" : "m-pill--warn"}`}>{dues.aJour ? t("À jour") : t(":n mois à régler", { n: dues.arrieres })}</span>}
+              </div>
+            </div>
+            {load === "error" ? failed : load === "loading" ? loading : dues ? (
+              <>
+                <p className="text-sm">{dues.aJour ? t("Vous êtes à jour de vos cotisations.") : t(":n mois à régler", { n: dues.arrieres })}</p>
+                <div className="mt-auto">
+                  {dues.aJour ? (
+                    <Link href={L("/espace-membre/cotisations")} className="btn btn--outline btn--sm w-full">{t("Voir")}</Link>
+                  ) : (
+                    // Ouvre directement le paiement du mois à régler
+                    <Link href={L("/espace-membre/cotisations?payer=1")} className="btn btn--primary btn--sm w-full">{t("Payer ma cotisation")}</Link>
+                  )}
+                </div>
+              </>
+            ) : (
+              <Link href={L("/espace-membre/cotisations")} className="btn btn--outline btn--sm w-full mt-auto">{t("Voir")}</Link>
+            )}
+          </MemberCardBox>
+        )}
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        {active && (
+          <section className="member-box m-card lg:col-span-2 overflow-hidden" aria-labelledby="home-news">
+            <div className="flex items-center justify-between gap-3 px-4 sm:px-5 py-3 border-b border-[var(--m-border)]">
+              <h2 id="home-news">{t("Annonces et communiqués")}</h2>
+              <Link href={L("/espace-membre/actualites")} className="m-link text-sm py-1">{t("Tout voir")}</Link>
+            </div>
+            {load === "error" ? failed : news === null ? loading : items.length ? (
+              <ul className="divide-y divide-[var(--m-border)]">
+                {items.map((n) => (
+                  <li key={n.key}>
+                    <Link href={n.href} className="flex gap-3 px-4 sm:px-5 py-3 hover:bg-[var(--m-surface-2)] transition-colors">
+                      <span className="m-icon !w-8 !h-8"><i className="fa-solid fa-bullhorn text-xs" aria-hidden="true"></i></span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block font-semibold leading-snug">{n.titre}</span>
+                        {n.texte && <span className="block text-sm m-muted line-clamp-1 mt-0.5">{n.texte}</span>}
+                        <span className="block text-xs m-muted mt-1">{n.kicker}{n.date ? ` · ${new Date(n.date).toLocaleDateString(locale)}` : ""}</span>
+                      </span>
+                      <i className="fa-solid fa-chevron-right text-xs m-muted self-center" aria-hidden="true"></i>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="m-state">
+                <i className="fa-regular fa-newspaper" aria-hidden="true"></i>
+                <p>{t("Aucune annonce pour le moment.")}</p>
+              </div>
+            )}
+          </section>
+        )}
+
+        <section className={`member-box m-card overflow-hidden ${active ? "" : "lg:col-span-3"}`} aria-labelledby="home-more">
+          <h2 id="home-more" className="px-4 sm:px-5 py-3 border-b border-[var(--m-border)]">{t("Raccourcis de l'espace membre")}</h2>
+          <ul className="grid grid-cols-3 lg:grid-cols-2 gap-px bg-[var(--m-border)]">
+            {others.map(([icon, label, href]) => (
+              <li key={href} className="bg-[var(--m-surface)]">
+                <Link href={L(href)} className="flex flex-col items-center justify-center gap-1.5 min-h-[4.5rem] px-2 py-3 text-center text-[13px] font-semibold leading-tight hover:bg-[var(--m-surface-2)] transition-colors">
+                  <i className={`fa-solid ${icon} text-base text-[var(--m-primary-text)]`} aria-hidden="true"></i>
+                  {label}
                 </Link>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-gray-500">{t("Aucune annonce pour le moment.")}</p>
-          )}
+              </li>
+            ))}
+          </ul>
         </section>
-      )}
+      </div>
     </div>
   );
 }
