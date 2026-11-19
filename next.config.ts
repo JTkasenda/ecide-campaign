@@ -53,8 +53,11 @@ const nextConfig: NextConfig = {
           // Affichage dans un cadre : le site lui-même et l'administration (aperçu de la typographie) seulement
           { key: "Content-Security-Policy", value: `frame-ancestors 'self' ${ADMIN_ORIGINS.join(" ")}` },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=()" },
+          // Caméra permise sur le site lui-même : lecture du QR code des cartes (page Vérifier une carte)
+          { key: "Permissions-Policy", value: "camera=(self), microphone=(), geolocation=(), payment=()" },
           { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
+          // Staging (SITE_NOINDEX=true) : jamais dans les moteurs de recherche
+          ...(process.env.SITE_NOINDEX === "true" ? [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] : []),
         ],
       },
       // Service worker (connexion intermittente) : toujours revérifié, pour que ses mises à jour arrivent vite

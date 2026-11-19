@@ -6,6 +6,7 @@ import { isRdc, memberApi, memberFile, type EventReport, type EventReportOptions
 import { showToast } from "@/lib/toast";
 import { useOnline } from "../OfflineSupport";
 import { clearReportDraft, readReportDraft, writeReportDraft } from "./offlineDraft";
+import { prepareUpload, uploadLimitMo } from "@/lib/upload";
 import { Field, INPUT, MemberCardBox, Notice } from "./ui";
 
 /** Champs du formulaire, tous en texte (comme dans les champs de saisie), sauf les types d'incident. */
@@ -99,6 +100,8 @@ export default function MemberReportForm({ data, report, options, onSaved, onCan
   const { t, locale } = useI18n();
   const m = data.membre;
   const geo = data.options.geo;
+  // Taille maximale d'une liste de présence : celle du serveur, plafonnée à celle du relais (lib/upload)
+  const maxMo = uploadLimitMo(options.fichierMaxMo);
   const key = report ? report.id : ("nouveau" as const);
   const readOnly = !!report && !report.modifiable;
   const online = useOnline();
@@ -231,13 +234,17 @@ export default function MemberReportForm({ data, report, options, onSaved, onCan
     if (online && waitingRef.current) submitRef.current();
   }, [online]);
 
-  function pick(list: FileList | null) {
+  async function pick(list: FileList | null) {
     if (!list?.length) return;
-    const chosen = [...list];
+    const picked = [...list];
     if (fileInput.current) fileInput.current.value = "";
-    for (const file of chosen) {
+    for (const file of picked) {
       if (!options.formats.includes(extOf(file.name))) return setErrors((e) => ({ ...e, fichier: t("Formats acceptés : PDF, photo (JPG, PNG, WebP, HEIC), CSV ou XLSX.") }));
-      if (file.size > options.fichierMaxMo * 1048576) return setErrors((e) => ({ ...e, fichier: t("Le fichier dépasse :max Mo.", { max: options.fichierMaxMo }) }));
+    }
+    // Photos de listes papier réduites avant l'envoi ; limite plafonnée à celle du relais (lib/upload)
+    const chosen = await Promise.all(picked.map(prepareUpload));
+    for (const file of chosen) {
+      if (file.size > maxMo * 1048576) return setErrors((e) => ({ ...e, fichier: t("Le fichier dépasse :max Mo.", { max: maxMo }) }));
     }
     if (total + chosen.length > options.fichiersMax) return setErrors((e) => ({ ...e, fichier: t("Au plus :n fichiers par rapport.", { n: options.fichiersMax }) }));
     setErrors((e) => ({ ...e, fichier: undefined }));
@@ -451,7 +458,7 @@ export default function MemberReportForm({ data, report, options, onSaved, onCan
 
         {section(t("Listes de présence"), "fa-paperclip", (
           <>
-            <p className="text-sm text-gray-600">{t("Si vous le pouvez, joignez la liste des personnes présentes : PDF, photo d'une liste papier, CSV ou XLSX (:n fichiers au plus, :max Mo chacun).", { n: options.fichiersMax, max: options.fichierMaxMo })}</p>
+            <p className="text-sm text-gray-600">{t("Si vous le pouvez, joignez la liste des personnes présentes : PDF, photo d'une liste papier, CSV ou XLSX (:n fichiers au plus, :max Mo chacun).", { n: options.fichiersMax, max: maxMo })}</p>
             {(files.length > 0 || queue.length > 0) && (
               <ul className="divide-y divide-gray-100 border border-gray-200">
                 {files.map((file) => (

@@ -7,6 +7,7 @@ import { amountLabel, isRdc, memberApi, memberFile, STEPS, type MemberData, type
 import { Field, INPUT, MemberPanel, Notice } from "./ui";
 import { useOnline } from "../OfflineSupport";
 import { clearDraft, readDraft, writeDraft } from "./offlineDraft";
+import { prepareUpload, uploadLimitMo } from "@/lib/upload";
 
 type Draft = Partial<Record<keyof MemberProfile, string>>;
 type Errors = Partial<Record<keyof MemberProfile, string>>;
@@ -497,9 +498,14 @@ function Upload({ type, label, help, present, pdf, accept, data, setData }: { ty
   const ref = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [version, setVersion] = useState(() => Date.now());
-  const max = data.options.documentMaxMo;
-  async function upload(file: File | undefined) {
-    if (!file) return;
+  // Limite du serveur, plafonnée à celle du relais (Vercel : 4,5 Mo par requête)
+  const max = uploadLimitMo(data.options.documentMaxMo);
+  async function upload(picked: File | undefined) {
+    if (!picked) return;
+    setBusy(true);
+    // Photo du téléphone réduite avant l'envoi (voir lib/upload)
+    const file = await prepareUpload(picked);
+    setBusy(false);
     if (file.size > max * 1024 * 1024) return showToast(t("Le fichier dépasse :max Mo.", { max }), "error");
     const form = new FormData();
     form.append("fichier", file);
