@@ -202,7 +202,7 @@ export default function Donation({ config, title, text, warning }: { config: Adh
   }
 
   return (
-    <div id="don" className="panel p-8 lg:p-10 space-y-8 scroll-mt-32">
+    <div id="don" className="panel p-8 lg:p-10 space-y-10 scroll-mt-32">
       <div>
         <h2 className="text-4xl text-ecideDarkBlue no-bar">{title}</h2>
         <p className="text-gray-600 mt-2">{text}</p>

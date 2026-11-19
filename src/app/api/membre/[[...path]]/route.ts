@@ -68,3 +68,5 @@ async function relay(request: NextRequest, ctx: Ctx): Promise<Response> {
 export const GET = relay;
 export const POST = relay;
 export const PUT = relay;
+// Retrait d'une liste de présence jointe à un rapport d'activité
+export const DELETE = relay;

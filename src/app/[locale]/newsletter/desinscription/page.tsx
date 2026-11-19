@@ -18,8 +18,8 @@ export default async function UnsubscribePage({ params }: PageParams) {
   return (
     <main id="main" className="flex-grow">
       <PageBanner eyebrow={t("Recevoir les communiqués")} title={t("Désabonnement")} narrow />
-      <section className="py-16 lg:py-24 px-6">
-        <div className="max-w-xl mx-auto space-y-8">
+      <section className="py-20 lg:py-32 px-6">
+        <div className="max-w-xl mx-auto space-y-10">
           <NewsletterUnsubscribe />
         </div>
       </section>

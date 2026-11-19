@@ -26,12 +26,12 @@ export default async function CadresPage({ params }: PageParams) {
       <PageBanner eyebrow={page.surtitre || t("Sur le territoire national")} title={page.titre || t("L'ECiDé en République démocratique du Congo")} text={page.texte || t("Congrès, Conseil national et Bureau national ; secrétariats provinciaux exécutifs, sections, sous-sections, cellules et noyaux, province par province ; structures spécialisées. Trouvez la structure la plus proche de chez vous et ses coordonnées.")}>
         <BannerStats items={[[stats.spe, t("secrétariats provinciaux")], [stats.sections, t("sections")], [locales, t("structures locales")]]} />
       </PageBanner>
-      <section className="py-12 lg:py-16 px-6 max-w-7xl mx-auto space-y-8">
+      <section className="py-16 lg:py-20 px-6 max-w-7xl mx-auto space-y-10">
         <CadresDirectory data={data} locale={locale} />
         <p className="text-center text-sm text-gray-500 italic">{page.avertissement || t("Les noms et profils publics des cadres sont publiés après validation par le Secrétariat Général ; leurs numéros personnels ne sont jamais affichés : pour joindre un cadre, contactez sa structure. « À confirmer » signale un poste dont le titulaire n'est pas encore renseigné.")}</p>
       </section>
 
-      <section className="bg-ecideDarkBlue text-white py-20 px-6 diag">
+      <section className="bg-ecideDarkBlue text-white py-28 px-6 diag">
         <div className="max-w-4xl mx-auto space-y-6 reveal">
           <h2 className="text-4xl lg:text-5xl">{page.appelTitre || t("Vous êtes cadre ou responsable de structure ?")}</h2>
           <p className="text-blue-100 text-lg">{page.appelTexte || t("Transmettez vos coordonnées officielles au Secrétariat Général pour figurer dans l'annuaire du parti.")}</p>

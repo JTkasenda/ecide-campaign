@@ -5,6 +5,7 @@ import { pad2, safeUrl } from "@/lib/format";
 import { localePath } from "@/lib/locales";
 import { pageLocale, type PageParams } from "@/lib/page";
 import { getT, pageMetadata } from "@/lib/server";
+import { Acronym, spellsAcronym } from "@/components/Acronym";
 import { CounterValue } from "@/components/Counter";
 import PageSubnav from "@/components/PageSubnav";
 
@@ -24,17 +25,25 @@ export default async function PartiPage({ params }: PageParams) {
   const hasVision = !!(parti.vision || parti.visionCitation);
   const hasMission = !!(parti.mission || missions.length);
   const hasProjet = !!(parti.projetIntro || projetAxes.length);
+  const nomComplet = `${parti.titre || ""} ${parti.titreAccent || ""}`.trim();
   return (
     <main id="main" className="flex-grow">
       <h1 className="sr-only">{t("Le Parti")}</h1>
       {/* IDENTITÉ DU PARTI */}
       <section className="bg-ecideDarkBlue text-white relative overflow-hidden flex items-center lg:min-h-[32rem] diag">
         <img src={site.assets.logo512 || "/assets/img/logo-512.png"} alt="" aria-hidden="true" className="hidden lg:block absolute -right-20 -bottom-24 w-[26rem] opacity-[0.08] pointer-events-none select-none" />
-        <div className="max-w-7xl mx-auto w-full px-6 py-14 lg:py-20 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center relative">
+        <div className="max-w-7xl mx-auto w-full px-6 py-20 lg:py-28 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative">
           <div className="lg:col-span-7 space-y-6">
             {parti.badge && <span className="pill pill--yellow">{parti.badge}</span>}
             <h2 className="text-4xl sm:text-5xl lg:text-6xl leading-none no-bar">
-              {parti.titre} <span className="text-ecideYellow">{parti.titreAccent}</span>
+              {/* Le nom complet du parti (titre + accent) : les lettres E · Ci · Dé, alignées, épellent le sigle */}
+              {spellsAcronym(nomComplet) ? (
+                <Acronym text={nomComplet} />
+              ) : (
+                <>
+                  {parti.titre} <span className="text-ecideYellow">{parti.titreAccent}</span>
+                </>
+              )}
             </h2>
             {parti.devise && <p className="text-2xl font-semibold text-white">{parti.devise}</p>}
             <p className="text-lg text-blue-100 leading-relaxed max-w-2xl">{parti.intro}</p>
@@ -70,8 +79,8 @@ export default async function PartiPage({ params }: PageParams) {
 
       {/* VISION */}
       {hasVision && (
-        <section id="vision" className="bg-ecideDarkBlue text-white py-20 lg:py-24 px-6 scroll-mt-32 diag">
-          <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-16 items-start relative">
+        <section id="vision" className="bg-ecideDarkBlue text-white py-28 lg:py-32 px-6 scroll-mt-32 diag">
+          <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-20 items-start relative">
             <div className="lg:col-span-2 space-y-5 reveal">
               <span className="eyebrow">{t("Vision")}</span>
               <h2 className="text-4xl">{t("Notre vision")}</h2>
@@ -85,8 +94,8 @@ export default async function PartiPage({ params }: PageParams) {
       )}
 
       {/* HISTORIQUE */}
-      <section id="historique" className="bg-white py-20 lg:py-24 px-6 scroll-mt-32">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-16 items-start">
+      <section id="historique" className="bg-white py-28 lg:py-32 px-6 scroll-mt-32">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-20 items-start">
           <div className="lg:col-span-2 space-y-5 reveal">
             <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Historique")}</span>
             <h2 className="text-4xl text-ecideDarkBlue">{t("Notre histoire")}</h2>
@@ -96,9 +105,9 @@ export default async function PartiPage({ params }: PageParams) {
             {parti.hist2 && <p className="text-xl text-gray-700 leading-relaxed">{parti.hist2}</p>}
           </div>
         </div>
-        <div className="max-w-6xl mx-auto mt-16 pt-16 border-t border-ecideDarkBlue/20">
+        <div className="max-w-6xl mx-auto mt-20 pt-20 border-t border-ecideDarkBlue/20">
         <span id="etapes" className="block scroll-mt-32" aria-hidden="true"></span>
-        <div className="max-w-6xl mx-auto space-y-12">
+        <div className="max-w-6xl mx-auto space-y-16">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 reveal">
             <div className="max-w-2xl space-y-3">
               <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Repères")}</span>
@@ -121,12 +130,12 @@ export default async function PartiPage({ params }: PageParams) {
 
       {/* CHARTE ET VALEURS : une amorce (les noms des valeurs) et les statuts ; les cartes des valeurs et les
           engagements sont sur la page Charte des valeurs, pour ne pas les répéter ici */}
-      <section id="charte-valeurs" className="bg-ecideBlue-50 py-20 lg:py-24 px-6 scroll-mt-32">
+      <section id="charte-valeurs" className="bg-ecideBlue-50 py-28 lg:py-32 px-6 scroll-mt-32">
         <span id="valeurs" className="block scroll-mt-32" aria-hidden="true"></span>
         <span id="charte" className="block scroll-mt-32" aria-hidden="true"></span>
         <span id="statuts" className="block scroll-mt-32" aria-hidden="true"></span>
         <span id="textes" className="block scroll-mt-32" aria-hidden="true"></span>
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16 items-start">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-16 lg:gap-20 items-start">
           <div className="lg:col-span-3 space-y-6 reveal">
             <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Textes fondateurs")}</span>
             <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue">{t("Charte et valeurs")}</h2>
@@ -171,8 +180,8 @@ export default async function PartiPage({ params }: PageParams) {
 
       {/* MISSION */}
       {hasMission && (
-        <section id="mission" className="bg-ecideDarkBlue text-white py-20 lg:py-24 px-6 scroll-mt-32 diag">
-          <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-16 items-start">
+        <section id="mission" className="bg-ecideDarkBlue text-white py-28 lg:py-32 px-6 scroll-mt-32 diag">
+          <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-20 items-start">
             <div className="lg:col-span-2 space-y-5 reveal">
               <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Mission")}</span>
               <h2 className="text-4xl">{t("Notre mission")}</h2>
@@ -192,8 +201,8 @@ export default async function PartiPage({ params }: PageParams) {
 
       {/* PROJET DE SOCIÉTÉ : une amorce (intitulés des axes) ; les axes détaillés et le PDF sont sur la page dédiée */}
       {hasProjet && (
-        <section id="projet" className="bg-white py-20 lg:py-24 px-6 scroll-mt-32">
-          <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+        <section id="projet" className="bg-white py-28 lg:py-32 px-6 scroll-mt-32">
+          <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
             <div className="lg:col-span-8 space-y-5 reveal">
               <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Projet de société")}</span>
               <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue">{t("Notre projet de société")}</h2>
@@ -214,9 +223,9 @@ export default async function PartiPage({ params }: PageParams) {
       )}
 
       {/* ORGANIGRAMME : page dédiée */}
-      <section id="organisation" className="bg-ecideDarkBlue text-white py-16 lg:py-24 px-6 scroll-mt-32 diag">
+      <section id="organisation" className="bg-ecideDarkBlue text-white py-20 lg:py-32 px-6 scroll-mt-32 diag">
         <span id="membres" className="block scroll-mt-32" aria-hidden="true"></span>
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-8 space-y-5 reveal">
             <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{t("Structure")}</span>
             <h2 className="text-4xl lg:text-5xl">{t("Organigramme")}</h2>

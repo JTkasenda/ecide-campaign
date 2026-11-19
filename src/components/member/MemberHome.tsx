@@ -47,24 +47,38 @@ export default function MemberHome() {
   const [meeting, setMeeting] = useState<Meeting | null | undefined>(undefined);
   const [dues, setDues] = useState<{ aJour: boolean; arrieres: number } | null>(null);
   const [news, setNews] = useState<{ internes: Internal[]; actualites: PublicNews[] } | null>(null);
+  // « loading » tant que l'accueil n'est pas arrivé, « error » s'il n'a pas pu l'être (avec un bouton pour réessayer)
+  const [load, setLoad] = useState<"loading" | "ready" | "error">("loading");
+  const [attempt, setAttempt] = useState(0);
   const active = m.statut === "actif";
 
   useEffect(() => {
     if (!active) return;
-    // Une réponse arrivée après coup (chargement relancé) n'écrase pas une réponse déjà donnée
+    // Une seule requête pour la réunion, les cotisations et les annonces (au lieu de trois en file).
+    // Une réponse arrivée après coup (chargement relancé) n'écrase pas une réponse déjà donnée.
     let live = true;
-    memberApi<{ reunion: Meeting | null }>("agenda/prochaine", locale).then((r) => live && setMeeting(r.ok ? r.data.reunion ?? null : null));
-    memberApi<{ aJour: boolean; arrieres: number }>("cotisations", locale).then((r) => live && r.ok && typeof r.data.aJour === "boolean" && setDues({ aJour: r.data.aJour, arrieres: r.data.arrieres || 0 }));
-    memberApi<{ internes: Internal[]; actualites: PublicNews[] }>("actualites", locale).then((r) => live && r.ok && setNews({ internes: r.data.internes || [], actualites: r.data.actualites || [] }));
+    memberApi<{ reunion: Meeting | null; cotisations: { aJour: boolean; arrieres: number } | null; internes: Internal[]; actualites: PublicNews[] }>("accueil", locale).then((r) => {
+      if (!live) return;
+      if (!r.ok) return setLoad("error");
+      setMeeting(r.data.reunion ?? null);
+      setDues(r.data.cotisations ?? null);
+      setNews({ internes: r.data.internes || [], actualites: r.data.actualites || [] });
+      setLoad("ready");
+    });
     return () => {
       live = false;
     };
-  }, [active, locale]);
+  }, [active, locale, attempt]);
+  const retry = () => {
+    setLoad("loading");
+    setAttempt((n) => n + 1);
+  };
 
   const tiles: [string, string, string][] = [
     ["fa-qrcode", t("QR code"), "/espace-membre/carte?qr=1"],
     ["fa-id-card", t("Ma carte"), "/espace-membre/carte"],
     ["fa-calendar-days", t("Agenda"), "/espace-membre/agenda"],
+    ["fa-clipboard-list", t("Mes rapports"), "/espace-membre/rapports"],
     ["fa-wallet", t("Cotisations"), "/espace-membre/cotisations"],
     ["fa-address-book", t("Annuaire"), "/espace-membre/annuaire"],
     ["fa-book-open", t("Documents"), "/espace-membre/documents"],
@@ -107,7 +121,7 @@ export default function MemberHome() {
             <p className="text-ecideYellow text-sm font-semibold">{m.categorieLibelle || t("Membre")}</p>
           </div>
         </div>
-        <nav className="grid grid-cols-4 lg:grid-cols-8 gap-2 mt-8" aria-label={t("Raccourcis de l'espace membre")}>
+        <nav className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-2 mt-8" aria-label={t("Raccourcis de l'espace membre")}>
           {tiles.map(([icon, label, href]) => (
             <Link key={href} href={L(href)} className="flex flex-col items-center gap-2 py-4 px-1 bg-white/10 hover:bg-white/20 border border-white/10 text-center text-[11px] sm:text-xs font-semibold leading-tight transition min-w-0 break-words">
               <i className={`fa-solid ${icon} text-lg text-ecideYellow`} aria-hidden="true"></i>
@@ -173,7 +187,12 @@ export default function MemberHome() {
             <h2 className="text-2xl text-ecideDarkBlue no-bar member-title">{t("Annonces et communiqués")}</h2>
             <Link href={L("/espace-membre/actualites")} className="text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue py-2.5">{t("Tout voir")}</Link>
           </div>
-          {news === null ? (
+          {load === "error" ? (
+            <p className="text-sm text-gray-600 flex flex-wrap items-center gap-x-3 gap-y-1" role="alert">
+              <span><i className="fa-solid fa-triangle-exclamation text-ecideYellow-700 mr-2" aria-hidden="true"></i>{t("L'accueil n'a pas pu être chargé.")}</span>
+              <button type="button" onClick={retry} className="font-bold text-ecideBlue hover:text-ecideDarkBlue py-2.5">{t("Réessayer")}</button>
+            </p>
+          ) : news === null ? (
             <p className="text-sm text-gray-500"><i className="fa-solid fa-spinner fa-spin mr-2" aria-hidden="true"></i>{t("Chargement…")}</p>
           ) : items.length ? (
             <div className="grid sm:grid-cols-2 gap-3">

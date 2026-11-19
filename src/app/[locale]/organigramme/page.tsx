@@ -67,8 +67,8 @@ export default async function OrganigrammePage({ params }: PageParams) {
       </PageBanner>
 
       {/* ORGANES */}
-      <section id="organisation" className="bg-ecideBlue-50 py-20 lg:py-24 px-6 scroll-mt-32">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+      <section id="organisation" className="bg-ecideBlue-50 py-28 lg:py-32 px-6 scroll-mt-32">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
           <div className="lg:col-span-4 space-y-5 reveal lg:sticky lg:top-32">
             <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue">{pp.orgaSousTitre || t("Les organes du parti")}</h2>
             <ul className="space-y-2 text-sm text-gray-600">
@@ -79,7 +79,7 @@ export default async function OrganigrammePage({ params }: PageParams) {
             <p className="text-sm text-gray-600">{pp.orgaLegende || t("Congrès, Conseil national et Bureau national ; secrétariats exécutifs provinciaux, sections, sous-sections, cellules et noyaux ; structures spécialisées.")}</p>
             <Link href={localePath(locale, "/cadres")} className="arrow-link">{t("Consulter l'annuaire des cadres")}</Link>
           </div>
-          <div className="lg:col-span-8 space-y-12 reveal">
+          <div className="lg:col-span-8 space-y-16 reveal">
             {groupes.map((g) => (
               <div key={g.key}>
                 <h3 className="eyebrow eyebrow--dark text-xs mb-4">{g.title}</h3>
@@ -99,9 +99,9 @@ export default async function OrganigrammePage({ params }: PageParams) {
           </div>
         </div>
         {membres.length > 0 && (
-          <div className="max-w-6xl mx-auto mt-16 pt-16 border-t border-ecideDarkBlue/20">
+          <div className="max-w-6xl mx-auto mt-20 pt-20 border-t border-ecideDarkBlue/20">
         <span id="membres" className="block scroll-mt-32" aria-hidden="true"></span>
-          <div className="max-w-6xl mx-auto space-y-12">
+          <div className="max-w-6xl mx-auto space-y-16">
             <div className="max-w-2xl space-y-3 reveal">
               <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{pp.membresSurtitre || t("Membres")}</span>
               <h3 className="text-3xl text-ecideDarkBlue">{pp.membresTitre || t("Les membres du parti")}</h3>

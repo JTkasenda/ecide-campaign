@@ -37,6 +37,8 @@ export interface MemberProfile {
   piece: boolean;
   pieceType: "pdf" | "image" | null;
   engagement: boolean;
+  /** Code d'honneur accepté (copie du texte gardée côté serveur) */
+  honneur: boolean;
   soumisLe: string | null;
   motif: string | null;
   manque: Partial<Record<Step, string[]>>;
@@ -60,6 +62,8 @@ export interface MemberOptions {
   geo: { rdc: string; provinces: string[]; kinshasa: Record<string, string[]>; pays: string[]; diasporaProvinces: Record<string, string[]> };
   etatsCivils: Record<string, string>;
   engagement: string;
+  /** Code d'honneur à accepter avec l'engagement ; null quand l'administration n'en a pas rédigé */
+  codeHonneur: { titre: string; texte: string } | null;
   intro: string;
   documentMaxMo: number;
 }
@@ -96,6 +100,47 @@ export interface ApiResult<T> {
   status: number;
   data: T & { message?: string; errors?: Record<string, string[]> };
   message: string;
+}
+
+/** Rapport d'activité d'un membre (événement organisé, incidents, listes de présence). Jamais la note interne du parti. */
+export interface EventReport {
+  id: number;
+  titre: string;
+  type: string;
+  typeLibelle: string;
+  lieu_nom: string;
+  lieu_adresse: string | null;
+  pays: string;
+  province: string | null;
+  ville: string | null;
+  commune: string | null;
+  lieu: string;
+  date: string;
+  heure_debut: string;
+  heure_fin: string | null;
+  participants: number | null;
+  recit: string | null;
+  incidents: boolean;
+  incident_types: string[];
+  incident_description: string | null;
+  blesses: number;
+  deces: number;
+  arrestations: number;
+  statut: "soumis" | "examine";
+  statutLibelle: string;
+  modifiable: boolean;
+  fichiers: { id: number; nom: string; taille: number; type: string }[];
+  creeLe: string | null;
+  modifieLe: string | null;
+  examineLe: string | null;
+}
+
+export interface EventReportOptions {
+  types: Record<string, string>;
+  incidentTypes: Record<string, string>;
+  fichierMaxMo: number;
+  fichiersMax: number;
+  formats: string[];
 }
 
 /** Appel au relais ; le message d'erreur est celui du serveur (premier champ en défaut sinon). */

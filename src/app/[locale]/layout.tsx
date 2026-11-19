@@ -8,10 +8,14 @@ import { I18nProvider } from "@/lib/i18n";
 import { LOCALES, isLocale } from "@/lib/locales";
 import { getT, SITE_AUTHOR, SITE_URL } from "@/lib/server";
 import Header from "@/components/Header";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import MobileActionBar from "@/components/MobileActionBar";
 import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
+import Assistant from "@/components/Assistant";
 import RevealObserver from "@/components/RevealObserver";
 import TypographyPreview from "@/components/TypographyPreview";
+import OfflineSupport from "@/components/OfflineSupport";
 
 export const dynamicParams = true;
 
@@ -64,11 +68,15 @@ export default async function LocaleLayout({ children, params }: { children: Rea
         <I18nProvider locale={locale} strings={i18n.strings}>
           <a href="#main" className="skip-link">{t("Aller au contenu principal")}</a>
           <Header site={site} locale={locale} />
+          <Breadcrumbs site={site} locale={locale} />
           {children}
           <Footer site={site} locale={locale} />
           <BackToTop label={t("Retour en haut de la page")} />
+          <MobileActionBar site={site} locale={locale} />
+          <Assistant locale={locale} />
           <RevealObserver />
           <TypographyPreview />
+          <OfflineSupport />
         </I18nProvider>
       </body>
     </html>

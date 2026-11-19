@@ -14,7 +14,7 @@ export interface NavItem {
   libelle: string;
   url: string;
   key: string;
-  /** Sous-page (case « Sous-page » de l'administration) : pied de page seulement, pas l'en-tête. */
+  /** Sous-page (case « Sous-page » de l'administration) : rangée sous l'entrée principale qui la précède (menu déroulant). */
   sub?: boolean;
 }
 

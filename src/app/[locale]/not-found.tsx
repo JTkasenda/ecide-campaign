@@ -9,8 +9,8 @@ export default function NotFound() {
   const l = isLocale(locale) ? locale : "fr";
   return (
     <main id="main" className="flex-grow">
-      <section className="py-24 px-6 bg-ecideDarkBlue text-white diag flex-grow">
-        <div className="max-w-2xl mx-auto text-center space-y-8">
+      <section className="py-32 px-6 bg-ecideDarkBlue text-white diag flex-grow">
+        <div className="max-w-2xl mx-auto text-center space-y-10">
           <p className="font-display text-9xl text-ecideYellow leading-none">404</p>
           <h1 className="text-4xl md:text-5xl">{t("Page introuvable")}</h1>
           <p className="text-lg text-blue-100">{t("La page que vous cherchez n'existe pas ou a été déplacée. Vérifiez l'adresse ou revenez à l'accueil.")}</p>

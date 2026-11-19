@@ -22,7 +22,7 @@ export function VideoGallery({ videos, labels, newsUrl }: { videos: Video[]; lab
   const others = videos.map((v, i) => ({ v, i })).filter(({ i }) => i !== current);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
       <article className="lg:col-span-2 reveal">
         {main.embed ? (
           <VideoPlayer key={main.id || current} embed={main.embed} title={main.titre} duree={main.duree} badge={current === 0 ? labels.latest : main.typeLabel} label={labels.lire} immediate={current !== 0} watch={{ url: main.lien, plateforme: main.plateforme }} />

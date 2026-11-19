@@ -253,7 +253,7 @@ export default function DiasporaDirectory({ data, locale }: { data: DiasporaData
             ))}
           </div>
           {list.length === 0 && (
-            <div className="text-center py-16 space-y-3 relative">
+            <div className="text-center py-20 space-y-3 relative">
               <i className="fa-solid fa-magnifying-glass text-4xl text-gray-300" aria-hidden="true"></i>
               <p className="text-lg font-bold text-gray-900">{t("Aucune représentation ne correspond à votre recherche.")}</p>
               <p className="text-gray-500">{t("Votre pays n'apparaît pas ? Proposez la création d'une fédération ci-dessous.")}</p>
@@ -291,7 +291,7 @@ export default function DiasporaDirectory({ data, locale }: { data: DiasporaData
             );
           })}
           {visible.length === 0 && (
-            <div className="col-span-full text-center py-16 space-y-3">
+            <div className="col-span-full text-center py-20 space-y-3">
               <i className="fa-solid fa-earth-africa text-4xl text-gray-300" aria-hidden="true"></i>
               <p className="text-lg font-bold text-gray-900">{t("Aucune représentation sur ce continent pour le moment.")}</p>
               <p className="text-gray-500">{t("Votre pays n'apparaît pas ? Proposez la création d'une fédération ci-dessous.")}</p>
@@ -318,7 +318,7 @@ function CountryView({ country, continentLabel, provinceFilter, villeFilter, org
   const villeSections = villeFilter ? sectionsOf(country).filter((s) => fold(s.ville) === fold(villeFilter)) : [];
   const orphans = provinceFilter ? [] : country.sections;
   return (
-    <section className="space-y-8 relative" aria-live="polite">
+    <section className="space-y-10 relative" aria-live="polite">
       <button type="button" onClick={onBack} className="inline-flex items-center gap-2 text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue"><i className="fa-solid fa-arrow-left text-xs" aria-hidden="true"></i>{t("Tous les pays")}</button>
 
       <div className="bg-ecideDarkBlue text-white diag p-6 lg:p-8 space-y-6">

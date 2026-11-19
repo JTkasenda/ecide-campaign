@@ -35,8 +35,8 @@ export default async function DonPage({ params }: PageParams) {
         </div>
       </PageBanner>
 
-      <section className="bg-ecideBlue-50 py-16 lg:py-24 px-6">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
+      <section className="bg-ecideBlue-50 py-20 lg:py-32 px-6">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           <div className="lg:col-span-8 reveal">
             <Suspense fallback={null}>
               <Donation config={paiement} title={s("donFormTitre") || t("Choisissez votre contribution")} text="" warning={s("donAvertissement")} />

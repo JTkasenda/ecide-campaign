@@ -5,7 +5,7 @@ import type { NextConfig } from "next";
  * sous préfixe (/en/parti). Les pages vivent sous app/[locale]/… ; les
  * adresses sans préfixe sont réécrites vers /fr/… et /fr/… redirige vers la racine.
  */
-const RESERVED = "en|ln|sw|tsh|kik|fr|api|_next|assets|uploads|favicon\\.ico|robots\\.txt|sitemap\\.xml|icon\\.png";
+const RESERVED = "en|ln|sw|tsh|kik|fr|api|_next|assets|uploads|favicon\\.ico|robots\\.txt|sitemap\\.xml|icon\\.png|sw\\.js";
 const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "");
 // Administration (aperçu de la typographie) : en local, localhost et 127.0.0.1 sont équivalents
 const ADMIN_ORIGINS = (() => {
@@ -55,6 +55,15 @@ const nextConfig: NextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=()" },
           { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
+        ],
+      },
+      // Service worker (connexion intermittente) : toujours revérifié, pour que ses mises à jour arrivent vite
+      {
+        source: "/sw.js",
+        headers: [
+          { key: "Content-Type", value: "application/javascript; charset=utf-8" },
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Content-Security-Policy", value: "default-src 'self'; script-src 'self'" },
         ],
       },
     ];

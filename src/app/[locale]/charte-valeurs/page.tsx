@@ -32,7 +32,7 @@ export default async function CharteValeursPage({ params }: PageParams) {
 
       {/* LES VALEURS */}
       {valeurs.length > 0 && (
-        <section id="valeurs" className="bg-ecideBlue-50 py-20 lg:py-24 px-6 scroll-mt-32">
+        <section id="valeurs" className="bg-ecideBlue-50 py-28 lg:py-32 px-6 scroll-mt-32">
           <div className="max-w-6xl mx-auto space-y-14">
             <div className="space-y-4 reveal">
               <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{pp.charteSurtitre || t("Textes fondateurs")}</span>
@@ -57,8 +57,8 @@ export default async function CharteValeursPage({ params }: PageParams) {
 
       {/* LES ENGAGEMENTS */}
       {engagements.length > 0 && (
-        <section id="engagements" className="bg-ecideDarkBlue text-white py-20 lg:py-24 px-6 scroll-mt-32 diag">
-          <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-16 items-start">
+        <section id="engagements" className="bg-ecideDarkBlue text-white py-28 lg:py-32 px-6 scroll-mt-32 diag">
+          <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-20 items-start">
             <div className="lg:col-span-2 space-y-5 reveal">
               <span className="eyebrow">{pp.charteSurtitre || t("Textes fondateurs")}</span>
               <h2 className="text-4xl">{pp.engagementsTitre || t("Les engagements de la charte")}</h2>
@@ -67,7 +67,7 @@ export default async function CharteValeursPage({ params }: PageParams) {
                 <Link href={localePath(locale, "/parti")} className="btn btn--outline-white">{t("Le Parti")}</Link>
               </div>
             </div>
-            <ul className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-6 text-lg reveal">
+            <ul className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-6 text-lg reveal">
               {engagements.map((e, i) => (
                 <li key={i} className="flex items-start gap-4"><i className="fa-solid fa-check text-ecideYellow text-2xl mt-1" aria-hidden="true"></i><span className="text-blue-100">{e}</span></li>
               ))}

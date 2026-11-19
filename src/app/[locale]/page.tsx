@@ -6,6 +6,7 @@ import { formatNumber, safeUrl, textStyle } from "@/lib/format";
 import { localePath, type Locale } from "@/lib/locales";
 import { pageLocale, type PageParams } from "@/lib/page";
 import { getT, pageMetadata } from "@/lib/server";
+import { Acronym } from "@/components/Acronym";
 import Chyron from "@/components/Chyron";
 import { CounterValue } from "@/components/Counter";
 import JumpSelect from "@/components/JumpSelect";
@@ -62,10 +63,11 @@ export async function HomeView({ locale, home }: { locale: Locale; home: HomePag
         <section data-apercu="hero" className="hero-photo text-white relative overflow-hidden flex items-center min-h-[36rem] lg:min-h-[calc(100svh-5rem)]">
           <img src={hero.image} alt="" fetchPriority="high" className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: `center ${hero.cadrage}%` }} aria-hidden="true" />
           <div className="hero-overlay absolute inset-0" style={{ opacity: Math.min(1, Math.max(0.6, hero.voile / 60)) }} aria-hidden="true"></div>
-          <div className="max-w-7xl mx-auto w-full px-6 py-16 lg:py-20 relative">
-            <div className="max-w-2xl space-y-8">
+          {/* Moins d'air en haut qu'en bas : le bloc de texte se place un peu au-dessus du centre de la photo */}
+          <div className="max-w-7xl mx-auto w-full px-6 pt-12 pb-24 lg:pt-14 lg:pb-40 relative">
+            <div className="max-w-2xl space-y-10">
               {hero.slogan && <p className="eyebrow text-xl" style={textStyle(hero.tailleSlogan)}>{hero.slogan}</p>}
-              <h1 className="hero-titre leading-[1.02]" style={textStyle(hero.tailleTitre)}>{hero.titre}</h1>
+              <h1 className="hero-titre leading-[1.02]" style={textStyle(hero.tailleTitre)}><Acronym text={hero.titre} /></h1>
               <p className="hero-texte text-blue-50 leading-relaxed max-w-xl" style={textStyle(hero.tailleTexte)}>{hero.texte}</p>
               {site.params.newsletter ? (
                 <NewsletterForm
@@ -83,23 +85,23 @@ export async function HomeView({ locale, home }: { locale: Locale; home: HomePag
         <Chyron site={site} locale={locale} label={t("Fil d'actualité")} />
 
         {/* MANIFESTE : panneau blanc qui chevauche la section bleu nuit des combats */}
-        <section data-apercu="manifeste" className="bg-white px-6 pt-16 lg:pt-20">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-end">
-            <div className="lg:col-span-7 bg-white lg:pr-16 pb-10 lg:pb-16 space-y-6 reveal relative z-10">
+        <section data-apercu="manifeste" className="bg-white px-6 pt-20 lg:pt-28">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
+            <div className="lg:col-span-7 bg-white lg:pr-16 pb-10 lg:pb-20 space-y-6 reveal relative z-10">
               <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm" style={textStyle(m.tailleSurtitre)}>{m.surtitre || t("Qui sommes-nous")}</span>
               <h2 className="bar-title text-3xl md:text-4xl text-ecideDarkBlue" style={textStyle(m.tailleTexte)}>{m.texte}</h2>
-              <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
+              <div className="flex flex-wrap items-center gap-x-10 gap-y-3">
                 {m.lien1 && <Link href={localePath(locale, m.url1)} className="arrow-link" style={textStyle(m.tailleLiens)}>{m.lien1}</Link>}
                 {m.lien2 && <Link href={localePath(locale, m.url2)} className="arrow-link" style={textStyle(m.tailleLiens)}>{m.lien2}</Link>}
               </div>
             </div>
             {chiffres.length > 0 && (
-              <dl className="lg:col-span-5 grid grid-cols-3 gap-4 pb-10 lg:pb-16" aria-label={t("Chiffres clés")}>
+              /* Le libellé (dt) s'affiche sous le chiffre, et n'est lu qu'une fois par les lecteurs d'écran */
+              <dl className="lg:col-span-5 grid grid-cols-3 gap-4 pb-10 lg:pb-20" aria-label={t("Chiffres clés")}>
                 {chiffres.map((c, i) => (
-                  <div key={i} className="border-t-4 border-ecideYellow pt-4 reveal">
-                    <dt className="sr-only">{c.libelle}</dt>
+                  <div key={i} className="border-t-4 border-ecideYellow pt-5 reveal flex flex-col">
+                    <dt className="order-last font-sans font-bold uppercase tracking-widest text-xs lg:text-[13px] text-gray-500 mt-3" style={textStyle(hero.tailleChiffresLibelle)}>{c.libelle}</dt>
                     <dd className="hero-chiffre font-display font-black text-ecideDarkBlue tabular-nums leading-none" style={textStyle(hero.tailleChiffres)}><CounterValue value={c.valeur} /></dd>
-                    <dd className="font-sans font-bold uppercase tracking-widest text-[11px] text-gray-500 mt-2" style={textStyle(hero.tailleChiffresLibelle)}>{c.libelle}</dd>
                   </div>
                 ))}
               </dl>
@@ -109,8 +111,8 @@ export async function HomeView({ locale, home }: { locale: Locale; home: HomePag
 
         {/* COMBATS MAJEURS : section bleu nuit, cartes gris-bleu (« On the issues ») */}
         {combats.length > 0 && (
-          <section data-apercu="combats" className="bg-ecideDarkBlue text-white py-16 lg:py-24 px-6 diag">
-            <div className="max-w-7xl mx-auto space-y-10">
+          <section data-apercu="combats" className="bg-ecideDarkBlue text-white py-20 lg:py-32 px-6 diag">
+            <div className="max-w-7xl mx-auto space-y-12">
               <h2 className="bar-title text-4xl lg:text-5xl reveal">{(s.combatsTitre as string) || t("Les Combats Majeurs")}</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {combats.map((c, i) => (
@@ -128,8 +130,8 @@ export async function HomeView({ locale, home }: { locale: Locale; home: HomePag
 
         {/* APPEL AU DON : bandeau jaune avec les montants (bandeau orange de warnockforgeorgia.com) */}
         {s.donActif !== false && (
-        <section data-apercu="don" className="bg-ecideYellow text-ecideDarkBlue py-12 lg:py-16 px-6">
-          <div className="max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center gap-8">
+        <section data-apercu="don" className="bg-ecideYellow text-ecideDarkBlue py-16 lg:py-20 px-6">
+          <div className="max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center gap-10">
             <div className="space-y-2 lg:w-1/3">
               <span className="eyebrow eyebrow--dark font-sans">{(s.donSurtitre as string) || t("Soutenir le Combat (Don)")}</span>
               <h2 className="text-3xl md:text-4xl leading-tight no-bar">{(s.donTitre as string) || t("Chaque contribution finance la mobilisation, la communication et la défense de la vérité des urnes.")}</h2>
@@ -148,7 +150,7 @@ export async function HomeView({ locale, home }: { locale: Locale; home: HomePag
         )}
 
         {/* LE PRÉSIDENT ÉLU : photo et panneau blanc (« Why I'm running ») */}
-        <section data-apercu="president" className="bg-ecideBlue-50 px-6 py-16 lg:py-24">
+        <section data-apercu="president" className="bg-ecideBlue-50 px-6 py-20 lg:py-32">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 items-center">
             <figure className="lg:col-span-6 relative h-80 sm:h-[26rem] lg:h-[34rem] reveal">
               <img src={pres.portrait} alt={`${t("Portrait officiel de")} ${pres.nom}`} loading="lazy" className="absolute inset-0 w-full h-full object-cover object-[50%_20%]" />
@@ -158,7 +160,7 @@ export async function HomeView({ locale, home }: { locale: Locale; home: HomePag
               <h2 className="bar-title text-4xl lg:text-5xl text-ecideDarkBlue leading-none" style={textStyle(s.presidentTailleNom)}>{pres.nom}</h2>
               {s.presidentSousTitre && <p className="text-xl font-semibold text-ecideBlue" style={textStyle(s.presidentTailleSousTitre)}>{s.presidentSousTitre as string}</p>}
               <p className="text-lg leading-relaxed text-gray-700" style={textStyle(s.presidentTailleTexte)}>{(s.presidentTexte as string) || ""}</p>
-              <div className="flex flex-wrap items-center gap-x-8 gap-y-3 pt-2">
+              <div className="flex flex-wrap items-center gap-x-10 gap-y-3 pt-2">
                 {s.presidentBouton1 && <Link href={localePath(locale, s.presidentUrl1)} className="btn btn--dark" style={textStyle(s.presidentTailleBoutons)}>{s.presidentBouton1 as string}</Link>}
                 {s.presidentBouton2 && <Link href={localePath(locale, s.presidentUrl2)} className="arrow-link" style={textStyle(s.presidentTailleBoutons)}><i className="fa-solid fa-play text-sm" aria-hidden="true"></i>{s.presidentBouton2 as string}</Link>}
                 {s.presidentSuivre && (pres.x || pres.facebook) && (
@@ -174,8 +176,8 @@ export async function HomeView({ locale, home }: { locale: Locale; home: HomePag
         </section>
 
         {/* POSITIONS OFFICIELLES */}
-        <section data-apercu="positions" className="bg-white py-16 lg:py-24 px-6">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+        <section data-apercu="positions" className="bg-white py-20 lg:py-32 px-6">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
             <div className="lg:col-span-5 space-y-6 reveal">
               <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm" style={textStyle(s.positionsTailleSurtitre)}>{(s.positionsSurtitre as string) || t("Positions officielles")}</span>
               <h2 className="bar-title text-4xl lg:text-5xl text-ecideDarkBlue" style={textStyle(s.positionsTailleTitre)}>{(s.positionsTitre as string) || ""}</h2>
@@ -203,8 +205,8 @@ export async function HomeView({ locale, home }: { locale: Locale; home: HomePag
 
         {/* ACTUALITÉS : « dans la presse », cartes blanches sur bleu nuit */}
         {newsItems.length > 0 && (
-          <section data-apercu="actu" className="bg-ecideDarkBlue text-white py-16 lg:py-24 px-6 diag">
-            <div className="max-w-7xl mx-auto space-y-10">
+          <section data-apercu="actu" className="bg-ecideDarkBlue text-white py-20 lg:py-32 px-6 diag">
+            <div className="max-w-7xl mx-auto space-y-12">
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 reveal">
                 <div className="space-y-3">
                   <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm" style={textStyle(s.actuTailleSurtitre)}>{(s.actuSurtitre as string) || t("À la une")}</span>
@@ -240,8 +242,8 @@ export async function HomeView({ locale, home }: { locale: Locale; home: HomePag
 
         {/* FILS OFFICIELS DU PARTI */}
         {fils.actif && (fils.x || fils.facebook) && (
-          <section data-apercu="fils" id="fils" className="bg-white py-16 lg:py-24 px-6 border-b border-gray-200">
-            <div className="max-w-7xl mx-auto space-y-10">
+          <section data-apercu="fils" id="fils" className="bg-white py-20 lg:py-32 px-6 border-b border-gray-200">
+            <div className="max-w-7xl mx-auto space-y-12">
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 reveal">
                 <div className="space-y-3 max-w-2xl">
                   <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm" style={textStyle(s.filsTailleSurtitre)}>{(s.filsSurtitre as string) || t("En direct du parti")}</span>
@@ -260,8 +262,8 @@ export async function HomeView({ locale, home }: { locale: Locale; home: HomePag
         )}
 
         {/* PRÈS DE CHEZ VOUS */}
-        <section data-apercu="proximite" className="bg-ecideBlue-50 py-16 lg:py-24 px-6">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        <section data-apercu="proximite" className="bg-ecideBlue-50 py-20 lg:py-32 px-6">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-5 space-y-4 reveal">
               <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm" style={textStyle(s.proximiteTailleSurtitre)}>{(s.proximiteSurtitre as string) || t("Près de chez vous")}</span>
               <h2 className="bar-title text-4xl text-ecideDarkBlue" style={textStyle(s.proximiteTailleTitre)}>{(s.proximiteTitre as string) || t("Trouvez votre secrétariat provincial")}</h2>
@@ -301,8 +303,8 @@ export async function HomeView({ locale, home }: { locale: Locale; home: HomePag
 
         {/* AGIR : trois panneaux */}
         {agir.length > 0 && (
-          <section data-apercu="agir" className="bg-white px-6 py-16 lg:py-24">
-            <div className="max-w-7xl mx-auto space-y-10">
+          <section data-apercu="agir" className="bg-white px-6 py-20 lg:py-32">
+            <div className="max-w-7xl mx-auto space-y-12">
               <div className="space-y-3 reveal">
                 <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm" style={textStyle(s.agirTailleSurtitre)}>{(s.agirSurtitre as string) || t("Agir")}</span>
                 <h2 className="bar-title text-4xl lg:text-5xl text-ecideDarkBlue" style={textStyle(s.agirTailleTitre)}>{(s.agirTitre as string) || ""}</h2>

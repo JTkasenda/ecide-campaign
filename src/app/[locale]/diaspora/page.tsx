@@ -26,13 +26,13 @@ export default async function DiasporaPage({ params }: PageParams) {
       <PageBanner eyebrow={s("surtitre") || t("Réseau mondial")} title={s("titre") || t("Diaspora")} text={s("texte")}>
         <BannerStats items={[[data.data.continents.length, t("continents")], [nbPays, t("pays")], [nbVilles, t("sections locales")]]} />
       </PageBanner>
-      <section className="py-12 lg:py-16 px-6 max-w-7xl mx-auto space-y-8">
+      <section className="py-16 lg:py-20 px-6 max-w-7xl mx-auto space-y-10">
         <DiasporaDirectory data={data.data} locale={locale} />
         <p className="text-center text-sm text-gray-500 italic relative">{s("avertissement") || t("Les noms et profils publics des responsables sont publiés après validation par la Coordination de la Diaspora ; leurs numéros personnels ne sont jamais affichés : utilisez les coordonnées du secrétariat provincial exécutif ou de la section. « À confirmer » signale un poste dont le titulaire n'est pas encore renseigné.")}</p>
       </section>
 
-      <section id="rejoindre" className="scroll-mt-24 py-20 lg:py-24 px-6 bg-ecideDarkBlue text-white diag">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+      <section id="rejoindre" className="scroll-mt-24 py-28 lg:py-32 px-6 bg-ecideDarkBlue text-white diag">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
           <div className="space-y-6 reveal">
             <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{s("rejoindreSurtitre") || t("Mobilisation")}</span>
             <h2 className="text-4xl lg:text-5xl">{s("rejoindreTitre")}</h2>

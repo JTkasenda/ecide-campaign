@@ -20,8 +20,8 @@ export default async function MentionsPage({ params }: PageParams) {
   return (
     <main id="main" className="flex-grow">
       <PageBanner eyebrow={t("Informations légales")} title={t("Mentions légales")} narrow />
-      <section className="py-16 px-6">
-        <div className="max-w-4xl mx-auto space-y-8">
+      <section className="py-20 px-6">
+        <div className="max-w-4xl mx-auto space-y-10">
           <div className="panel p-8 lg:p-10 space-y-6 text-gray-700 text-lg leading-relaxed">
             {data.paragraphs.length > 0 ? (
               data.paragraphs.map((para, i) => (
@@ -30,7 +30,7 @@ export default async function MentionsPage({ params }: PageParams) {
             ) : (
               <>
                 <p>
-                  <strong className="text-ecideDarkBlue">{t("Éditeur :")}</strong> {p.nomLong || ""} ({p.nom || "ECiDé"}){p.adresse ? `, ${p.adresse}` : ""}.
+                  <strong className="text-ecideDarkBlue">{t("Éditeur :")}</strong> <span translate="no">{p.nomLong || ""} ({p.nom || "ECiDé"})</span>{p.adresse ? `, ${p.adresse}` : ""}.
                 </p>
                 {p.email && (
                   <p>

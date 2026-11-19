@@ -11,7 +11,7 @@ export default function SocialEmbeds({ x, facebook, name, height = 600 }: { x?: 
   // Facebook affiche son widget en anglais ou en swahili ; lingala, tshiluba et kikongo restent en français
   const fbLocale = locale === "en" ? "en_GB" : locale === "sw" ? "sw_KE" : "fr_FR";
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
       {x && (
         <article className="bg-white border border-gray-200 shadow-soft flex flex-col reveal">
           <header className="flex items-center justify-between gap-4 p-5 border-b border-gray-200">

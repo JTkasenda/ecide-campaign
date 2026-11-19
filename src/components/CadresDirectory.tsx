@@ -317,7 +317,7 @@ export default function CadresDirectory({ data, locale }: { data: CadresData; lo
             {list.length > 200 && <p className="col-span-full text-center text-sm text-gray-500">{t("Affinez votre recherche pour voir les :n autres résultats.", { n: list.length - 200 })}</p>}
           </div>
           {list.length === 0 && groups.length === 0 && (
-            <div className="text-center py-16 space-y-3">
+            <div className="text-center py-20 space-y-3">
               <i className="fa-solid fa-magnifying-glass text-4xl text-gray-300" aria-hidden="true"></i>
               <p className="text-lg font-bold text-gray-900">{t("Aucun cadre ne correspond à votre recherche.")}</p>
               <p className="text-gray-500">{t("Essayez un autre mot, une autre province ou réinitialisez les filtres.")}</p>
@@ -383,7 +383,7 @@ function ProvinceView({ province, organe, label, contact: c, leaders, sections, 
   const { t } = useI18n();
   const chip = "inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 font-semibold text-gray-800 hover:border-ecideBlue hover:text-ecideBlue transition";
   return (
-    <section className="space-y-8" aria-live="polite">
+    <section className="space-y-10" aria-live="polite">
       <button type="button" onClick={onBack} className="inline-flex items-center gap-2 text-sm font-bold text-ecideBlue hover:text-ecideDarkBlue"><i className="fa-solid fa-arrow-left text-xs" aria-hidden="true"></i>{t("Tous les secrétariats provinciaux")}</button>
 
       {/* Siège du secrétariat provincial exécutif */}

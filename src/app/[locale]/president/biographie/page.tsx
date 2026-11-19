@@ -45,8 +45,8 @@ export default async function BiographiePage({ params }: PageParams) {
 
       {/* LE TEXTE DE LA BIOGRAPHIE */}
       {(pres.bioTexte || pres.bio2 || pres.bio3 || pres.citation || enBref.length > 0) && (
-        <section id="parcours" className="bg-ecideBlue-50 py-16 lg:py-24 px-6 scroll-mt-32">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+        <section id="parcours" className="bg-ecideBlue-50 py-20 lg:py-32 px-6 scroll-mt-32">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-20 items-start">
             <div className="lg:col-span-7 space-y-6 reveal">
               <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue leading-none">{pres.bioTitre || t("Biographie")}</h2>
               {pres.bioTexte && <p className="text-xl text-gray-800 leading-relaxed">{pres.bioTexte}</p>}
@@ -87,7 +87,7 @@ export default async function BiographiePage({ params }: PageParams) {
 
       {/* WIKIPÉDIA : la carte de l'article en français (titre, description courte) et le lien, sans reprendre le récit */}
       {wikiUrl && (
-        <section id="wikipedia" className="bg-white py-12 lg:py-16 px-6 scroll-mt-32">
+        <section id="wikipedia" className="bg-white py-16 lg:py-20 px-6 scroll-mt-32">
           <div className="max-w-7xl mx-auto panel p-6 lg:p-8 flex flex-col md:flex-row md:items-center gap-6 reveal">
             <span className="icon-tile icon-tile--dark shrink-0"><i className="fa-brands fa-wikipedia-w" aria-hidden="true"></i></span>
             <div className="flex-1 min-w-0 space-y-1">
@@ -104,7 +104,7 @@ export default async function BiographiePage({ params }: PageParams) {
       )}
 
       {/* LA BIOGRAPHIE OFFICIELLE EN PDF : à télécharger (pas d'aperçu dans la page) */}
-      <section id="document" className={`bg-white px-6 scroll-mt-32 ${wikiUrl ? "pb-12 lg:pb-16" : "py-12 lg:py-16"}`}>
+      <section id="document" className={`bg-white px-6 scroll-mt-32 ${wikiUrl ? "pb-16 lg:pb-20" : "py-16 lg:py-20"}`}>
         <div className="max-w-7xl mx-auto panel p-6 lg:p-8 reveal">
           <DocumentCard doc={biographie} title={pres.bioPdfTitre || t("Biographie officielle")} t={t} />
         </div>
@@ -112,8 +112,8 @@ export default async function BiographiePage({ params }: PageParams) {
 
       {/* LES GRANDES ÉTAPES */}
       {parcours.length > 0 && (
-        <section id="etapes" className="bg-ecideDarkBlue text-white py-16 lg:py-24 px-6 scroll-mt-32 diag">
-          <div className="max-w-7xl mx-auto space-y-10">
+        <section id="etapes" className="bg-ecideDarkBlue text-white py-20 lg:py-32 px-6 scroll-mt-32 diag">
+          <div className="max-w-7xl mx-auto space-y-12">
             <div className="space-y-3 reveal">
               <span className="eyebrow">{pres.parcoursSurtitre || t("Parcours")}</span>
               <h2 className="text-4xl">{pres.parcoursTitre || t("Les grandes étapes")}</h2>

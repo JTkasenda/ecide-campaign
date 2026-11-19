@@ -61,7 +61,7 @@ export default function PdfDocument({ doc, title, t }: { doc: PartyDocument | nu
   const url = doc?.url ? safeUrl(doc.url) : "";
   if (!doc || !url) {
     return (
-      <section id="document" className="bg-white py-12 lg:py-16 px-6 scroll-mt-32">
+      <section id="document" className="bg-white py-16 lg:py-20 px-6 scroll-mt-32">
         <div className="max-w-6xl mx-auto panel p-10 lg:p-14 text-center space-y-4 reveal">
           <div className="flex justify-center"><span className="icon-tile icon-tile--dark"><i className="fa-regular fa-file-pdf" aria-hidden="true"></i></span></div>
           <h2 className="text-2xl text-ecideDarkBlue no-bar">{title}</h2>
@@ -77,7 +77,7 @@ export default function PdfDocument({ doc, title, t }: { doc: PartyDocument | nu
     </a>
   );
   return (
-    <section id="document" className="bg-white py-12 lg:py-16 px-6 scroll-mt-32">
+    <section id="document" className="bg-white py-16 lg:py-20 px-6 scroll-mt-32">
       <div className="max-w-6xl mx-auto space-y-6">
         <DocumentCard doc={doc} title={title} t={t} className="reveal" />
         <object data={`${url}#view=FitH`} type="application/pdf" className="pdf-frame w-full bg-gray-100 border border-gray-200 reveal" aria-label={title}>

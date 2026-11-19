@@ -40,8 +40,8 @@ export default async function ArticlePage({ params }: ArticleParams) {
         </nav>
       </div>
 
-      <article className="py-16 px-6">
-        <div className="max-w-4xl mx-auto space-y-10">
+      <article className="py-20 px-6">
+        <div className="max-w-4xl mx-auto space-y-12">
           <header className="space-y-6">
             <div className="flex flex-wrap items-center gap-3 text-xs font-bold uppercase tracking-widest">
               <span className="pill">{cat.long}</span>
@@ -102,10 +102,10 @@ export default async function ArticlePage({ params }: ArticleParams) {
       </article>
 
       {related.length > 0 && (
-        <section className="bg-ecideBlue-50 py-20 px-6">
-          <div className="max-w-6xl mx-auto space-y-10">
+        <section className="bg-ecideBlue-50 py-28 px-6">
+          <div className="max-w-6xl mx-auto space-y-12">
             <h2 className="text-4xl text-ecideDarkBlue reveal">{t("À lire aussi")}</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
               {related.map((n) => (
                 <RelatedCard key={n.id} n={n} locale={locale} />
               ))}

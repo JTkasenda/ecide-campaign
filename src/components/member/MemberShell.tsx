@@ -26,7 +26,7 @@ interface Notif {
 /**
  * Cadre de l'espace membre. Lit la session au chargement (cookie protégé, via le relais) :
  * sans session, la connexion par code ; pendant la demande d'adhésion, le parcours de demande ;
- * pour un membre validé, la navigation (Accueil, Ma carte, Agenda, Actualités, Annuaire,
+ * pour un membre validé, la navigation (Accueil, Ma carte, Agenda, Mes rapports, Actualités, Annuaire,
  * Documents, Cotisations, Profil), la cloche et le thème sombre, puis la page demandée.
  */
 export default function MemberShell({ children }: { children: ReactNode }) {
@@ -119,6 +119,7 @@ function MemberNav({ data, dark, toggleTheme, logout }: { data: MemberData; dark
     ["", "fa-house", t("Accueil")],
     ["/carte", "fa-id-card", t("Ma carte")],
     ["/agenda", "fa-calendar-days", t("Agenda")],
+    ["/rapports", "fa-clipboard-list", t("Rapports")],
     ["/actualites", "fa-newspaper", t("Actualités")],
     ["/annuaire", "fa-address-book", t("Annuaire")],
     ["/documents", "fa-book-open", t("Documents")],
@@ -138,12 +139,12 @@ function MemberNav({ data, dark, toggleTheme, logout }: { data: MemberData; dark
     <div className="member-nav bg-ecideDarkBlue text-white border-t border-white/10 sticky top-16 xl:top-20 z-30 print:hidden">
       <div className="max-w-5xl mx-auto px-2 sm:px-6 flex items-center gap-1">
         <nav ref={navRef} className="flex-1 min-w-0 overflow-x-auto no-scrollbar" aria-label={t("Navigation de l'espace membre")}>
-          <ul className="flex items-center gap-1 py-1.5">
+          <ul className="flex items-center gap-1 lg:gap-0.5 py-1.5">
             {items.map(([suffix, icon, label]) => {
               const on = current(suffix);
               return (
                 <li key={suffix || "accueil"} className="shrink-0">
-                  <Link href={base + suffix} aria-current={on ? "page" : undefined} className={`inline-flex items-center gap-1.5 px-2.5 py-2.5 text-[13px] font-semibold transition ${on ? "bg-ecideYellow text-ecideDarkBlue" : "text-blue-100 hover:bg-white/10 hover:text-white"}`}>
+                  <Link href={base + suffix} aria-current={on ? "page" : undefined} className={`inline-flex items-center gap-1.5 px-2.5 lg:px-2 py-2.5 text-[13px] font-semibold transition ${on ? "bg-ecideYellow text-ecideDarkBlue" : "text-blue-100 hover:bg-white/10 hover:text-white"}`}>
                     <i className={`fa-solid ${icon} text-xs`} aria-hidden="true"></i>
                     {label}
                   </Link>

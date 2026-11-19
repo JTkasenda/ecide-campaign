@@ -27,7 +27,7 @@ export default async function ActualitesPage({ params }: PageParams) {
       <NewsFilterProvider>
         {/* MANCHETTE */}
         <section className="bg-ecideDarkBlue text-white diag">
-          <div className="max-w-7xl mx-auto px-6 pt-12 pb-6">
+          <div className="max-w-7xl mx-auto px-6 pt-16 pb-6">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 mb-2 border-b border-white/20">
               <div className="space-y-3">
                 <p className="eyebrow">
@@ -46,8 +46,8 @@ export default async function ActualitesPage({ params }: PageParams) {
         {/* À LA UNE */}
         {featured && (
           <FeaturedGate>
-            <section className="max-w-7xl mx-auto px-6 py-12">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <section className="max-w-7xl mx-auto px-6 py-16">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                 <article className="lg:col-span-2 group reveal">
                   <Link href={localePath(locale, featured.url)} className="block">
                     <div className={`relative ${featured.categorie.bg} h-64 md:h-96 flex items-center justify-center overflow-hidden`}>
@@ -62,7 +62,7 @@ export default async function ActualitesPage({ params }: PageParams) {
                     <p className="text-sm text-gray-500"><i className="fa-regular fa-clock mr-1" aria-hidden="true"></i>{featured.lecture ? `${featured.lecture} ${t("de lecture")} · ` : ""}{featured.auteur}</p>
                   </div>
                 </article>
-                <div className="flex flex-col gap-8 lg:border-l lg:border-gray-200 lg:pl-8">
+                <div className="flex flex-col gap-10 lg:border-l lg:border-gray-200 lg:pl-8">
                   {side.map((n, i) => {
                     const direct = n.categorie.key === "direct";
                     return (
@@ -86,9 +86,9 @@ export default async function ActualitesPage({ params }: PageParams) {
 
         {/* FLUX + COLONNE LATÉRALE */}
         <section className="bg-white border-t border-gray-200">
-          <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
+          <div className="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 lg:grid-cols-3 gap-16">
             <NewsFeed locale={locale} news={news} labels={{ allPublications: t("Toutes les publications"), publications: t("publications"), empty: t("Aucune publication pour le moment."), emptyCategory: t("Aucune publication dans cette rubrique pour le moment."), pagination: t("Pagination"), replayVideo: t("Replay vidéo") }} />
-            <aside className="news-aside space-y-10 lg:border-l lg:border-gray-200 lg:pl-10">
+            <aside className="news-aside space-y-12 lg:border-l lg:border-gray-200 lg:pl-10">
               {video && (
                 <section className="reveal">
                   <h2 className="text-2xl text-ecideDarkBlue rule-title">{t("Directs & vidéos")}</h2>
@@ -126,7 +126,7 @@ export default async function ActualitesPage({ params }: PageParams) {
 
       {/* POSITIONS & CANAUX */}
       <section className="bg-ecideBlue-50">
-        <div className="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-2 gap-16">
           <section className="reveal">
             <h2 className="text-2xl text-ecideDarkBlue rule-title">{t("Positions officielles")}</h2>
             <ol className="mt-4 space-y-4">

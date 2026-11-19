@@ -84,8 +84,8 @@ export function NewsFeed({ locale, news, labels }: { locale: Locale; news: NewsI
         <p className="text-sm text-gray-500 shrink-0"><span>{filtered.length}</span> {labels.publications}</p>
       </div>
       <div ref={listRef} className="divide-y divide-gray-200 flex-1">
-        {news.length === 0 && <p className="py-16 text-center text-gray-500">{labels.empty}</p>}
-        {news.length > 0 && filtered.length === 0 && <p className="py-16 text-center text-gray-500">{labels.emptyCategory}</p>}
+        {news.length === 0 && <p className="py-20 text-center text-gray-500">{labels.empty}</p>}
+        {news.length > 0 && filtered.length === 0 && <p className="py-20 text-center text-gray-500">{labels.emptyCategory}</p>}
         {visible.map((n) => (
           <article key={n.id} className={`news-row reveal is-visible${playing === n.id ? " is-playing" : ""}`}>
             {n.embed ? (

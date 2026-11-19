@@ -33,8 +33,8 @@ export default async function ProjetSocietePage({ params }: PageParams) {
 
       {/* LES AXES */}
       {projetAxes.length > 0 && (
-        <section id="axes" className="bg-ecideBlue-50 py-20 lg:py-24 px-6 scroll-mt-32">
-          <div className="max-w-6xl mx-auto space-y-12">
+        <section id="axes" className="bg-ecideBlue-50 py-28 lg:py-32 px-6 scroll-mt-32">
+          <div className="max-w-6xl mx-auto space-y-16">
             <div className="space-y-4 reveal">
               <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{pp.projetSurtitre || t("Projet de société")}</span>
               <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue">{pp.axesTitre || t("Les axes du projet")}</h2>
@@ -54,8 +54,8 @@ export default async function ProjetSocietePage({ params }: PageParams) {
       )}
 
       {/* REJOINDRE */}
-      <section className="bg-ecideDarkBlue text-white py-16 lg:py-20 px-6 diag">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center justify-between gap-8 reveal">
+      <section className="bg-ecideDarkBlue text-white py-20 lg:py-28 px-6 diag">
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center justify-between gap-10 reveal">
           <div className="space-y-3 max-w-2xl">
             <span className="eyebrow">{pp.rejoindreSurtitre || t("Agir")}</span>
             <h2 className="text-4xl no-bar">{pp.rejoindreTitre || t("Rejoindre le parti")}</h2>

@@ -5,12 +5,18 @@ import { useI18n } from "@/lib/i18n";
 import { showToast } from "@/lib/toast";
 import { amountLabel, isRdc, memberApi, memberFile, STEPS, type MemberData, type MemberProfile, type Step } from "@/lib/member";
 import { Field, INPUT, MemberPanel, Notice } from "./ui";
+import { useOnline } from "../OfflineSupport";
+import { clearDraft, readDraft, writeDraft } from "./offlineDraft";
 
 type Draft = Partial<Record<keyof MemberProfile, string>>;
 type Errors = Partial<Record<keyof MemberProfile, string>>;
 type SetField = (k: keyof MemberProfile, v: string) => void;
 
 const OTHER = "__autre__";
+
+/** Statuts où la demande se modifie encore (voir Member::EDITABLE). */
+const EDITABLE = ["compte", "brouillon", "complement"];
+const ADDRESS_FIELDS: (keyof MemberProfile)[] = ["pays", "province", "district", "ville", "commune", "quartier", "localite", "adresse"];
 
 /** Catégories ouvertes selon le lieu de résidence (RD Congo ou diaspora). */
 const categoriesFor = (data: MemberData, pays: string | null | undefined) => data.options.categories.filter((c) => c.pour === "tous" || (c.pour === "rdc") === isRdc(pays));
@@ -44,11 +50,23 @@ export default function MembershipWizard({ data, setData }: { data: MemberData; 
     const d: Draft = {};
     (["nom", "postnom", "prenom", "sexe", "date_naissance", "lieu_naissance", "etat_civil", "profession", "telephone", "email", "pays", "province", "district", "ville", "commune", "quartier", "localite", "adresse", "categorie"] as const).forEach((k) => (d[k] = (m[k] as string) || ""));
     if (!d.pays) d.pays = o.geo.rdc;
+    // Saisie pas encore enregistrée (coupure, page rechargée) : retrouvée sur cet appareil
+    if (EDITABLE.includes(m.statut)) Object.assign(d, readDraft(m.id)?.champs);
     return d;
   });
+  // Connexion intermittente : étapes validées hors ligne, envoyées au retour du réseau
+  const [kept] = useState(() => (EDITABLE.includes(m.statut) ? readDraft(m.id) : null));
+  const [waiting, setWaiting] = useState(() => !!kept?.enAttente.length);
+  const [restored, setRestored] = useState(() => !!kept);
+  const pending = useRef<(keyof MemberProfile)[]>((kept?.enAttente || []) as (keyof MemberProfile)[]);
+  const dirty = useRef(!!kept);
+  const latest = useRef(draft);
+  const flushing = useRef(false);
+  const online = useOnline();
   const titleRef = useRef<HTMLHeadingElement>(null);
   const moved = useRef(false);
   const set: SetField = (k, v) => {
+    dirty.current = true;
     setDraft((d) => ({ ...d, [k]: v }));
     setErrors((e) => (e[k] ? { ...e, [k]: undefined } : e));
   };
@@ -64,6 +82,49 @@ export default function MembershipWizard({ data, setData }: { data: MemberData; 
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (only) setDraft((d) => ({ ...d, categorie: only }));
   }, [only]);
+
+  // Chaque saisie est gardée sur l'appareil jusqu'à ce que le parti l'ait reçue
+  useEffect(() => {
+    latest.current = draft;
+    if (dirty.current) writeDraft(m.id, draft, pending.current);
+  }, [draft, m.id]);
+
+  /** Envoie les étapes remplies hors ligne ; sans réponse du serveur, nouvel essai plus tard. */
+  async function flush() {
+    const fields = pending.current;
+    if (!fields.length || flushing.current) return;
+    flushing.current = true;
+    const payload: Record<string, string | null> = {};
+    fields.forEach((k) => (payload[k] = String(latest.current[k] ?? "").trim() || null));
+    const r = await memberApi("demande", locale, { method: "PUT", json: payload });
+    flushing.current = false;
+    if (r.status === 0) return;
+    pending.current = [];
+    setWaiting(false);
+    if (!r.ok) {
+      // Refusé par le serveur : retour à l'étape concernée, la saisie reste gardée
+      const byField: Errors = {};
+      Object.entries(r.data.errors || {}).forEach(([k, v]) => (byField[k as keyof MemberProfile] = v[0]));
+      const first = (Object.keys(byField)[0] || (r.message ? fieldOf(r.message) : null) || fields[0]) as keyof MemberProfile;
+      go(first === "categorie" ? "categorie" : ADDRESS_FIELDS.includes(first) ? "adresse" : "identite");
+      if (Object.keys(byField).length) showErrors(byField);
+      writeDraft(m.id, latest.current, []);
+      return setError(r.message || t("Enregistrement impossible. Réessayez."));
+    }
+    clearDraft(m.id);
+    dirty.current = false;
+    setRestored(false);
+    setData(r.data);
+    showToast(t("Connexion retrouvée : vos informations sont enregistrées."));
+  }
+  // Retour de la connexion : envoi aussitôt, puis toutes les 30 secondes si le serveur ne répond pas
+  useEffect(() => {
+    if (!online || !waiting) return;
+    flush();
+    const id = setInterval(flush, 30000);
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [online, waiting]);
 
   // Nouvelle étape : titre ramené en vue et annoncé (pas au premier affichage)
   useEffect(() => {
@@ -100,6 +161,13 @@ export default function MembershipWizard({ data, setData }: { data: MemberData; 
     fields.forEach((k) => (payload[k] = String(draft[k] ?? "").trim() || null));
     const r = await memberApi("demande", locale, { method: "PUT", json: payload });
     setBusy(false);
+    // Pas de connexion : l'étape est gardée sur l'appareil et partira au retour du réseau
+    if (r.status === 0) {
+      pending.current = [...new Set([...pending.current, ...fields])];
+      writeDraft(m.id, draft, pending.current);
+      setWaiting(true);
+      return next();
+    }
     if (!r.ok) {
       // Erreurs par champ (validation) ou message du serveur rattaché à son champ
       const byField: Errors = {};
@@ -108,6 +176,11 @@ export default function MembershipWizard({ data, setData }: { data: MemberData; 
       if (guess && fields.includes(guess)) byField[guess] = r.message;
       if (Object.keys(byField).length) showErrors(byField);
       return setError(r.message || t("Enregistrement impossible. Réessayez."));
+    }
+    if (!pending.current.length) {
+      clearDraft(m.id);
+      dirty.current = false;
+      setRestored(false);
     }
     setData(r.data);
     next();
@@ -118,7 +191,8 @@ export default function MembershipWizard({ data, setData }: { data: MemberData; 
     setBusy(true);
     const r = await memberApi("soumettre", locale, { json: {} });
     setBusy(false);
-    if (!r.ok) return setError(r.message || t("Transmission impossible. Réessayez."));
+    if (!r.ok) return setError(r.status === 0 ? t("Pas de connexion : la demande n'est pas encore transmise. Réessayez au retour du réseau.") : r.message || t("Transmission impossible. Réessayez."));
+    clearDraft(m.id);
     showToast(r.data.message || t("Votre demande est transmise."));
     setData(r.data);
   }
@@ -161,13 +235,20 @@ export default function MembershipWizard({ data, setData }: { data: MemberData; 
     documents: () => (m.photo && m.piece ? next() : setError(!m.photo && !m.piece ? t("Ajoutez votre photo et votre pièce d'identité.") : !m.photo ? t("Ajoutez votre photo d'identité.") : t("Ajoutez votre pièce d'identité."))),
     engagement: async () => {
       const box = document.getElementById("mEngage") as HTMLInputElement | null;
-      if (m.engagement) return next();
-      if (!box?.checked) {
+      const honneurBox = document.getElementById("mHonneur") as HTMLInputElement | null;
+      // Code d'honneur : à accepter s'il existe, sauf s'il l'a déjà été
+      const needHonneur = !!o.codeHonneur && !m.honneur;
+      if (m.engagement && !needHonneur) return next();
+      if (!m.engagement && !box?.checked) {
         box?.focus();
         return setError(t("Cochez la case pour prendre l'engagement."));
       }
+      if (needHonneur && !honneurBox?.checked) {
+        honneurBox?.focus();
+        return setError(t("Cochez la case pour accepter le code d'honneur."));
+      }
       setBusy(true);
-      const r = await memberApi("engagement", locale, { json: { accepte: true } });
+      const r = await memberApi("engagement", locale, { json: { accepte: true, honneur: needHonneur } });
       setBusy(false);
       if (!r.ok) return setError(r.message);
       setData(r.data);
@@ -181,6 +262,19 @@ export default function MembershipWizard({ data, setData }: { data: MemberData; 
         {m.statut === "complement" && m.motif && (
           <div className="mb-6">
             <Notice tone="info" icon="fa-comment-dots"><strong>{t("Le parti vous demande de compléter votre demande")} :</strong> {m.motif}</Notice>
+          </div>
+        )}
+        {(!online || waiting) && (
+          <div className="mb-6" role="status">
+            <Notice tone="warn" icon="fa-wifi">
+              <strong>{online ? t("Envoi en attente") : t("Hors ligne")} :</strong> {online ? t("vos informations sont gardées sur cet appareil et seront envoyées dès que le serveur répondra.") : t("continuez à remplir votre demande. Ce que vous saisissez est gardé sur cet appareil et sera envoyé dès le retour de la connexion.")}
+              {online && <button type="button" onClick={() => flush()} className="ml-2 font-bold text-ecideBlue underline">{t("Réessayer maintenant")}</button>}
+            </Notice>
+          </div>
+        )}
+        {restored && online && !waiting && (
+          <div className="mb-6">
+            <Notice tone="info" icon="fa-clock-rotate-left">{t("Vos dernières saisies, pas encore enregistrées, ont été retrouvées sur cet appareil.")}</Notice>
           </div>
         )}
         {header}
@@ -452,6 +546,23 @@ function Engagement({ data, onCheck }: { data: MemberData; onCheck: () => void }
           <strong>{t("Je prends cet engagement.")}</strong> {t("J'atteste aussi que les informations de ma demande sont exactes.")}
         </span>
       </label>
+      {/* Code d'honneur rédigé par l'administration : texte officiel en français, à accepter */}
+      {data.options.codeHonneur && (
+        <>
+          <section aria-labelledby="mHonneurTitre" className="space-y-3 pt-2">
+            <h3 id="mHonneurTitre" className="text-xl text-ecideDarkBlue">{data.options.codeHonneur.titre}</h3>
+            <div tabIndex={0} className="max-h-72 overflow-y-auto border border-gray-200 bg-white p-5 text-gray-800 leading-relaxed whitespace-pre-line focus:outline-2 focus:outline-ecideBlue">
+              {data.options.codeHonneur.texte}
+            </div>
+          </section>
+          <label className="flex items-start gap-3 p-4 border border-gray-200 cursor-pointer">
+            <input id="mHonneur" type="checkbox" defaultChecked={m.honneur} disabled={m.honneur} onChange={onCheck} className="w-5 h-5 mt-0.5 shrink-0" />
+            <span className="text-sm text-gray-700">
+              <strong>{t("J'ai lu le code d'honneur et je m'engage à le respecter.")}</strong>
+            </span>
+          </label>
+        </>
+      )}
     </div>
   );
 }

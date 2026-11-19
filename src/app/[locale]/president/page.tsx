@@ -42,7 +42,7 @@ export default async function PresidentPage({ params }: PageParams) {
         <figure className="relative h-72 sm:h-96 lg:h-auto lg:order-2">
           <img src={pres.portrait} alt={`${t("Portrait officiel de")} ${pres.nom}`} className="absolute inset-0 w-full h-full object-cover object-[50%_20%]" />
         </figure>
-        <div className="flex items-center px-6 py-12 lg:py-16 lg:pl-[max(1.5rem,calc((100vw-80rem)/2))] lg:pr-16 lg:order-1">
+        <div className="flex items-center px-6 py-16 lg:py-20 lg:pl-[max(1.5rem,calc((100vw-80rem)/2))] lg:pr-16 lg:order-1">
           <div className="space-y-6 max-w-xl">
             <span className="pill pill--yellow inline-flex flex-wrap items-center gap-2 whitespace-normal max-w-full">
               {pastille[0].trim()}
@@ -71,21 +71,18 @@ export default async function PresidentPage({ params }: PageParams) {
       <PageSubnav label={t("Sommaire de la page")} links={subnav} />
 
       {/* BIOGRAPHIE : une amorce seulement, la biographie complète a sa propre page */}
-      <section id="biographie" className="bg-white py-16 lg:py-24 px-6 scroll-mt-32">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
-          <div className="lg:col-span-8 space-y-6 reveal">
-            <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue leading-none">{pres.bioTitre || t("Biographie")}</h2>
-            {pres.bioTexte && <p className="text-xl text-gray-800 leading-relaxed">{pres.bioTexte}</p>}
-          </div>
-          <div className="lg:col-span-4 flex flex-wrap lg:flex-col lg:items-end gap-3 reveal">
-            <Link href={localePath(locale, "/president/biographie")} className="btn btn--dark"><i className="fa-solid fa-book-open text-sm" aria-hidden="true"></i>{t("Lire la biographie")}</Link>
-          </div>
+      <section id="biographie" className="bg-white py-20 lg:py-32 px-6 scroll-mt-32">
+        {/* Amorce et bouton d'un seul bloc : l'action suit la lecture au lieu de flotter à l'autre bout de la page */}
+        <div className="max-w-7xl mx-auto space-y-8 reveal">
+          <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue leading-none">{pres.bioTitre || t("Biographie")}</h2>
+          {pres.bioTexte && <p className="text-xl text-gray-800 leading-relaxed max-w-3xl">{pres.bioTexte}</p>}
+          <Link href={localePath(locale, "/president/biographie")} className="btn btn--dark"><i className="fa-solid fa-book-open text-sm" aria-hidden="true"></i>{t("Lire la biographie")}</Link>
         </div>
       </section>
 
       {/* DISCOURS & VIDÉOS */}
-      <section id="discours" className="bg-ecideBlue-50 py-16 lg:py-24 px-6 scroll-mt-32">
-        <div className="max-w-7xl mx-auto space-y-10">
+      <section id="discours" className="bg-ecideBlue-50 py-20 lg:py-32 px-6 scroll-mt-32">
+        <div className="max-w-7xl mx-auto space-y-12">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 reveal">
             <div className="space-y-3 max-w-2xl">
               <h2 className="text-4xl text-ecideDarkBlue">{t("Discours & vidéos")}</h2>
@@ -114,8 +111,8 @@ export default async function PresidentPage({ params }: PageParams) {
       </section>
 
       {/* DOSSIER DE PRESSE */}
-      <section id="presse" className="py-16 lg:py-24 px-6 bg-white scroll-mt-32">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+      <section id="presse" className="py-20 lg:py-32 px-6 bg-white scroll-mt-32">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-20 items-start">
           <div className="lg:col-span-5 space-y-5 reveal">
             <h2 className="text-4xl text-ecideDarkBlue">{t("Dossier de presse & visuels")}</h2>
             <p className="text-lg text-gray-600 leading-relaxed">{pres.presseTexte || ""}</p>
