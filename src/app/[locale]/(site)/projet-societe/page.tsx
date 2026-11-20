@@ -39,9 +39,10 @@ export default async function ProjetSocietePage({ params }: PageParams) {
               <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{pp.projetSurtitre || t("Projet de société")}</span>
               <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue">{pp.axesTitre || t("Les axes du projet")}</h2>
             </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Téléphone et tablette : liste compacte en rangées (icône et intitulé), voir .mob-rows */}
+          <div className="mob-rows grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {projetAxes.map((a, i) => (
-              <article key={i} className="panel panel--white p-7 space-y-4 reveal relative overflow-hidden">
+              <article key={i} className="mob-row panel panel--white p-7 space-y-4 reveal relative overflow-hidden">
                 <span className="card-index" aria-hidden="true">{pad2(i + 1)}</span>
                 <div className="icon-tile icon-tile--dark"><i className={`fa-solid ${a.icone}`} aria-hidden="true"></i></div>
                 <h3 className="text-xl font-bold text-gray-900">{a.titre}</h3>

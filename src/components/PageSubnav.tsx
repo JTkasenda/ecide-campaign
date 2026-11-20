@@ -64,8 +64,9 @@ export default function PageSubnav({ links, label, children }: { links: { href: 
     </a>
   );
 
+  // Téléphone et tablette : pas de sommaire de page (Le Parti, Président Élu)
   return (
-    <nav className="page-subnav" aria-label={label}>
+    <nav className="page-subnav mob-hide" aria-label={label}>
       {/* Index visible à l'arrivée */}
       <div className="subnav-index" ref={indexRef}>
         <div className="max-w-7xl mx-auto px-6 flex flex-wrap items-center justify-center gap-x-2 gap-y-1">

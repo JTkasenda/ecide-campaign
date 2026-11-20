@@ -3077,3 +3077,44 @@ body:has(.assistant-fab) .back-to-top {
     outline-offset: 2px;
   }
 }
+
+/* Téléphone et tablette : cartes de valeurs (Charte) et d'axes (Projet de société) en rangées compactes :
+   un seul bloc blanc, icône à gauche, intitulé à côté, filet entre les rangées, sans le grand numéro */
+@media (max-width: 1023.98px) {
+  #main .mob-rows {
+    display: block;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0, 27, 82, 0.06);
+  }
+  #main .mob-rows > .mob-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-height: 3.75rem;
+    padding: 0.75rem 1rem;
+    margin: 0;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid #e5e9f0;
+    box-shadow: none;
+  }
+  #main .mob-rows > .mob-row:last-child {
+    border-bottom: 0;
+  }
+  #main .mob-rows > .mob-row > * {
+    margin: 0 !important;
+  }
+  #main .mob-rows > .mob-row .card-index {
+    display: none;
+  }
+  #main .mob-rows > .mob-row > div:first-of-type {
+    flex: 0 0 2.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1rem;
+  }
+  #main .mob-rows > .mob-row h3 {
+    font-size: 1rem;
+    line-height: 1.3;
+  }
+}

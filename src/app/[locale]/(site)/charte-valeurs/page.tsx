@@ -38,11 +38,12 @@ export default async function CharteValeursPage({ params }: PageParams) {
               <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{pp.charteSurtitre || t("Textes fondateurs")}</span>
               <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue">{pp.valeursTitre || (valeurs.length === 13 ? t("Les 13 valeurs de l'ECiDé") : t("Nos valeurs"))}</h2>
             </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {/* Téléphone et tablette : liste compacte en rangées (icône et nom), voir .mob-rows */}
+          <div className="mob-rows grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {valeurs.map((v, i) => {
               const tt = tint(v.couleur);
               return (
-                <div key={i} className="panel panel--white p-8 space-y-3 reveal relative overflow-hidden">
+                <div key={i} className="mob-row panel panel--white p-8 space-y-3 reveal relative overflow-hidden">
                   <span className="card-index" aria-hidden="true">{pad2(i + 1)}</span>
                   <div className={`w-14 h-14 ${tt.bg} ${tt.text} flex items-center justify-center text-2xl`}><i className={`fa-solid ${v.icone}`} aria-hidden="true"></i></div>
                   <h3 className="text-xl font-bold text-gray-900">{v.titre}</h3>

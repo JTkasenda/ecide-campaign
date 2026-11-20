@@ -36,25 +36,29 @@ export default async function PartiPage({ params }: PageParams) {
           <div className="lg:col-span-7 space-y-6">
             {parti.badge && <span className="pill pill--yellow">{parti.badge}</span>}
             <h2 className="text-4xl sm:text-5xl lg:text-6xl leading-none no-bar">
-              {/* Le nom complet du parti (titre + accent) : les lettres E · Ci · Dé, alignées, épellent le sigle */}
-              {spellsAcronym(nomComplet) ? (
-                <Acronym text={nomComplet} />
-              ) : (
-                <>
-                  {parti.titre} <span className="text-ecideYellow">{parti.titreAccent}</span>
-                </>
-              )}
+              {/* Téléphone et tablette : le nom court du parti en jaune ; le nom complet reste pour les lecteurs d'écran */}
+              <span className="lg:hidden text-ecideYellow" aria-hidden="true" translate="no">{site.params.nom || "ECiDé"}</span>
+              <span className="max-lg:sr-only">
+                {/* Le nom complet du parti (titre + accent) : les lettres E · Ci · Dé, alignées, épellent le sigle */}
+                {spellsAcronym(nomComplet) ? (
+                  <Acronym text={nomComplet} />
+                ) : (
+                  <>
+                    {parti.titre} <span className="text-ecideYellow">{parti.titreAccent}</span>
+                  </>
+                )}
+              </span>
             </h2>
-            {/* Téléphone et tablette : l'étiquette, le nom du parti et un seul bouton ; devise, introduction et chiffres sur ordinateur */}
-            {parti.devise && <p className="mob-hide text-2xl font-semibold text-white">{parti.devise}</p>}
-            <p className="mob-hide text-lg text-blue-100 leading-relaxed max-w-2xl">{parti.intro}</p>
+            {/* Téléphone et tablette : l'étiquette, le nom court, la devise, l'introduction, un seul bouton et les chiffres */}
+            {parti.devise && <p className="text-2xl font-semibold text-white">{parti.devise}</p>}
+            <p className="text-lg text-blue-100 leading-relaxed max-w-2xl">{parti.intro}</p>
             <div className="flex flex-wrap gap-4 pt-2">
               {parti.bouton1 && <Link href={localePath(locale, parti.url1)} className="btn btn--primary">{parti.bouton1} <i className="fa-solid fa-arrow-right text-sm" aria-hidden="true"></i></Link>}
               {parti.bouton2 && <Link href={localePath(locale, parti.url2)} className="btn btn--outline-white mob-hide">{parti.bouton2} <i className="fa-solid fa-arrow-right text-sm" aria-hidden="true"></i></Link>}
             </div>
           </div>
           {chiffres.length > 0 && (
-            <dl className="mob-hide lg:col-span-5 grid grid-cols-2 gap-4">
+            <dl className="lg:col-span-5 grid grid-cols-2 gap-4">
               {chiffres.map((c, i) => (
                 <div key={i} className="bg-white text-gray-900 p-5">
                   <dd className="font-display text-4xl text-ecideDarkBlue leading-none"><CounterValue value={c.valeur} /></dd>
@@ -102,9 +106,9 @@ export default async function PartiPage({ params }: PageParams) {
             <h2 className="text-4xl text-ecideDarkBlue">{t("Notre histoire")}</h2>
           </div>
           <div className="lg:col-span-3 space-y-6 reveal">
-            {/* Téléphone et tablette : le premier paragraphe coupé à 3 lignes ; l'histoire entière sur ordinateur */}
-            {parti.hist1 && <p className="mob-clamp text-xl text-gray-700 leading-relaxed">{parti.hist1}</p>}
-            {parti.hist2 && <p className="mob-hide text-xl text-gray-700 leading-relaxed">{parti.hist2}</p>}
+            {/* L'histoire en entier, sur téléphone comme sur ordinateur */}
+            {parti.hist1 && <p className="text-xl text-gray-700 leading-relaxed">{parti.hist1}</p>}
+            {parti.hist2 && <p className="text-xl text-gray-700 leading-relaxed">{parti.hist2}</p>}
           </div>
         </div>
         <div className="mob-card max-w-6xl mx-auto mt-20 pt-20 border-t border-ecideDarkBlue/20">
