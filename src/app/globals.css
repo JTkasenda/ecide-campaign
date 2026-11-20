@@ -2125,7 +2125,8 @@ main .text-white :is(.panel, .panel--white, [class~="bg-white"], [class~="bg-eci
 .mobile-actions.is-visible {
   transform: none;
 }
-@media (max-width: 1023.98px) {
+/* Téléphone seulement (md:hidden) : à partir de 768 px, l'en-tête porte « Adhérer » et le don, la barre disparaît */
+@media (max-width: 767.98px) {
   body:has(.mobile-actions.is-visible) .back-to-top {
     bottom: 5.5rem;
   }
@@ -2149,7 +2150,7 @@ main .text-white :is(.panel, .panel--white, [class~="bg-white"], [class~="bg-eci
 :root {
   --assistant-bottom: 1.5rem;
 }
-@media (max-width: 1023.98px) {
+@media (max-width: 767.98px) {
   body:has(.mobile-actions.is-visible) {
     --assistant-bottom: 5.5rem;
   }
@@ -2382,5 +2383,697 @@ body:has(.assistant-fab) .back-to-top {
   .assistant-fab,
   .assistant-panel {
     display: none !important;
+  }
+}
+
+/* ==========================================================================
+   Téléphone et tablette (< 1024 px) : mise en page façon warnockforgeorgia.com sur mobile
+   --------------------------------------------------------------------------
+   En-tête compact avec le don en bloc jaune collé au bord droit ; bandeau d'accueil avec la
+   photo en haut et le contenu centré sur le bleu nuit ; sections en cartes blanches posées sur
+   un fond gris-bleu ; montants du don en tuiles ; actualités en cartes blanches sur bleu nuit ;
+   pied de page centré. Tout est sous cette requête média : l'ordinateur (≥ 1024 px) ne change
+   pas. Sélecteurs préfixés par #main : ils passent devant les règles « main … » plus haut.
+   Doré des petits textes sur blanc : #7a5c00 (ecideYellow-800, contraste 6,2:1), le #9a7400
+   (700) restant sous 4,5:1 pour du texte de cette taille.
+   ========================================================================== */
+@media (max-width: 1023.98px) {
+  :root {
+    --mob-page: #dfe6ee;
+    --mob-gold: #7a5c00;
+    --mob-muted: #c3d0e4;
+  }
+
+  /* — En-tête : hamburger à fines lignes, puis « Faire un don » sur toute la hauteur, sans marge — */
+  .site-header__actions {
+    align-self: stretch;
+    gap: 0.5rem;
+  }
+  .site-header .site-header__don {
+    align-self: stretch;
+    height: auto;
+    min-width: 0;
+    border-radius: 0;
+    padding: 0 1.15rem;
+    font-size: calc(0.8125rem * var(--ts-all));
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    line-height: 1.15;
+    text-transform: uppercase;
+  }
+  .site-header .site-header__actions > :is(.btn, .lang-switch) {
+    min-height: 2.75rem;
+  }
+  .site-header .site-header__don:focus-visible {
+    outline: 3px solid var(--ecide-dark);
+    outline-offset: -6px;
+  }
+  .site-burger {
+    width: 3rem;
+    height: 3rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+  }
+  .site-burger__lines {
+    position: relative;
+    display: block;
+    width: 1.75rem;
+    height: 1.125rem;
+  }
+  .site-burger__lines > span {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1.5px;
+    background: currentColor;
+    opacity: 0.9;
+    transition: transform 0.25s ease, top 0.25s ease, opacity 0.2s ease;
+  }
+  .site-burger__lines > span:nth-child(1) {
+    top: 0;
+  }
+  .site-burger__lines > span:nth-child(2) {
+    top: calc(50% - 0.75px);
+    right: 0.3rem;
+  }
+  .site-burger__lines > span:nth-child(3) {
+    top: calc(100% - 1.5px);
+  }
+  .site-burger[aria-expanded="true"] .site-burger__lines > span:nth-child(1) {
+    top: calc(50% - 0.75px);
+    transform: rotate(45deg);
+  }
+  .site-burger[aria-expanded="true"] .site-burger__lines > span:nth-child(2) {
+    opacity: 0;
+  }
+  .site-burger[aria-expanded="true"] .site-burger__lines > span:nth-child(3) {
+    top: calc(50% - 0.75px);
+    transform: rotate(-45deg);
+  }
+
+  /* — Bandeau d'accueil : photo en haut (sans texte), puis le contenu centré sur le bleu nuit — */
+  #main .hero-photo {
+    --hero-ph: clamp(14rem, 42svh, 27rem);
+    display: block;
+    min-height: 0;
+    border-bottom: 6px solid var(--ecide-yellow);
+  }
+  #main .hero-photo > img {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: var(--hero-ph);
+  }
+  /* Le voile ne couvre que la photo et se fond dans le bleu nuit en bas (réglage du voile ignoré ici) */
+  #main .hero-photo > .hero-overlay {
+    bottom: auto;
+    height: var(--hero-ph);
+    opacity: 1 !important;
+    background: linear-gradient(180deg, rgba(0, 27, 82, 0) 40%, rgba(0, 27, 82, 0.55) 72%, #001b52 100%);
+  }
+  #main .hero-body {
+    padding: 0 1rem 2.25rem;
+  }
+  #main .hero-stack {
+    max-width: 34rem;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-align: center;
+  }
+  #main .hero-stack > * {
+    margin: 0;
+  }
+  #main .hero-stack > .hero-emblem {
+    display: block;
+    width: 5.5rem;
+    height: 5.5rem;
+    /* Remonté dans le fondu de la photo : logo, nom et formulaire montent d'environ 30 px */
+    margin-top: -5rem;
+    border-radius: 9999px;
+    object-fit: cover;
+    box-shadow: 0 0 0 4px #001b52, 0 10px 28px rgba(0, 0, 0, 0.35);
+  }
+  /* Nom court du parti sous l'emblème (le titre complet est masqué à l'œil sur téléphone) */
+  #main .hero-stack > .hero-nom {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: calc(3rem * var(--ts-all));
+    line-height: 1;
+    letter-spacing: -0.01em;
+    color: #fff;
+    text-align: center;
+    margin-top: 0.75rem;
+  }
+  #main .hero-stack .eyebrow {
+    font-size: calc(0.8125rem * var(--ts-all));
+    letter-spacing: 0.28em;
+  }
+  #main .hero-stack .hero-texte {
+    font-size: calc(1rem * var(--ts-all));
+  }
+  /* Formulaire : grille serrée sur deux rangs (e-mail ; prénom | bouton), champs clairs sans espace entre eux */
+  #main .newsletter-hero {
+    width: 100%;
+    max-width: 30rem;
+    margin-top: 0.75rem;
+  }
+  #main .newsletter-hero__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0;
+  }
+  #main .newsletter-hero__fields {
+    display: contents;
+  }
+  #main .newsletter-hero :is(.newsletter-hero__email, .newsletter-hero__name) {
+    min-height: 3.5rem;
+    padding: 0 1rem;
+    background: var(--color-ecideBlue-50);
+    border: 0;
+    border-radius: 0;
+    font-size: 1rem;
+    color: #111827;
+  }
+  #main .newsletter-hero .newsletter-hero__email {
+    grid-column: 1 / -1;
+    border-bottom: 1px solid #c9d3e3;
+  }
+  #main .newsletter-hero :is(.newsletter-hero__email, .newsletter-hero__name):focus-visible {
+    background: #fff;
+    outline: 3px solid var(--ecide-yellow);
+    outline-offset: -3px;
+  }
+  #main .newsletter-hero .newsletter-hero__submit {
+    text-transform: uppercase;
+    min-height: 3.5rem;
+    height: auto;
+    /* Libellé long (lingala…) : passe sur deux lignes plutôt que d'écraser le champ du prénom */
+    max-width: 10.5rem;
+    padding: 0.5rem 1.15rem;
+    border-radius: 0;
+    font-size: calc(0.875rem * var(--ts-all));
+    letter-spacing: 0.18em;
+  }
+  #main .newsletter-hero__grid:not(:has(.newsletter-hero__name)) .newsletter-hero__submit {
+    grid-column: 1 / -1;
+  }
+  #main .newsletter-hero .newsletter-hero__submit:focus-visible {
+    outline: 3px solid var(--ecide-dark);
+    outline-offset: -6px;
+  }
+  #main .newsletter-hero__note {
+    max-width: 26rem;
+    margin: 0 auto;
+    padding-top: 0.9rem;
+    color: #dbe4f3;
+    line-height: 1.6;
+  }
+
+  /* — Sections en cartes blanches sur fond gris-bleu — */
+  #main .mob-band {
+    background: var(--mob-page);
+    color: var(--ecide-dark);
+    padding: 1.25rem 1rem;
+    border: 0;
+  }
+  #main .mob-band.diag::before,
+  #main .mob-card.diag::before {
+    display: none;
+  }
+  #main .mob-band :is(.space-y-12, .space-y-6) > :not(:last-child) {
+    margin-block-end: 1.25rem;
+  }
+  #main .mob-band :is(.gap-6, .gap-5, .gap-12) {
+    gap: 1rem;
+  }
+  #main .mob-card {
+    background: #fff;
+    color: var(--ecide-dark);
+    padding: 2rem 1.5rem 2.25rem;
+    border: 0;
+    box-shadow: 0 1px 2px rgba(0, 27, 82, 0.06);
+  }
+  #main .mob-band .mob-card.grid {
+    gap: 2rem;
+  }
+  #main .mob-band .mob-card > .space-y-12 > :not(:last-child),
+  #main .mob-band .mob-card.space-y-12 > :not(:last-child) {
+    margin-block-end: 2rem;
+  }
+  #main .mob-stack {
+    gap: 1rem;
+  }
+  /* Fils officiels : en-têtes des fils X et Facebook qui passent à la ligne plutôt que de couper le nom */
+  #main .mob-band article > header:has(.fa-circle-check) {
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+  }
+  #main .mob-band article > header:has(.fa-circle-check) > div {
+    flex: 1 1 11rem;
+  }
+  /* Deux cartes à la suite dans une même section (Le Parti › historique, puis les grandes étapes) */
+  #main .mob-card + .mob-card {
+    margin-top: 1rem;
+  }
+  #main .mob-band article > header span[class*="text-ecideGreen"][class*="tracking-widest"] {
+    font-size: calc(0.6875rem * var(--ts-all));
+  }
+  /* Titres : filet jaune vertical court à gauche (« Why I'm Running ») au lieu du filet au-dessus */
+  #main :is(.mob-band, .mob-news) :is(.bar-title, h2[class*="text-4xl"], h2[class*="text-5xl"]) {
+    position: relative;
+    border-top: 0;
+    padding-top: 0;
+    padding-left: 1rem;
+    font-size: calc(2rem * var(--ts-all));
+    line-height: 1.1;
+  }
+  #main :is(.mob-band, .mob-news) :is(.bar-title, h2[class*="text-4xl"], h2[class*="text-5xl"])::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.1em;
+    width: 4px;
+    height: 0.95em;
+    background: var(--ecide-yellow);
+  }
+  #main .mob-band :is(.bar-title, h2[class*="text-4xl"], h2[class*="text-5xl"]) {
+    color: var(--ecide-dark);
+  }
+  /* Le manifeste est une phrase longue : taille de titre de carte */
+  #main [data-apercu="manifeste"].mob-band h2.bar-title {
+    font-size: calc(1.375rem * var(--ts-all));
+    line-height: 1.3;
+  }
+  #main [data-apercu="manifeste"].mob-band h2.bar-title::before {
+    top: 0.2em;
+    height: 1em;
+  }
+  /* Surtitres : petites capitales dorées plutôt que la pastille bleue */
+  #main :is(.mob-band, .mob-news) span[class*="text-ecideGreen"][class*="tracking-widest"] {
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    color: var(--mob-gold);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-weight: 700;
+    font-size: calc(0.8125rem * var(--ts-all));
+  }
+  #main .mob-news span[class*="text-ecideGreen"][class*="tracking-widest"] {
+    color: var(--ecide-yellow);
+  }
+  #main .mob-band .eyebrow--dark {
+    color: var(--mob-gold);
+  }
+  /* Liens « En savoir plus → » : capitales espacées, dorées, zone de toucher de 44 px */
+  #main :is(.mob-band, .mob-news) .arrow-link {
+    min-height: 2.75rem;
+    color: var(--mob-gold);
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-weight: 700;
+    font-size: calc(0.875rem * var(--ts-all));
+  }
+  #main :is(.mob-band, .mob-news) .arrow-link:hover {
+    color: var(--ecide-dark);
+  }
+  /* Cartes d'origine sombres (agir) passées en blanc */
+  #main .mob-card--from-dark {
+    min-height: 0;
+  }
+  #main .mob-card--from-dark :is(h3, p) {
+    color: var(--ecide-dark);
+  }
+  #main .mob-card--from-dark p {
+    color: #374151;
+  }
+
+  /* Président : photo en tête de carte, grand bouton de lecture carré */
+  #main .mob-pres {
+    background: #fff;
+    gap: 0;
+  }
+  #main .mob-pres__panel {
+    padding: 2rem 1.5rem 2.25rem;
+    border: 0;
+    box-shadow: none;
+  }
+  .mob-play {
+    position: absolute;
+    right: 0;
+    bottom: 1.5rem;
+    width: 5.5rem;
+    height: 5.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ecide-yellow);
+    color: var(--ecide-dark);
+  }
+  .mob-play i {
+    width: 3.5rem;
+    height: 3.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 0.3rem;
+    border: 3px solid currentColor;
+    border-radius: 9999px;
+    font-size: 1.4rem;
+  }
+  /* Vignettes vidéo : même bouton carré jaune */
+  .video-play {
+    width: 5rem;
+    height: 5rem;
+    border-radius: 0;
+    background: var(--ecide-yellow);
+    color: var(--ecide-dark);
+    font-size: 1.9rem;
+    box-shadow: none;
+  }
+
+  /* — Don : montants en tuiles 2 × 2, puis « Faire un don » en pleine largeur — */
+  #main .mob-don {
+    padding: 2.5rem 1rem;
+  }
+  #main .mob-don > div {
+    gap: 1.75rem;
+  }
+  #main .mob-don__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+  #main .mob-don__tile {
+    min-width: 0;
+    min-height: 6rem;
+    padding: 1.25rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.42);
+    font-size: calc(2.5rem * var(--ts-all));
+  }
+  #main .mob-don__tile > span {
+    font-size: calc(0.75rem * var(--ts-all));
+    margin-top: 0.35rem;
+  }
+  #main .mob-don .mob-don__cta {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-height: 5.25rem;
+    background: rgba(255, 255, 255, 0.42);
+    color: var(--ecide-dark);
+    font-size: calc(1rem * var(--ts-all));
+    font-weight: 800;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+  }
+  #main .mob-don :is(.mob-don__tile, .mob-don__cta):hover {
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--ecide-dark);
+  }
+  #main .mob-don :is(.mob-don__tile, .mob-don__cta):focus-visible {
+    outline: 3px solid var(--ecide-dark);
+    outline-offset: -3px;
+  }
+
+  /* — Actualités : cartes blanches sur bleu nuit, date et rubrique dorées, titre en serif gras — */
+  #main .mob-news {
+    padding: 3rem 1rem;
+  }
+  #main .mob-news.diag::before {
+    display: none;
+  }
+  #main .mob-news .space-y-12 > :not(:last-child) {
+    margin-block-end: 2rem;
+  }
+  #main .mob-news .grid {
+    gap: 1rem;
+  }
+  #main .mob-news__card > .p-7 {
+    padding: 1.75rem 1.5rem 1.5rem;
+  }
+  #main .mob-news__meta {
+    color: var(--mob-gold);
+    font-size: calc(0.75rem * var(--ts-all));
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    line-height: 1.5;
+  }
+  #main .mob-news__title {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: calc(1.6rem * var(--ts-all));
+    line-height: 1.2;
+    letter-spacing: 0;
+    color: var(--ecide-dark);
+  }
+
+  /* — Pied de page : tout centré — */
+  footer.diag::before {
+    display: none;
+  }
+  .site-foot {
+    max-width: 40rem;
+    margin: 0 auto;
+    padding: 3.5rem 1.25rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.75rem;
+    text-align: center;
+  }
+  .site-foot__brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .site-foot__links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    column-gap: 1.25rem;
+  }
+  .site-foot__links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: calc(0.875rem * var(--ts-all));
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--mob-muted);
+    transition: color 0.15s ease;
+  }
+  .site-foot__links a:hover,
+  .site-foot__socials a:hover,
+  .site-foot__inline:hover,
+  .site-foot__admin:hover {
+    color: var(--ecide-yellow);
+  }
+  .site-foot__legal {
+    max-width: 30rem;
+    font-family: var(--font-ui);
+    font-size: calc(0.8125rem * var(--ts-all));
+    line-height: 1.7;
+    color: var(--mob-muted);
+  }
+  .site-foot__legal + .site-foot__legal {
+    margin-top: -1rem;
+  }
+  .site-foot__inline {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    margin: 0 0.5rem;
+  }
+  .site-foot__chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  .site-foot__chips > li {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.35rem 0.75rem;
+    font-size: calc(0.75rem * var(--ts-all));
+    font-weight: 600;
+    color: var(--mob-muted);
+  }
+  .site-foot__news {
+    width: 100%;
+    max-width: 24rem;
+  }
+  .site-foot__news form > p {
+    text-align: center;
+  }
+  .site-foot__news :is(input, button) {
+    min-height: 3rem;
+    border-radius: 0 !important;
+  }
+  .site-foot__news button {
+    min-width: 3rem;
+  }
+  .site-foot__socials {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+  .site-foot__socials a {
+    width: 2.75rem;
+    height: 2.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: var(--mob-muted);
+    transition: color 0.15s ease;
+  }
+  .site-foot__box {
+    width: 100%;
+    max-width: 24rem;
+    padding: 0.9rem 1.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    font-family: var(--font-ui);
+    font-size: calc(0.8125rem * var(--ts-all));
+    line-height: 1.5;
+    color: var(--mob-muted);
+  }
+  .site-foot__admin {
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2.75rem;
+    margin-top: -0.75rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: calc(0.75rem * var(--ts-all));
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #8fa3c4;
+  }
+
+  /* Barre d'action du téléphone : bouton de 44 px au moins */
+  .mobile-actions .btn {
+    min-height: 2.75rem;
+  }
+}
+@media (min-width: 640px) and (max-width: 1023.98px) {
+  #main .mob-band {
+    padding: 1.5rem;
+  }
+  #main .mob-card,
+  #main .mob-pres__panel {
+    padding: 2.5rem 2.25rem;
+  }
+}
+@media (max-width: 1023.98px) and (prefers-reduced-motion: reduce) {
+  .site-burger__lines > span,
+  .site-foot__links a,
+  .site-foot__socials a {
+    transition: none;
+  }
+}
+
+/* Onglets des actualités sur téléphone : la rangée défile au doigt ; un fondu à droite montre qu'il y
+   en a d'autres, et chaque onglet s'arrête net au bord (le bureau n'est pas concerné) */
+@media (max-width: 1023.98px) {
+  nav.scroll-x:has(> .news-tab) {
+    mask-image: linear-gradient(to right, #000 82%, transparent);
+    -webkit-mask-image: linear-gradient(to right, #000 82%, transparent);
+    scroll-snap-type: x proximity;
+    padding-right: 2.5rem;
+  }
+  nav.scroll-x > .news-tab {
+    flex-shrink: 0;
+    scroll-snap-align: start;
+  }
+}
+
+/* Téléphone : étiquettes en capitales des annuaires (Cadres, Diaspora…) un peu plus grandes pour rester lisibles */
+@media (max-width: 1023.98px) {
+  #main .text-\[11px\] {
+    font-size: 12px;
+  }
+}
+
+/* Menu mobile ouvert : l'assistant et « haut de page » masqueraient les boutons du bas du menu */
+@media (max-width: 1023.98px) {
+  body:has(#mobileMenu:not(.hidden)) :is(.assistant-fab, .back-to-top) {
+    visibility: hidden;
+  }
+}
+
+/* Téléphone et tablette : pas de fil d'actualité défilant sous la photo d'accueil (les actualités ont leur section plus bas) */
+@media (max-width: 1023.98px) {
+  .chyron {
+    display: none !important;
+  }
+}
+
+/* Téléphone et tablette : texte coupé à 3 lignes (Président Élu à l'accueil) ; le texte entier reste sur ordinateur */
+@media (max-width: 1023.98px) {
+  #main .mob-clamp {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+  }
+}
+
+/* Téléphone et tablette : élément masqué même s'il porte un style d'affichage du site (ex. .arrow-link) */
+@media (max-width: 1023.98px) {
+  #main .mob-hide {
+    display: none !important;
+  }
+  /* Sommaire de page (PageSubnav) : liens d'au moins 44 px de haut au doigt */
+  .subnav-index .subnav-link {
+    min-height: 2.75rem;
+  }
+  /* Petits boutons (ex. « Ouvrir dans un nouvel onglet ») : 44 px de haut au moins */
+  #main .btn--sm {
+    min-height: 2.75rem;
+  }
+  /* Liste des actualités : vignette sans photo masquée, le texte prend toute la largeur */
+  #main .news-row:has(> .news-thumb.mob-hide) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Accueil, téléphone et tablette : bouton « Adhérer en ligne » sous le formulaire, sur toute sa largeur */
+@media (max-width: 1023.98px) {
+  #main .hero-stack > .hero-adherer {
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    min-height: 3.25rem;
+    margin-top: 0.25rem;
+    background: #fff;
+    color: var(--color-ecideDarkBlue);
+    font-family: var(--font-sans, inherit);
+    font-weight: 800;
+    font-size: 0.8125rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  #main .hero-stack > .hero-adherer:hover {
+    background: var(--color-ecideYellow);
+  }
+  #main .hero-stack > .hero-adherer:focus-visible {
+    outline: 3px solid var(--color-ecideYellow);
+    outline-offset: 2px;
   }
 }

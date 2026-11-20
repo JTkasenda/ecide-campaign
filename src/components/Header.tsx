@@ -16,6 +16,8 @@ import type { Site } from "@/lib/types";
  * clavier s'y pose (Organigramme, Charte, Projet, Cadres, Diaspora sous « Le Parti »…). Le rangement
  * vient de l'administration (Paramètres › Navigation, case « Sous-page »). Sur mobile et tablette,
  * le bouton de menu (hamburger) ouvre le panneau avec les mêmes entrées, sous-pages en retrait.
+ * Sous 1024 px (façon warnockforgeorgia.com sur mobile) : hamburger à fines lignes juste avant
+ * « Faire un don », bloc jaune collé au bord droit sur toute la hauteur du bandeau (globals.css).
  */
 export default function Header({ site, locale }: { site: Site; locale: Locale }) {
   const { t } = useI18n();
@@ -107,7 +109,7 @@ export default function Header({ site, locale }: { site: Site; locale: Locale })
   return (
     <header className="site-header bg-ecideDarkBlue text-white sticky top-0 z-40">
       <nav aria-label={t("Navigation principale")}>
-        <div className="max-w-7xl mx-auto px-6 flex justify-between items-center gap-3 xl:gap-6 h-16 xl:h-20">
+        <div className="max-w-7xl mx-auto px-6 max-lg:pr-0 max-lg:pl-4 sm:max-lg:pl-6 flex justify-between items-center gap-3 xl:gap-6 h-16 xl:h-20">
           <Link href={localePath(locale, "/")} className="flex items-center gap-3 min-w-0 shrink lg:shrink-0" aria-label={`${p.nom || "ECiDé"}, ${t("retour à l'accueil")}`}>
             <img src={site.assets.logo || "/assets/img/logo-160.png"} alt="" width={44} height={44} className="w-11 h-11 shrink-0 rounded-full object-cover" />
             <span className="min-w-0 leading-none">
@@ -205,7 +207,7 @@ export default function Header({ site, locale }: { site: Site; locale: Locale })
             })}
           </ul>
 
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0 shrink-0 max-w-[calc(100%-3.5rem)] sm:max-w-none">
+          <div className="site-header__actions flex items-center gap-2 sm:gap-3 min-w-0 shrink-0 max-w-[calc(100%-3.5rem)] sm:max-w-none">
             <label className="lang-switch hidden sm:flex items-center gap-2 text-white border border-white/50 hover:border-white hover:bg-white/10 px-3 py-2 text-xs font-sans font-bold tracking-widest relative cursor-pointer transition">
               <i className="fa-solid fa-globe text-ecideYellow" aria-hidden="true"></i>
               <span>{locale.toUpperCase()}</span>
@@ -215,48 +217,30 @@ export default function Header({ site, locale }: { site: Site; locale: Locale })
             <Link href={localePath(locale, site.cta.url)} className="btn btn--outline-white btn--sm min-w-0 hidden md:inline-flex" aria-current={matches(site.cta.url) || matches("/espace-membre") ? "page" : undefined}>
               <span className="truncate">{site.cta.label}</span>
             </Link>
-            {donLink("btn btn--primary btn--sm min-w-0")}
-            <button type="button" onClick={() => setOpen(!open)} className="lg:hidden text-white text-2xl p-1 ml-1 shrink-0" aria-label={t("Ouvrir le menu")} aria-expanded={open} aria-controls="mobileMenu">
-              <i className={open ? "fa-solid fa-xmark" : "fa-solid fa-bars"} aria-hidden="true"></i>
+            {/* Téléphone et tablette : hamburger à fines lignes, puis le don en bloc jaune collé au bord droit et sur toute la hauteur du bandeau */}
+            <button type="button" onClick={() => setOpen(!open)} className="site-burger lg:hidden text-white shrink-0" aria-label={t("Ouvrir le menu")} aria-expanded={open} aria-controls="mobileMenu">
+              <span className="site-burger__lines" aria-hidden="true"><span></span><span></span><span></span></span>
             </button>
+            {donLink("site-header__don btn btn--primary btn--sm min-w-0")}
           </div>
         </div>
       </nav>
 
       {/* Panneau mobile et tablette */}
       <div id="mobileMenu" ref={menuRef} className={`${open ? "" : "hidden"} lg:hidden bg-white text-gray-900 border-t border-gray-200 px-6 py-4 shadow-card absolute w-full max-h-[calc(100vh-4rem)] overflow-y-auto`}>
-        <Link href={localePath(locale, "/")} onClick={() => setOpen(false)} className="mobile-link block py-3 text-gray-700 border-b" aria-current={path === "/" ? "page" : undefined}>
-          {t("Accueil")}
-        </Link>
+        {/* Menu simplifié : les entrées principales seulement (le logo mène à l'accueil ; les sous-pages
+            restent accessibles depuis leur page et le pied de page ; « Faire un don » est dans l'en-tête,
+            « Adhérer » sous le formulaire de l'accueil et dans l'en-tête sur tablette) */}
         {nav.map((n, i) => (
-          <div key={n.id || n.url} className={i === nav.length - 1 ? "" : "border-b"}>
-            <Link href={localePath(locale, n.url)} onClick={() => setOpen(false)} className="mobile-link block py-3 text-gray-700" aria-current={isCurrent(n.url) ? "page" : undefined}>
-              {n.libelle}
-            </Link>
-            {n.children.length > 0 && (
-              <ul className="pb-3 pl-4 border-l-2 border-ecideYellow ml-1 space-y-0.5">
-                {n.children.map((c) => (
-                  <li key={c.id || c.url}>
-                    <Link href={localePath(locale, c.url)} onClick={() => setOpen(false)} className="mobile-link mobile-link--sub block py-2 text-sm text-gray-600" aria-current={isCurrent(c.url) ? "page" : undefined}>
-                      {c.libelle}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          <Link key={n.id || n.url} href={localePath(locale, n.url)} onClick={() => setOpen(false)} className={`mobile-link block py-3 text-gray-700 ${i === nav.length - 1 ? "" : "border-b"}`} aria-current={isCurrent(n.url) || n.children.some((c) => isCurrent(c.url)) ? "page" : undefined}>
+            {n.libelle}
+          </Link>
         ))}
         <label className="sm:hidden flex items-center gap-3 py-3 border-t text-sm font-sans font-semibold text-gray-700">
           <i className="fa-solid fa-globe text-ecideBlue" aria-hidden="true"></i>
           <span>{t("Langue")}</span>
           {langSelect("langSelectMobile", "ml-auto min-w-0 bg-white border border-ecideDarkBlue text-ecideDarkBlue px-3 py-2 text-sm font-semibold focus:outline-none")}
         </label>
-        <div className="flex flex-col sm:flex-row gap-3 mt-4">
-          <Link href={localePath(locale, site.cta.url)} onClick={() => setOpen(false)} className="btn btn--dark flex-1">
-            {site.cta.label}
-          </Link>
-          {donLink("btn btn--primary flex-1")}
-        </div>
       </div>
     </header>
   );

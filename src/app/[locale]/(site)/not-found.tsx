@@ -16,7 +16,8 @@ export default function NotFound() {
           <p className="text-lg text-blue-100">{t("La page que vous cherchez n'existe pas ou a été déplacée. Vérifiez l'adresse ou revenez à l'accueil.")}</p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link href={localePath(l, "/")} className="btn btn--primary btn--lg"><i className="fa-solid fa-house text-sm" aria-hidden="true"></i>{t("Retour à l'accueil")}</Link>
-            <Link href={localePath(l, "/actualites")} className="btn btn--outline-white btn--lg">{t("Voir les actualités")}</Link>
+            {/* Téléphone et tablette : un seul bouton */}
+            <Link href={localePath(l, "/actualites")} className="btn btn--outline-white btn--lg mob-hide">{t("Voir les actualités")}</Link>
           </div>
         </div>
       </section>

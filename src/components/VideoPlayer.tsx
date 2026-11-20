@@ -117,7 +117,7 @@ export function VideoPlayer({
     >
       {poster ? <img src={poster} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover" /> : <span className="absolute inset-0 bg-gradient-to-br from-ecideBlue-100 to-ecideBlue-50" aria-hidden="true"></span>}
       <span className="absolute inset-0 flex items-center justify-center">
-        <span className={`${compact ? "w-11 h-11 text-base" : "w-16 h-16 md:w-20 md:h-20 text-2xl md:text-3xl"} rounded-full bg-white/90 text-ecideBlue flex items-center justify-center shadow-card group-hover:scale-110 transition`}>
+        <span className={`${compact ? "w-11 h-11 text-base" : "video-play w-16 h-16 md:w-20 md:h-20 text-2xl md:text-3xl"} rounded-full bg-white/90 text-ecideBlue flex items-center justify-center shadow-card group-hover:scale-110 transition`}>
           <i className="fa-solid fa-play ml-0.5" aria-hidden="true"></i>
         </span>
       </span>

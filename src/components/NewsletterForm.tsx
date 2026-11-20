@@ -23,13 +23,13 @@ interface Labels {
  * reçoit la langue de la page (?lang) : chaque abonné reçoit ses e-mails dans cette langue. Le
  * pied de page propose aussi le numéro de téléphone : alertes par SMS, en plus ou à la place de l'e-mail.
  */
-export default function NewsletterForm({ variant, labels, description }: { variant: "footer" | "aside" | "hero"; labels: Labels; description?: string }) {
+export default function NewsletterForm({ variant, labels, description, idPrefix }: { variant: "footer" | "aside" | "hero"; labels: Labels; description?: string; /** Identifiant des champs, quand le même formulaire figure deux fois sur la page (pied de page mobile et ordinateur) */ idPrefix?: string }) {
   const { t, locale } = useI18n();
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
-  const id = variant === "footer" ? "footerEmail" : variant === "hero" ? "heroEmail" : "newsEmail";
+  const id = idPrefix || (variant === "footer" ? "footerEmail" : variant === "hero" ? "heroEmail" : "newsEmail");
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -57,20 +57,21 @@ export default function NewsletterForm({ variant, labels, description }: { varia
   if (variant === "hero") {
     return (
       <form onSubmit={submit} className="newsletter-hero max-w-xl" aria-label={labels.title}>
-        <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto]">
-          <div className="bg-ecideBlue-50 text-gray-900 grid grid-cols-1 sm:grid-cols-2">
+        {/* Téléphone et tablette (globals.css) : grille serrée sur deux rangs, e-mail en pleine largeur puis prénom et bouton */}
+        <div className="newsletter-hero__grid grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto]">
+          <div className="newsletter-hero__fields bg-ecideBlue-50 text-gray-900 grid grid-cols-1 sm:grid-cols-2">
             <label htmlFor={id} className="sr-only">{labels.placeholder}</label>
-            <input id={id} name="email" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={labels.placeholder} className="min-w-0 px-5 py-5 bg-transparent text-base placeholder:text-gray-500 focus:outline-none focus:bg-white sm:border-r border-white" />
+            <input id={id} name="email" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={labels.placeholder} className="newsletter-hero__email min-w-0 px-5 py-5 bg-transparent text-base placeholder:text-gray-500 focus:outline-none focus:bg-white sm:border-r border-white" />
             {labels.name && (
               <>
                 <label htmlFor={`${id}Name`} className="sr-only">{labels.name}</label>
-                <input id={`${id}Name`} name="nom" type="text" autoComplete="given-name" maxLength={120} value={name} onChange={(e) => setName(e.target.value)} placeholder={labels.name} className="min-w-0 px-5 py-5 bg-transparent text-base placeholder:text-gray-500 focus:outline-none focus:bg-white border-t sm:border-t-0 border-white" />
+                <input id={`${id}Name`} name="nom" type="text" autoComplete="given-name" maxLength={120} value={name} onChange={(e) => setName(e.target.value)} placeholder={labels.name} className="newsletter-hero__name min-w-0 px-5 py-5 bg-transparent text-base placeholder:text-gray-500 focus:outline-none focus:bg-white border-t sm:border-t-0 border-white" />
               </>
             )}
           </div>
-          <button type="submit" disabled={busy} className="btn btn--primary btn--lg sm:h-full disabled:opacity-60">{labels.submit}</button>
+          <button type="submit" disabled={busy} className="newsletter-hero__submit btn btn--primary btn--lg sm:h-full disabled:opacity-60">{labels.submit}</button>
         </div>
-        {labels.note && <p className="text-xs text-blue-100 pt-3 max-w-md font-sans">{labels.note}</p>}
+        {labels.note && <p className="newsletter-hero__note text-xs text-blue-100 pt-3 max-w-md font-sans">{labels.note}</p>}
       </form>
     );
   }

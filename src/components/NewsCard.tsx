@@ -36,7 +36,8 @@ export function RelatedCard({ n, locale }: { n: NewsItem; locale: Locale }) {
   const c = n.categorie;
   return (
     <article className="panel panel--white overflow-hidden transition reveal">
-      <div className={`relative h-40 overflow-hidden ${c.bg} flex items-center justify-center`}>
+      {/* Téléphone et tablette : la vignette sans photo (simple icône de rubrique) est masquée */}
+      <div className={`relative h-40 overflow-hidden ${c.bg} flex items-center justify-center${n.image ? "" : " mob-hide"}`}>
         {n.image ? <img src={n.image} alt="" loading="lazy" className="w-full h-full object-cover" /> : <i className={`${c.icon} text-4xl ${c.muted}`} aria-hidden="true"></i>}
         {n.duree && <span className="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] font-bold px-1.5 py-0.5">{n.duree}</span>}
       </div>

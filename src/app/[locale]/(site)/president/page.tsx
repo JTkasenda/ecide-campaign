@@ -25,6 +25,8 @@ export default async function PresidentPage({ params }: PageParams) {
   const [data, t] = await Promise.all([getPresident(locale), getT(locale)]);
   const { president: pres, videos, presse } = data;
   const nom = (pres.nom || "").trim().split(/ (.+)/);
+  // Téléphone et tablette : prénom et nom seulement (« Martin Fayulu ») ; la suite reste lue par les lecteurs d'écran
+  const nomSuite = (nom[1] || "").split(" ");
   const main = videos[0];
   const pastille = (pres.pastille || t("Président Élu")).split("·");
   const showFils = pres.afficherFils && (pres.x || pres.facebook);
@@ -56,13 +58,17 @@ export default async function PresidentPage({ params }: PageParams) {
             <h1 className="text-5xl sm:text-6xl lg:text-7xl leading-[0.95] text-white">
               {nom[0] || ""}
               <br />
-              <span className="text-ecideYellow">{nom[1] || ""}</span>
+              <span className="text-ecideYellow">
+                {nomSuite[0]}
+                {nomSuite.length > 1 && <span className="max-lg:sr-only"> {nomSuite.slice(1).join(" ")}</span>}
+              </span>
             </h1>
             {pres.sousTitre && <p className="text-xl font-semibold text-blue-100">{pres.sousTitre}</p>}
-            <p className="text-lg leading-relaxed text-blue-100">{pres.intro || ""}</p>
+            {/* Téléphone et tablette : sans l'introduction, et un seul bouton */}
+            <p className="mob-hide text-lg leading-relaxed text-blue-100">{pres.intro || ""}</p>
             <div className="flex flex-wrap gap-3 pt-2">
               <a href="#discours" className="btn btn--primary"><i className="fa-solid fa-play text-sm" aria-hidden="true"></i>{t("Discours & vidéos")}</a>
-              <a href="#biographie" className="btn btn--outline-white">{t("Biographie")}</a>
+              <a href="#biographie" className="btn btn--outline-white mob-hide">{t("Biographie")}</a>
             </div>
           </div>
         </div>
@@ -71,11 +77,11 @@ export default async function PresidentPage({ params }: PageParams) {
       <PageSubnav label={t("Sommaire de la page")} links={subnav} />
 
       {/* BIOGRAPHIE : une amorce seulement, la biographie complète a sa propre page */}
-      <section id="biographie" className="bg-white py-20 lg:py-32 px-6 scroll-mt-32">
+      <section id="biographie" className="mob-band bg-white py-20 lg:py-32 px-6 scroll-mt-32">
         {/* Amorce et bouton d'un seul bloc : l'action suit la lecture au lieu de flotter à l'autre bout de la page */}
-        <div className="max-w-7xl mx-auto space-y-8 reveal">
+        <div className="mob-card max-w-7xl mx-auto space-y-8 reveal">
           <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue leading-none">{pres.bioTitre || t("Biographie")}</h2>
-          {pres.bioTexte && <p className="text-xl text-gray-800 leading-relaxed max-w-3xl">{pres.bioTexte}</p>}
+          {pres.bioTexte && <p className="mob-clamp text-xl text-gray-800 leading-relaxed max-w-3xl">{pres.bioTexte}</p>}
           <Link href={localePath(locale, "/president/biographie")} className="btn btn--dark"><i className="fa-solid fa-book-open text-sm" aria-hidden="true"></i>{t("Lire la biographie")}</Link>
         </div>
       </section>
@@ -86,9 +92,10 @@ export default async function PresidentPage({ params }: PageParams) {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 reveal">
             <div className="space-y-3 max-w-2xl">
               <h2 className="text-4xl text-ecideDarkBlue">{t("Discours & vidéos")}</h2>
-              {pres.videosIntro && <p className="text-lg text-gray-600">{pres.videosIntro}</p>}
+              {pres.videosIntro && <p className="mob-hide text-lg text-gray-600">{pres.videosIntro}</p>}
             </div>
-            {pres.youtube && <a href={safeUrl(pres.youtube)} target="_blank" rel="noopener" className="btn btn--outline text-ecideBlue btn--sm md:shrink-0"><i className="fa-brands fa-youtube text-red-600 text-lg" aria-hidden="true"></i> {t("Chaîne YouTube officielle")}</a>}
+            {/* Téléphone et tablette : titre et vidéos ; introduction, lien YouTube et réseaux sociaux sur ordinateur */}
+            {pres.youtube && <a href={safeUrl(pres.youtube)} target="_blank" rel="noopener" className="btn btn--outline text-ecideBlue btn--sm md:shrink-0 mob-hide"><i className="fa-brands fa-youtube text-red-600 text-lg" aria-hidden="true"></i> {t("Chaîne YouTube officielle")}</a>}
           </div>
           {main ? (
             <VideoGallery videos={videos.slice(0, 3)} labels={{ lire, latest: t("Dernière intervention"), allLives: t("Tous les directs & replays"), lives: t("Directs"), inNews: t("Dans la rubrique Actualités"), soon: t("Vidéo à venir") }} newsUrl={localePath(locale, "/actualites")} />
@@ -96,7 +103,7 @@ export default async function PresidentPage({ params }: PageParams) {
             <p className="text-gray-500 reveal">{t("Aucune vidéo publiée pour le moment.")}</p>
           )}
           {showFils && (
-            <div id="communication" className="panel panel--white p-6 flex flex-col md:flex-row md:items-center gap-5 scroll-mt-32 reveal">
+            <div id="communication" className="mob-hide panel panel--white p-6 flex flex-col md:flex-row md:items-center gap-5 scroll-mt-32 reveal">
               <p className="text-gray-700 flex-1 min-w-0">
                 <span className="font-semibold text-gray-900">{t("Sur les réseaux sociaux")}</span>
                 {pres.communicationTexte ? ` — ${pres.communicationTexte}` : ""}
@@ -111,11 +118,12 @@ export default async function PresidentPage({ params }: PageParams) {
       </section>
 
       {/* DOSSIER DE PRESSE */}
-      <section id="presse" className="py-20 lg:py-32 px-6 bg-white scroll-mt-32">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-20 items-start">
+      <section id="presse" className="mob-band py-20 lg:py-32 px-6 bg-white scroll-mt-32">
+        <div className="mob-card max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-20 items-start">
           <div className="lg:col-span-5 space-y-5 reveal">
             <h2 className="text-4xl text-ecideDarkBlue">{t("Dossier de presse & visuels")}</h2>
-            <p className="text-lg text-gray-600 leading-relaxed">{pres.presseTexte || ""}</p>
+            {/* Téléphone et tablette : titre, contacts du service presse et fichiers (sans leur description) */}
+            <p className="mob-hide text-lg text-gray-600 leading-relaxed">{pres.presseTexte || ""}</p>
             {(pres.presseMail || pres.presseTel) && (
               <p className="text-gray-700 leading-relaxed">
                 <span className="font-semibold text-gray-900">{t("Service presse")}</span>
@@ -144,7 +152,7 @@ export default async function PresidentPage({ params }: PageParams) {
                     <span className={`icon-tile shrink-0 ${zip ? "" : "bg-red-600"}`} aria-hidden="true"><i className={zip ? "fa-regular fa-images" : "fa-regular fa-file-pdf"}></i></span>
                     <span className="flex-1 min-w-0">
                       <span className="block font-semibold text-gray-900 group-hover:text-ecideBlue">{f.nom}</span>
-                      <span className="block text-sm text-gray-500">{f.type}{f.taille ? ` · ${f.taille}` : ""}{f.date ? ` · ${t("mise à jour")} ${f.dateLabel}` : ""}</span>
+                      <span className="mob-hide block text-sm text-gray-500">{f.type}{f.taille ? ` · ${f.taille}` : ""}{f.date ? ` · ${t("mise à jour")} ${f.dateLabel}` : ""}</span>
                     </span>
                     <i className="fa-solid fa-download text-gray-400 group-hover:text-ecideBlue" aria-hidden="true"></i>
                   </a>

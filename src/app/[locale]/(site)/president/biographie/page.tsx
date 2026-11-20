@@ -39,7 +39,7 @@ export default async function BiographiePage({ params }: PageParams) {
 
   return (
     <main id="main" className="flex-grow">
-      <PageBanner eyebrow={pres.bioSurtitre || t("Biographie")} title={nom} text={pres.sousTitre || pres.pastille || ""}>
+      <PageBanner eyebrow={pres.bioSurtitre || t("Biographie")} title={nom} text={pres.sousTitre || pres.pastille || ""} mobileText="clamp">
         <DocumentButtons doc={biographie} t={t} back={{ href: localePath(locale, "/president"), label: t("Président Élu") }} />
       </PageBanner>
 
@@ -58,7 +58,8 @@ export default async function BiographiePage({ params }: PageParams) {
                   <footer className="mt-3 text-sm font-semibold text-gray-500">{nom}</footer>
                 </blockquote>
               )}
-              <div className="flex flex-wrap gap-x-6 gap-y-2 pt-2">
+              {/* Téléphone et tablette : le texte complet, sans le lien secondaire */}
+              <div className="mob-hide flex flex-wrap gap-x-6 gap-y-2 pt-2">
                 <Link href={`${localePath(locale, "/president")}#discours`} className="arrow-link">{t("Discours & vidéos")}</Link>
               </div>
             </div>
@@ -87,8 +88,8 @@ export default async function BiographiePage({ params }: PageParams) {
 
       {/* WIKIPÉDIA : la carte de l'article en français (titre, description courte) et le lien, sans reprendre le récit */}
       {wikiUrl && (
-        <section id="wikipedia" className="bg-white py-16 lg:py-20 px-6 scroll-mt-32">
-          <div className="max-w-7xl mx-auto panel p-6 lg:p-8 flex flex-col md:flex-row md:items-center gap-6 reveal">
+        <section id="wikipedia" className="mob-band bg-white py-16 lg:py-20 px-6 scroll-mt-32">
+          <div className="mob-card max-w-7xl mx-auto panel p-6 lg:p-8 flex flex-col md:flex-row md:items-center gap-6 reveal">
             <span className="icon-tile icon-tile--dark shrink-0"><i className="fa-brands fa-wikipedia-w" aria-hidden="true"></i></span>
             <div className="flex-1 min-w-0 space-y-1">
               <span className="text-ecideGreen font-bold uppercase tracking-widest text-xs">{pres.wikiSurtitre || t("Sur Wikipédia")}</span>
@@ -96,7 +97,7 @@ export default async function BiographiePage({ params }: PageParams) {
                 {wiki?.title || nom}
                 {wiki?.description && <span className="font-serif font-normal text-lg text-gray-600"> — {wiki.description}</span>}
               </h2>
-              <p className="text-sm text-gray-500 font-sans">{pres.wikiTexte || t("Article de l'encyclopédie libre Wikipédia, en français.")}</p>
+              <p className="mob-hide text-sm text-gray-500 font-sans">{pres.wikiTexte || t("Article de l'encyclopédie libre Wikipédia, en français.")}</p>
             </div>
             {wikiButton("btn btn--dark md:shrink-0")}
           </div>
@@ -104,8 +105,8 @@ export default async function BiographiePage({ params }: PageParams) {
       )}
 
       {/* LA BIOGRAPHIE OFFICIELLE EN PDF : à télécharger (pas d'aperçu dans la page) */}
-      <section id="document" className={`bg-white px-6 scroll-mt-32 ${wikiUrl ? "pb-16 lg:pb-20" : "py-16 lg:py-20"}`}>
-        <div className="max-w-7xl mx-auto panel p-6 lg:p-8 reveal">
+      <section id="document" className={`mob-band bg-white px-6 scroll-mt-32 ${wikiUrl ? "pb-16 lg:pb-20" : "py-16 lg:py-20"}`}>
+        <div className="mob-card max-w-7xl mx-auto panel p-6 lg:p-8 reveal">
           <DocumentCard doc={biographie} title={pres.bioPdfTitre || t("Biographie officielle")} t={t} />
         </div>
       </section>

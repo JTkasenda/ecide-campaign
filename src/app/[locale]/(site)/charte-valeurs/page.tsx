@@ -46,7 +46,8 @@ export default async function CharteValeursPage({ params }: PageParams) {
                   <span className="card-index" aria-hidden="true">{pad2(i + 1)}</span>
                   <div className={`w-14 h-14 ${tt.bg} ${tt.text} flex items-center justify-center text-2xl`}><i className={`fa-solid ${v.icone}`} aria-hidden="true"></i></div>
                   <h3 className="text-xl font-bold text-gray-900">{v.titre}</h3>
-                  <p className="text-gray-600">{v.texte}</p>
+                  {/* Téléphone et tablette : icône et nom de la valeur ; le texte complet est dans le PDF de la charte */}
+                  <p className="mob-hide text-gray-600">{v.texte}</p>
                 </div>
               );
             })}
@@ -64,7 +65,7 @@ export default async function CharteValeursPage({ params }: PageParams) {
               <h2 className="text-4xl">{pp.engagementsTitre || t("Les engagements de la charte")}</h2>
               <div className="flex flex-wrap gap-3 pt-2">
                 <Link href={localePath(locale, "/adherer")} className="btn btn--primary">{t("Rejoindre le parti")}</Link>
-                <Link href={localePath(locale, "/parti")} className="btn btn--outline-white">{t("Le Parti")}</Link>
+                <Link href={localePath(locale, "/parti")} className="btn btn--outline-white mob-hide">{t("Le Parti")}</Link>
               </div>
             </div>
             <ul className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-6 text-lg reveal">

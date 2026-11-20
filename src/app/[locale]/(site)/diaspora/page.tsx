@@ -28,7 +28,8 @@ export default async function DiasporaPage({ params }: PageParams) {
       </PageBanner>
       <section className="py-16 lg:py-20 px-6 max-w-7xl mx-auto space-y-10">
         <DiasporaDirectory data={data.data} locale={locale} />
-        <p className="text-center text-sm text-gray-500 italic relative">{s("avertissement") || t("Les noms et profils publics des responsables sont publiés après validation par la Coordination de la Diaspora ; leurs numéros personnels ne sont jamais affichés : utilisez les coordonnées du secrétariat provincial exécutif ou de la section. « À confirmer » signale un poste dont le titulaire n'est pas encore renseigné.")}</p>
+        {/* Téléphone et tablette : l'annuaire seul ; l'avertissement sur ordinateur */}
+        <p className="mob-hide text-center text-sm text-gray-500 italic relative">{s("avertissement") || t("Les noms et profils publics des responsables sont publiés après validation par la Coordination de la Diaspora ; leurs numéros personnels ne sont jamais affichés : utilisez les coordonnées du secrétariat provincial exécutif ou de la section. « À confirmer » signale un poste dont le titulaire n'est pas encore renseigné.")}</p>
       </section>
 
       <section id="rejoindre" className="scroll-mt-24 py-28 lg:py-32 px-6 bg-ecideDarkBlue text-white diag">
@@ -36,7 +37,7 @@ export default async function DiasporaPage({ params }: PageParams) {
           <div className="space-y-6 reveal">
             <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{s("rejoindreSurtitre") || t("Mobilisation")}</span>
             <h2 className="text-4xl lg:text-5xl">{s("rejoindreTitre")}</h2>
-            <p className="text-lg text-blue-100 leading-relaxed">{s("rejoindreTexte")}</p>
+            <p className="mob-hide text-lg text-blue-100 leading-relaxed">{s("rejoindreTexte")}</p>
             <ul className="space-y-3 text-blue-50 font-serif">
               {dp.avantages.map((a, i) => (
                 <li key={i} className="flex items-start gap-3"><i className="fa-solid fa-circle-check text-ecideYellow mt-1" aria-hidden="true"></i> {a}</li>

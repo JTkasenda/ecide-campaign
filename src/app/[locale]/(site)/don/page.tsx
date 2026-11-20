@@ -43,7 +43,8 @@ export default async function DonPage({ params }: PageParams) {
             </Suspense>
           </div>
           <aside className="lg:col-span-4 space-y-6 lg:sticky lg:top-32">
-            <div className="panel panel--white p-7 space-y-4 reveal">
+            {/* Téléphone et tablette : les moyens de paiement sont déjà au choix dans le formulaire */}
+            <div className="mob-hide panel panel--white p-7 space-y-4 reveal">
               <h2 className="text-2xl text-ecideDarkBlue no-bar">{s("donMoyensTitre") || t("Moyens de paiement acceptés")}</h2>
               <ul className="divide-y divide-gray-200">
                 {paiement.moyens.map((m) => (
@@ -59,7 +60,7 @@ export default async function DonPage({ params }: PageParams) {
               <p className="text-blue-100">{s("donAideTexte") || t("Écrivez à la Trésorerie du parti : un reçu peut vous être remis sur demande.")}</p>
               <div className="flex flex-wrap gap-3">
                 <Link href={localePath(locale, "/contact")} className="btn btn--primary btn--sm">{t("Nous contacter")}</Link>
-                <Link href={localePath(locale, site.cta.url || "/adherer")} className="btn btn--outline-white btn--sm">{t("Devenir membre")}</Link>
+                <Link href={localePath(locale, site.cta.url || "/adherer")} className="btn btn--outline-white btn--sm mob-hide">{t("Devenir membre")}</Link>
               </div>
             </div>
           </aside>

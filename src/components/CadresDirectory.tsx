@@ -243,7 +243,8 @@ export default function CadresDirectory({ data, locale }: { data: CadresData; lo
             ))}
           </div>
         </div>
-        <p className="text-sm text-gray-500">{NIVEAUX.find((n) => n.id === state.niveau)?.hint}</p>
+        {/* Aide du niveau choisi : ordinateur seulement */}
+        <p className="mob-hide text-sm text-gray-500">{NIVEAUX.find((n) => n.id === state.niveau)?.hint}</p>
       </div>
 
       <div className="bg-ecideBlue-50 p-5 lg:p-6 space-y-5">

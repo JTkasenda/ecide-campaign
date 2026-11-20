@@ -4,7 +4,8 @@ import { safeUrl } from "@/lib/format";
 import type { T } from "@/lib/t";
 import type { PartyDocument } from "@/lib/types";
 
-/** Boutons du bandeau d'une page-document : téléchargement du PDF, boutons libres, retour vers la page parente. */
+/** Boutons du bandeau d'une page-document : téléchargement du PDF, boutons libres, retour vers la page parente
+ * (téléphone : le fil d'Ariane mène déjà à la page parente, le bouton de retour est masqué). */
 export function DocumentButtons({ doc, t, back, children }: { doc: PartyDocument | null; t: T; back: { href: string; label: string }; children?: ReactNode }) {
   return (
     <div className="flex flex-wrap gap-3 shrink-0">
@@ -15,12 +16,13 @@ export function DocumentButtons({ doc, t, back, children }: { doc: PartyDocument
         </a>
       )}
       {children}
-      <Link href={back.href} className="btn btn--outline-white">{back.label}</Link>
+      <Link href={back.href} className="btn btn--outline-white mob-hide">{back.label}</Link>
     </div>
   );
 }
 
-/** En-tête d'un document : icône PDF, titre, taille et date, boutons de téléchargement et d'ouverture. */
+/** En-tête d'un document : icône PDF, titre, taille et date, boutons de téléchargement et d'ouverture
+ * (téléphone : le bandeau de la page propose déjà le téléchargement, seul « Ouvrir » reste ici). */
 export function DocumentCard({ doc, title, t, className = "" }: { doc: PartyDocument | null; title: string; t: T; className?: string }) {
   const url = doc?.url ? safeUrl(doc.url) : "";
   return (
@@ -36,7 +38,7 @@ export function DocumentCard({ doc, title, t, className = "" }: { doc: PartyDocu
       </div>
       {url && (
         <div className="flex flex-wrap gap-3 shrink-0">
-          <a href={url} download className="btn btn--dark btn--sm">
+          <a href={url} download className="btn btn--dark btn--sm mob-hide">
             <i className="fa-solid fa-download" aria-hidden="true"></i>
             {t("Télécharger le PDF")}
           </a>

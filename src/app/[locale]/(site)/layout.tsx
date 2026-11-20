@@ -5,9 +5,7 @@ import { isLocale } from "@/lib/locales";
 import { getT } from "@/lib/server";
 import Header from "@/components/Header";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import MobileActionBar from "@/components/MobileActionBar";
 import Footer from "@/components/Footer";
-import BackToTop from "@/components/BackToTop";
 import Assistant from "@/components/Assistant";
 import RevealObserver from "@/components/RevealObserver";
 
@@ -35,8 +33,6 @@ export default async function SiteLayout({ children, params }: { children: React
       <Breadcrumbs site={site} locale={locale} />
       {children}
       <Footer site={site} locale={locale} />
-      <BackToTop label={t("Retour en haut de la page")} />
-      <MobileActionBar site={site} locale={locale} />
       <Assistant locale={locale} />
       <RevealObserver />
     </>

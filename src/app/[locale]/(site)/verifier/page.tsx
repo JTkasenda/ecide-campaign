@@ -31,8 +31,8 @@ export default async function VerifierIndexPage({ params }: PageParams) {
         title={t("Vérifier une carte de membre")}
         text={t("Une personne se présente comme membre de l'ECiDé ? Saisissez le numéro de sa carte et son nom, ou scannez le QR code imprimé au verso.")}
       />
-      <section className="py-20 lg:py-28 px-6">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16">
+      <section className="mob-band py-20 lg:py-28 px-6">
+        <div className="mob-card max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16">
           <div className="lg:col-span-7">
             <CardCheck locale={locale} />
           </div>

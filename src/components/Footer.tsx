@@ -10,6 +10,8 @@ import NewsletterForm from "./NewsletterForm";
  * Pied de page façon site de campagne : bleu nuit, logo, combats et réseaux sociaux ; les liens
  * rangés comme le menu de l'en-tête (une colonne par rubrique à sous-pages, puis « Agir ») ;
  * coordonnées et inscription aux communiqués ; mentions en bas.
+ * Téléphone et tablette (< 1024 px) : version centrée façon warnockforgeorgia.com (logo, liens en
+ * capitales qui passent à la ligne, mentions, réseaux, copyright dans un cadre) ; mêmes contenus.
  */
 export default async function Footer({ site, locale }: { site: Site; locale: Locale }) {
   const t = await getT(locale);
@@ -19,9 +21,76 @@ export default async function Footer({ site, locale }: { site: Site; locale: Loc
   const sections = groups.filter((g) => g.children.length && !g.children.every((c) => ["/adherer", "/don"].includes(c.url)));
   const autres = groups.filter((g) => !sections.includes(g)).flatMap((g) => [g, ...g.children]);
   const linkCls = "hover:text-ecideYellow transition";
+  const copyright = p.copyright || `${p.nom || "ECiDé"} - ${t("Tous droits réservés.")}`;
+  // Liens du pied de page mobile : rubriques et sous-pages, puis les pages de service (sans doublon)
+  const legal = [
+    { url: "/contact", libelle: t("Contact") },
+    { url: "/verifier", libelle: t("Vérifier une carte de membre") },
+    { url: "/mentions-legales", libelle: t("Mentions légales") },
+  ];
+  const mobileLinks = [...groups.flatMap((g) => [g, ...g.children]), ...legal].filter((n, i, all) => all.findIndex((m) => m.url === n.url) === i);
 
   return (
     <footer className="bg-ecideDarkBlue text-white text-sm diag">
+      {/* Téléphone et tablette */}
+      <div className="site-foot lg:hidden">
+        <Link href={localePath(locale, "/")} className="site-foot__brand">
+          <img src={site.assets.logo || "/assets/img/logo-160.png"} alt="" width={72} height={72} loading="lazy" className="w-[4.5rem] h-[4.5rem] rounded-full object-cover" />
+          <span className="font-display font-black text-4xl block leading-none" translate="no">{p.nom || "ECiDé"}</span>
+          {p.slogan && <span className="eyebrow text-[11px] block">{p.slogan}</span>}
+        </Link>
+        <nav aria-label={t("Plan du site")}>
+          <ul className="site-foot__links">
+            {mobileLinks.map((n) => (
+              <li key={n.url}>
+                <Link href={localePath(locale, n.url)}>{n.libelle}</Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        {p.footerTexte && <p className="site-foot__legal">{p.footerTexte}</p>}
+        {(p.adresse || p.email || p.telephone) && (
+          <address className="site-foot__legal not-italic">
+            {p.adresse && <span className="block">{p.adresse}</span>}
+            {p.email && <a href={`mailto:${p.email}`} className="site-foot__inline">{p.email}</a>}
+            {p.telephone && <a href={telHref(p.telephone)} className="site-foot__inline">{p.telephone}</a>}
+          </address>
+        )}
+        {p.footerCombats.length > 0 && (
+          <ul className="site-foot__chips" aria-label={t("Nos Combats")}>
+            {p.footerCombats.map((c, i) => (
+              <li key={i}>{c}</li>
+            ))}
+          </ul>
+        )}
+        {p.newsletter && (
+          <div className="site-foot__news">
+            <NewsletterForm
+              variant="footer"
+              idPrefix="footerEmailMobile"
+              labels={{ title: t("Recevoir les communiqués"), placeholder: t("Votre e-mail"), phone: t("Votre numéro (SMS)"), note: t("Par e-mail, par SMS ou les deux."), submit: t("S'abonner"), success: t("Merci ! Vous recevrez nos communiqués officiels.") }}
+            />
+          </div>
+        )}
+        {site.socials.length > 0 && (
+          <ul className="site-foot__socials">
+            {site.socials.map((s) => (
+              <li key={s.key}>
+                <a href={safeUrl(s.url)} target="_blank" rel="noopener" aria-label={s.label}>
+                  <i className={`fa-brands ${s.icon}`} aria-hidden="true"></i>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+        <p className="site-foot__box">&copy; {new Date().getFullYear()} {copyright}</p>
+        <a href={safeUrl(site.admin)} className="site-foot__admin hidden md:inline-flex">
+          <i className="fa-solid fa-lock" aria-hidden="true"></i>
+          {t("Espace Admin")}
+        </a>
+      </div>
+
+      <div className="hidden lg:block">
       <div className="max-w-7xl mx-auto px-6 pt-20 pb-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-10">
         <div className="sm:col-span-2 lg:col-span-4 space-y-6">
           <Link href={localePath(locale, "/")} className="flex items-center gap-3">
@@ -108,7 +177,7 @@ export default async function Footer({ site, locale }: { site: Site; locale: Loc
       <div className="border-t border-white/15">
         <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row md:flex-wrap justify-between items-center gap-4 font-sans text-blue-200 text-xs tracking-wide">
           <p className="font-sans">
-            &copy; {new Date().getFullYear()} {p.copyright || `${p.nom || "ECiDé"} - ${t("Tous droits réservés.")}`}
+            &copy; {new Date().getFullYear()} {copyright}
           </p>
           <ul className="flex flex-wrap justify-center gap-6 uppercase font-bold tracking-widest text-[11px]">
             <li>
@@ -129,6 +198,7 @@ export default async function Footer({ site, locale }: { site: Site; locale: Loc
             </li>
           </ul>
         </div>
+      </div>
       </div>
     </footer>
   );

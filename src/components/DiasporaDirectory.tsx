@@ -183,7 +183,8 @@ export default function DiasporaDirectory({ data, locale }: { data: DiasporaData
             ))}
           </div>
         </div>
-        <p className="text-sm text-gray-500">{cur ? cur.hint : t("Une fédération par pays, ses secrétariats provinciaux exécutifs et leurs sections locales : toutes les représentations de l'ECiDé à l'étranger.")}</p>
+        {/* Aide du continent choisi : ordinateur seulement */}
+        <p className="mob-hide text-sm text-gray-500">{cur ? cur.hint : t("Une fédération par pays, ses secrétariats provinciaux exécutifs et leurs sections locales : toutes les représentations de l'ECiDé à l'étranger.")}</p>
       </div>
 
       <div className="bg-ecideBlue-50 p-5 lg:p-6 space-y-5 relative">

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Script from "next/script";
 import { safeUrl } from "@/lib/format";
 import { useI18n } from "@/lib/i18n";
@@ -7,6 +8,15 @@ import { useI18n } from "@/lib/i18n";
 /** Fils X et Facebook officiels (page d'accueil et page Président). */
 export default function SocialEmbeds({ x, facebook, name, height = 600 }: { x?: string; facebook?: string; name: string; height?: number }) {
   const { t, locale } = useI18n();
+  // Fils masqués sur téléphone et tablette (section cachée) : le script de X n'y est pas téléchargé
+  const [wide, setWide] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const sync = () => setWide(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
   const dataLang = locale === "en" ? "en" : "fr";
   // Facebook affiche son widget en anglais ou en swahili ; lingala, tshiluba et kikongo restent en français
   const fbLocale = locale === "en" ? "en_GB" : locale === "sw" ? "sw_KE" : "fr_FR";
@@ -33,7 +43,7 @@ export default function SocialEmbeds({ x, facebook, name, height = 600 }: { x?: 
               </span>
             </a>
           </div>
-          <Script src="https://platform.twitter.com/widgets.js" strategy="lazyOnload" />
+          {wide && <Script src="https://platform.twitter.com/widgets.js" strategy="lazyOnload" />}
         </article>
       )}
       {facebook && (

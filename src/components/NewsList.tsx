@@ -93,7 +93,8 @@ export function NewsFeed({ locale, news, labels }: { locale: Locale; news: NewsI
                 <VideoPlayer embed={n.embed} title={n.titre} poster={n.image} duree={n.duree} label={t("Lire la vidéo :")} onPlay={() => setPlaying(n.id)} className={playing === n.id ? "" : "news-thumb"} compact={playing !== n.id} watch={{ url: n.lienVideo, plateforme: n.plateforme }} />
               </div>
             ) : (
-              <Link href={localePath(locale, n.url)} className={`news-thumb ${n.categorie.bg} relative`}>
+              // Téléphone et tablette : la vignette sans photo (simple icône de rubrique) est masquée
+              <Link href={localePath(locale, n.url)} className={`news-thumb ${n.categorie.bg} relative${n.image ? "" : " mob-hide"}`}>
                 {n.image ? <img src={n.image} alt="" loading="lazy" className="w-full h-full object-cover" /> : <i className={`${n.categorie.icon} text-3xl ${n.categorie.muted}`} aria-hidden="true"></i>}
                 {n.duree && <span className="absolute bottom-2 right-2 bg-black/60 text-white text-[11px] font-bold px-1.5 py-0.5">{n.duree}</span>}
               </Link>
@@ -101,8 +102,9 @@ export function NewsFeed({ locale, news, labels }: { locale: Locale; news: NewsI
             <div className="min-w-0 space-y-2">
               <NewsMeta n={n} />
               <h3 className="text-2xl text-gray-900 leading-tight"><Link href={localePath(locale, n.url)} className="hover:text-ecideBlue">{n.titre}</Link></h3>
-              <p className="text-gray-600">{n.resume}</p>
-              <p className="text-sm text-gray-500">
+              {/* Téléphone et tablette : résumé coupé à 3 lignes, sans la ligne auteur / durée */}
+              <p className="mob-clamp text-gray-600">{n.resume}</p>
+              <p className="mob-hide text-sm text-gray-500">
                 {n.video ? (
                   <>
                     <i className={`${n.embed?.provider === "youtube" ? "fa-brands fa-youtube text-red-600" : n.embed?.provider === "facebook" ? "fa-brands fa-facebook text-[#1877f2]" : "fa-solid fa-video text-ecideBlue"} mr-1`} aria-hidden="true"></i>
@@ -126,7 +128,8 @@ export function NewsFeed({ locale, news, labels }: { locale: Locale; news: NewsI
         ))}
       </div>
       {filtered.length > 0 && (
-        <nav className="flex flex-wrap items-center justify-between gap-4 pt-8 border-t border-gray-200 mt-auto" aria-label={labels.pagination}>
+        // Téléphone et tablette : pagination centrée
+        <nav className="flex flex-wrap items-center justify-between max-lg:justify-center gap-4 pt-8 border-t border-gray-200 mt-auto" aria-label={labels.pagination}>
           <span className="text-sm text-gray-500">
             {pages > 1 ? t("Page :page sur :pages · :n publications", { page: current, pages, n: filtered.length }) : t(filtered.length > 1 ? ":n publications" : ":n publication", { n: filtered.length })}
           </span>

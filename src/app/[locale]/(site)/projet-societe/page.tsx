@@ -25,7 +25,7 @@ export default async function ProjetSocietePage({ params }: PageParams) {
   const projetAxes = data.projetAxes || [];
   return (
     <main id="main" className="flex-grow">
-      <PageBanner eyebrow={pp.projetSurtitre || t("Projet de société")} title={pp.projetTitre || t("Notre projet de société")} text={parti.projetIntro || ""}>
+      <PageBanner eyebrow={pp.projetSurtitre || t("Projet de société")} title={pp.projetTitre || t("Notre projet de société")} text={parti.projetIntro || ""} mobileText="clamp">
         <DocumentButtons doc={projet} t={t} back={{ href: localePath(locale, "/parti"), label: t("Le Parti") }} />
       </PageBanner>
 
@@ -45,7 +45,8 @@ export default async function ProjetSocietePage({ params }: PageParams) {
                 <span className="card-index" aria-hidden="true">{pad2(i + 1)}</span>
                 <div className="icon-tile icon-tile--dark"><i className={`fa-solid ${a.icone}`} aria-hidden="true"></i></div>
                 <h3 className="text-xl font-bold text-gray-900">{a.titre}</h3>
-                <p className="text-gray-600">{a.texte}</p>
+                {/* Téléphone et tablette : icône et intitulé de l'axe ; le détail est dans le PDF du projet */}
+                <p className="mob-hide text-gray-600">{a.texte}</p>
               </article>
             ))}
           </div>
@@ -62,7 +63,7 @@ export default async function ProjetSocietePage({ params }: PageParams) {
           </div>
           <div className="flex flex-wrap gap-3 shrink-0">
             <Link href={localePath(locale, parti.url1 || "/adherer")} className="btn btn--primary btn--lg">{parti.bouton1 || t("Rejoindre le parti")}</Link>
-            <Link href={localePath(locale, "/parti")} className="btn btn--outline-white btn--lg">{t("Le Parti")}</Link>
+            <Link href={localePath(locale, "/parti")} className="btn btn--outline-white btn--lg mob-hide">{t("Le Parti")}</Link>
           </div>
         </div>
       </section>

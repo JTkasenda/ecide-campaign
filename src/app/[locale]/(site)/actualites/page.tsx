@@ -35,9 +35,10 @@ export default async function ActualitesPage({ params }: PageParams) {
                   {t("Édition du")} <time dateTime={edition.date}>{edition.dateLabel}</time> · {ap.signature || "Communication ECiDé"}
                 </p>
                 <h1 className="text-5xl lg:text-6xl leading-none text-white">{t("Actualités")}</h1>
-                <p className="text-lg text-blue-100">{ap.sousTitre || ""}</p>
+                <p className="mob-hide text-lg text-blue-100">{ap.sousTitre || ""}</p>
               </div>
-              <a href="#canaux" className="arrow-link arrow-link--light"><i className="fa-solid fa-circle-check text-ecideGreen" aria-hidden="true"></i>{t("Seuls nos canaux officiels font foi")}</a>
+              {/* Téléphone et tablette : édition, titre et rubriques ; sous-titre et lien vers les canaux sur ordinateur */}
+              <a href="#canaux" className="arrow-link arrow-link--light mob-hide"><i className="fa-solid fa-circle-check text-ecideGreen" aria-hidden="true"></i>{t("Seuls nos canaux officiels font foi")}</a>
             </div>
             <NewsTabs categories={data.categories} labels={{ all: t("Toutes"), sections: t("Rubriques"), declarations: t("Déclarations"), communiques: t("Communiqués"), presse: t("Revue de presse"), directs: t("Directs & replays") }} />
           </div>
@@ -58,11 +59,12 @@ export default async function ActualitesPage({ params }: PageParams) {
                   <div className="pt-6 space-y-4">
                     <NewsMeta n={featured} />
                     <h2 className="text-3xl lg:text-4xl text-gray-900 normal-case font-bold tracking-tight leading-tight"><Link href={localePath(locale, featured.url)} className="hover:text-ecideBlue">{featured.titre}</Link></h2>
-                    <p className="text-xl text-gray-600 leading-relaxed max-w-3xl">{featured.resume}</p>
-                    <p className="text-sm text-gray-500"><i className="fa-regular fa-clock mr-1" aria-hidden="true"></i>{featured.lecture ? `${featured.lecture} ${t("de lecture")} · ` : ""}{featured.auteur}</p>
+                    <p className="mob-clamp text-xl text-gray-600 leading-relaxed max-w-3xl">{featured.resume}</p>
+                    <p className="mob-hide text-sm text-gray-500"><i className="fa-regular fa-clock mr-1" aria-hidden="true"></i>{featured.lecture ? `${featured.lecture} ${t("de lecture")} · ` : ""}{featured.auteur}</p>
                   </div>
                 </article>
-                <div className="flex flex-col gap-10 lg:border-l lg:border-gray-200 lg:pl-8">
+                {/* Téléphone et tablette : la une seule ; les deux suivantes figurent déjà dans la liste en dessous */}
+                <div className="mob-hide flex flex-col gap-10 lg:border-l lg:border-gray-200 lg:pl-8">
                   {side.map((n, i) => {
                     const direct = n.categorie.key === "direct";
                     return (
@@ -88,7 +90,8 @@ export default async function ActualitesPage({ params }: PageParams) {
         <section className="bg-white border-t border-gray-200">
           <div className="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 lg:grid-cols-3 gap-16">
             <NewsFeed locale={locale} news={news} labels={{ allPublications: t("Toutes les publications"), publications: t("publications"), empty: t("Aucune publication pour le moment."), emptyCategory: t("Aucune publication dans cette rubrique pour le moment."), pagination: t("Pagination"), replayVideo: t("Replay vidéo") }} />
-            <aside className="news-aside space-y-12 lg:border-l lg:border-gray-200 lg:pl-10">
+            {/* Téléphone et tablette : colonne masquée (vidéo, et formulaire d'inscription déjà présent dans le pied de page) */}
+            <aside className="mob-hide news-aside space-y-12 lg:border-l lg:border-gray-200 lg:pl-10">
               {video && (
                 <section className="reveal">
                   <h2 className="text-2xl text-ecideDarkBlue rule-title">{t("Directs & vidéos")}</h2>
@@ -135,7 +138,8 @@ export default async function ActualitesPage({ params }: PageParams) {
                   <span className="font-display text-3xl text-ecideBlue leading-none w-10 shrink-0">{pad2(i + 1)}</span>
                   <div>
                     <p className="font-bold text-gray-900">{pos.titre}</p>
-                    <p className="text-sm text-gray-500">{pos.texte}</p>
+                    {/* Téléphone et tablette : numéro et intitulé de la position seulement */}
+                    <p className="mob-hide text-sm text-gray-500">{pos.texte}</p>
                   </div>
                 </li>
               ))}

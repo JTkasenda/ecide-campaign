@@ -25,8 +25,8 @@ export default async function ContactPage({ params }: PageParams) {
   return (
     <main id="main" className="flex-grow">
       <PageBanner eyebrow={t("Nous écrire")} title={t("Contact")} text={cp.intro || t("Contactez-nous : siège national, e-mail, téléphone, WhatsApp et formulaire.")} />
-      <section className="py-20 px-6 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 cols-rule">
+      <section className="mob-band py-20 px-6 max-w-7xl mx-auto">
+        <div className="mob-card grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 cols-rule">
           <div className="p-2 space-y-3 reveal">
             <span className="icon-tile icon-tile--dark" aria-hidden="true"><i className="fa-solid fa-location-dot"></i></span>
             <h2 className="text-2xl text-gray-900">{t("Siège National")}</h2>
@@ -55,11 +55,11 @@ export default async function ContactPage({ params }: PageParams) {
       </section>
 
       {proximite && (proximite.provinces.length > 0 || proximite.pays.length > 0) && (
-        <section className="px-6 pb-20 max-w-7xl mx-auto" aria-labelledby="contactLocal">
-          <div className="bg-ecideBlue-50 p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+        <section className="mob-band px-6 pb-20 max-w-7xl mx-auto" aria-labelledby="contactLocal">
+          <div className="mob-card bg-ecideBlue-50 p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
             <div>
               <h2 id="contactLocal" className="text-2xl text-ecideDarkBlue no-bar">{t("Un contact près de chez vous")}</h2>
-              <p className="text-sm text-gray-600 mt-1">{t("Choisissez votre province ou votre pays : les responsables locaux et leurs coordonnées s'affichent.")}</p>
+              <p className="mob-hide text-sm text-gray-600 mt-1">{t("Choisissez votre province ou votre pays : les responsables locaux et leurs coordonnées s'affichent.")}</p>
             </div>
             <label className="block">
               <span className="flex items-center gap-2 eyebrow eyebrow--dark text-xs mb-2"><i className="fa-solid fa-map text-ecideBlue" aria-hidden="true"></i>{t("En RDC · ma province")}</span>
@@ -80,15 +80,16 @@ export default async function ContactPage({ params }: PageParams) {
         </section>
       )}
 
-      <section className="pb-32 px-6 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-16 items-start">
+      <section className="mob-band pb-32 px-6 max-w-7xl mx-auto">
+        <div className="mob-card grid grid-cols-1 lg:grid-cols-5 gap-16 items-start">
           <ContactForm
             destinataires={destinataires}
             confirmation={cp.confirmation}
             labels={{ title: t("Envoyer un message"), name: t("Nom & Prénom"), email: t("E-mail"), recipient: t("Destinataire"), message: t("Message"), submit: t("Envoyer") }}
           />
           <div className="lg:col-span-2 space-y-6 reveal">
-            <div className="overflow-hidden panel panel--white border border-gray-200">
+            {/* Téléphone et tablette : pas de carte intégrée, l'adresse du siège figure plus haut */}
+            <div className="mob-hide overflow-hidden panel panel--white border border-gray-200">
               <iframe title={t("Carte du siège")} src="https://www.openstreetmap.org/export/embed.html?bbox=15.20%2C-4.45%2C15.45%2C-4.28&layer=mapnik" className="w-full h-72 border-0" loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
               <div className="p-5">
                 <p className="font-bold text-gray-900">{cp.carteTitre || t("Siège National")}</p>
@@ -97,7 +98,7 @@ export default async function ContactPage({ params }: PageParams) {
             </div>
             <div className="bg-ecideDarkBlue text-white p-8 space-y-4 diag">
               <h2 className="text-2xl">{cp.presseTitre || t("Vous êtes journaliste ?")}</h2>
-              <p className="text-blue-100 text-sm leading-relaxed">{cp.presseTexte || ""}</p>
+              <p className="mob-hide text-blue-100 text-sm leading-relaxed">{cp.presseTexte || ""}</p>
               <Link href={`${localePath(locale, "/president")}#presse`} className="arrow-link arrow-link--light">{t("Dossier de presse")}</Link>
             </div>
           </div>

@@ -36,7 +36,8 @@ export default async function AdhererPage({ params }: PageParams) {
             <i className="fa-solid fa-id-card" aria-hidden="true"></i>
             {s("plateformeBouton") || t("Adhérer en ligne")}
           </Link>
-          <Link href={localePath(locale, "/espace-membre")} className="btn btn--outline-white">
+          {/* Téléphone et tablette : un seul bouton (les deux mènent à l'espace membre) */}
+          <Link href={localePath(locale, "/espace-membre")} className="btn btn--outline-white mob-hide">
             <i className="fa-regular fa-circle-user" aria-hidden="true"></i>
             {t("Espace membre")}
           </Link>
@@ -44,13 +45,13 @@ export default async function AdhererPage({ params }: PageParams) {
       </PageBanner>
 
       {/* ESPACE MEMBRE : l'entrée unique des membres (le bandeau du site n'a plus de bouton à part) */}
-      <section id="espace-membre" className="border-b border-gray-200 bg-white px-6 py-8 scroll-mt-32">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-12">
+      <section id="espace-membre" className="mob-band border-b border-gray-200 bg-white px-6 py-8 scroll-mt-32">
+        <div className="mob-card max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-12">
           <div className="flex gap-4 min-w-0 lg:flex-1">
             <div className="icon-tile icon-tile--dark shrink-0"><i className="fa-regular fa-circle-user" aria-hidden="true"></i></div>
             <div className="min-w-0 space-y-2">
               <h2 className="text-2xl lg:text-3xl text-ecideDarkBlue no-bar">{t("Espace membre")}</h2>
-              <p className="text-gray-600 text-sm">{t("Connectez-vous avec votre téléphone ou votre e-mail, sans mot de passe : un code vous est envoyé. Vous y suivez votre demande d'adhésion et, une fois membre, vous retrouvez :")}</p>
+              <p className="mob-hide text-gray-600 text-sm">{t("Connectez-vous avec votre téléphone ou votre e-mail, sans mot de passe : un code vous est envoyé. Vous y suivez votre demande d'adhésion et, une fois membre, vous retrouvez :")}</p>
               <ul className="flex flex-wrap gap-2 pt-1" aria-label={t("Dans votre espace membre")}>
                 {[
                   ["fa-id-card", t("Carte de membre")],
@@ -73,7 +74,7 @@ export default async function AdhererPage({ params }: PageParams) {
               <i className="fa-solid fa-right-to-bracket" aria-hidden="true"></i>
               {s("espaceLibelle") || t("Accéder à mon espace membre")}
             </Link>
-            <Link href={localePath(locale, "/espace-membre")} className="btn btn--outline">
+            <Link href={localePath(locale, "/espace-membre")} className="btn btn--outline mob-hide">
               <i className="fa-solid fa-id-card" aria-hidden="true"></i>
               {s("plateformeBouton") || t("Adhérer en ligne")}
             </Link>
@@ -82,15 +83,16 @@ export default async function AdhererPage({ params }: PageParams) {
       </section>
 
       {atouts.length > 0 && (
-        <section className="bg-ecideBlue-50 py-16 px-6">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 cols-rule">
+        <section className="mob-band bg-ecideBlue-50 py-16 px-6">
+          <div className="mob-card max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 cols-rule">
             {atouts.map((a, i) => {
               return (
                 <div key={i} className="flex gap-4 reveal">
                   <div className={`icon-tile shrink-0 ${TILE[a.couleur] || "icon-tile--dark"}`}><i className={`fa-solid ${a.icone}`} aria-hidden="true"></i></div>
                   <div>
                     <h2 className="text-2xl text-gray-900">{a.titre}</h2>
-                    <p className="text-gray-600 text-sm">{a.texte}</p>
+                    {/* Téléphone et tablette : icône et titre seulement */}
+                    <p className="mob-hide text-gray-600 text-sm">{a.texte}</p>
                   </div>
                 </div>
               );
@@ -99,13 +101,13 @@ export default async function AdhererPage({ params }: PageParams) {
         </section>
       )}
 
-      <section className="py-20 lg:py-28 px-6 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-start">
+      <section className="mob-band py-20 lg:py-28 px-6 max-w-7xl mx-auto">
+        <div className="mob-card grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-start">
           {/* ADHÉSION : PLATEFORME OFFICIELLE DES MEMBRES */}
           <div id="carte" className="panel p-8 lg:p-10 space-y-10 reveal">
             <div>
               <h2 className="text-4xl text-ecideDarkBlue no-bar">{s("plateformeTitre") || t("Devenir membre")}</h2>
-              <p className="text-gray-600 mt-2">{s("plateformeTexte")}</p>
+              <p className="mob-hide text-gray-600 mt-2">{s("plateformeTexte")}</p>
             </div>
             {ad.etapes.length > 0 && (
               <ol className="space-y-5">
@@ -114,7 +116,7 @@ export default async function AdhererPage({ params }: PageParams) {
                     <span className={`w-10 h-10 shrink-0 ${STEP_COLORS[i % 3]} font-display text-xl flex items-center justify-center`} aria-hidden="true">{i + 1}</span>
                     <div>
                       <p className="font-bold text-gray-900">{e.titre}</p>
-                      {e.texte && <p className="text-sm text-gray-600">{e.texte}</p>}
+                      {e.texte && <p className="mob-hide text-sm text-gray-600">{e.texte}</p>}
                     </div>
                   </li>
                 ))}
@@ -124,7 +126,8 @@ export default async function AdhererPage({ params }: PageParams) {
               <i className="fa-solid fa-id-card" aria-hidden="true"></i>
               {s("plateformeBouton") || t("Adhérer en ligne")}
             </Link>
-            <p className="text-sm text-gray-600 text-center">
+            {/* Téléphone et tablette : déjà proposé par le bloc Espace membre plus haut */}
+            <p className="mob-hide text-sm text-gray-600 text-center">
               {t("Déjà membre ?")} <Link href={localePath(locale, "/espace-membre")} className="font-semibold text-ecideDarkBlue underline decoration-ecideYellow decoration-2 underline-offset-4 hover:text-ecideBlue">{s("espaceLibelle") || t("Accéder à mon espace membre")}</Link>
             </p>
             {s("avertissement") && (
@@ -140,7 +143,7 @@ export default async function AdhererPage({ params }: PageParams) {
             <div className="space-y-3">
               <span className="eyebrow">{t("Soutenir le Combat (Don)")}</span>
               <h2 className="text-3xl no-bar">{s("donTitre") || t("Faire un don")}</h2>
-              {s("donTexte") && <p className="text-blue-100 leading-relaxed">{s("donTexte")}</p>}
+              {s("donTexte") && <p className="mob-hide text-blue-100 leading-relaxed">{s("donTexte")}</p>}
             </div>
             <ul className="flex flex-wrap gap-x-5 gap-y-3" aria-label={t("Moyens de paiement acceptés")}>
               {paiement.moyens.map((m) => (
