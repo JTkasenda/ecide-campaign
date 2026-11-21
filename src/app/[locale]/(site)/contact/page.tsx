@@ -26,7 +26,7 @@ export default async function ContactPage({ params }: PageParams) {
     <main id="main" className="flex-grow max-lg:flex max-lg:flex-col">
       <PageBanner eyebrow={t("Nous écrire")} title={t("Contact")} text={cp.intro || t("Contactez-nous : siège national, e-mail, téléphone, WhatsApp et formulaire.")} />
       {/* Téléphone et tablette : aucun contenant sur la page Contact (fond blanc, blocs posés sur la page) */}
-      <section className="mob-band mob-white py-20 px-6 max-w-7xl mx-auto max-lg:w-full max-lg:order-2">
+      <section className="mob-band mob-white py-20 px-6 max-w-7xl mx-auto max-lg:w-full max-lg:order-3">
         <div className="mob-plain grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 cols-rule">
           <div className="p-2 max-lg:px-0 space-y-3 reveal">
             <span className="icon-tile icon-tile--dark" aria-hidden="true"><i className="fa-solid fa-location-dot"></i></span>
@@ -56,7 +56,7 @@ export default async function ContactPage({ params }: PageParams) {
       </section>
 
       {proximite && (proximite.provinces.length > 0 || proximite.pays.length > 0) && (
-        <section className="mob-band mob-white px-6 pb-20 max-w-7xl mx-auto max-lg:w-full max-lg:order-3" aria-labelledby="contactLocal">
+        <section className="mob-band mob-white px-6 pb-20 max-w-7xl mx-auto max-lg:w-full max-lg:order-2" aria-labelledby="contactLocal">
           <div className="mob-plain bg-ecideBlue-50 p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
             <div>
               <h2 id="contactLocal" className="text-2xl text-ecideDarkBlue no-bar">{t("Un contact près de chez vous")}</h2>
@@ -81,7 +81,7 @@ export default async function ContactPage({ params }: PageParams) {
         </section>
       )}
 
-      {/* Téléphone et tablette : le formulaire d'abord (juste sous le titre), puis les coordonnées et les contacts locaux */}
+      {/* Téléphone et tablette : le formulaire d'abord (juste sous le titre), puis les contacts locaux, puis les coordonnées */}
       <section className="mob-band mob-white pb-32 px-6 max-w-7xl mx-auto max-lg:w-full max-lg:order-1">
         <div className="mob-plain grid grid-cols-1 lg:grid-cols-5 gap-16 items-start">
           <ContactForm
