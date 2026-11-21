@@ -45,8 +45,9 @@ export default async function AdhererPage({ params }: PageParams) {
       </PageBanner>
 
       {/* ESPACE MEMBRE : l'entrée unique des membres (le bandeau du site n'a plus de bouton à part) */}
-      <section id="espace-membre" className="mob-band border-b border-gray-200 bg-white px-6 py-8 scroll-mt-32">
-        <div className="mob-card max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-12">
+      {/* Téléphone et tablette : aucun contenant sur la page Adhérer (fond blanc, blocs posés sur la page ; blocs foncés en texte foncé) */}
+      <section id="espace-membre" className="mob-band mob-white border-b border-gray-200 bg-white px-6 py-8 scroll-mt-32">
+        <div className="mob-plain max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-12">
           <div className="flex gap-4 min-w-0 lg:flex-1">
             <div className="icon-tile icon-tile--dark shrink-0"><i className="fa-regular fa-circle-user" aria-hidden="true"></i></div>
             <div className="min-w-0 space-y-2">
@@ -83,8 +84,8 @@ export default async function AdhererPage({ params }: PageParams) {
       </section>
 
       {atouts.length > 0 && (
-        <section className="mob-band bg-ecideBlue-50 py-16 px-6">
-          <div className="mob-card max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 cols-rule">
+        <section className="mob-band mob-white bg-ecideBlue-50 py-16 px-6">
+          <div className="mob-plain max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 cols-rule">
             {atouts.map((a, i) => {
               return (
                 <div key={i} className="flex gap-4 reveal">
@@ -101,10 +102,10 @@ export default async function AdhererPage({ params }: PageParams) {
         </section>
       )}
 
-      <section className="mob-band py-20 lg:py-28 px-6 max-w-7xl mx-auto">
-        <div className="mob-card grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-start">
+      <section className="mob-band mob-white py-20 lg:py-28 px-6 max-w-7xl mx-auto">
+        <div className="mob-plain grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-start">
           {/* ADHÉSION : PLATEFORME OFFICIELLE DES MEMBRES */}
-          <div id="carte" className="panel p-8 lg:p-10 space-y-10 reveal">
+          <div id="carte" className="mob-plain panel p-8 lg:p-10 space-y-10 reveal">
             <div>
               <h2 className="text-4xl text-ecideDarkBlue no-bar">{s("plateformeTitre") || t("Devenir membre")}</h2>
               <p className="mob-hide text-gray-600 mt-2">{s("plateformeTexte")}</p>
@@ -131,7 +132,7 @@ export default async function AdhererPage({ params }: PageParams) {
               {t("Déjà membre ?")} <Link href={localePath(locale, "/espace-membre")} className="font-semibold text-ecideDarkBlue underline decoration-ecideYellow decoration-2 underline-offset-4 hover:text-ecideBlue">{s("espaceLibelle") || t("Accéder à mon espace membre")}</Link>
             </p>
             {s("avertissement") && (
-              <div className="bg-white border-l-4 border-ecideYellow p-5 text-sm text-gray-700 flex gap-3">
+              <div className="mob-plain bg-white border-l-4 border-ecideYellow p-5 text-sm text-gray-700 flex gap-3">
                 <i className="fa-solid fa-shield-halved text-ecideYellow-700 mt-0.5" aria-hidden="true"></i>
                 <p>{s("avertissement")}</p>
               </div>
@@ -139,7 +140,7 @@ export default async function AdhererPage({ params }: PageParams) {
           </div>
 
           {/* DON : le formulaire est sur sa page ; ici l'appel, les moyens acceptés et le bouton */}
-          <div id="don" className="panel panel--dark p-8 lg:p-10 space-y-6 reveal scroll-mt-32">
+          <div id="don" className="mob-plain mob-ink panel panel--dark p-8 lg:p-10 space-y-6 reveal scroll-mt-32">
             <div className="space-y-3">
               <span className="eyebrow">{t("Soutenir le Combat (Don)")}</span>
               <h2 className="text-3xl no-bar">{s("donTitre") || t("Faire un don")}</h2>
@@ -159,13 +160,13 @@ export default async function AdhererPage({ params }: PageParams) {
       </section>
 
       {faq.length > 0 && (
-        <section className="bg-ecideDarkBlue text-white py-28 lg:py-32 px-6 diag">
+        <section className="mob-band mob-white mob-plain mob-ink bg-ecideDarkBlue text-white py-28 lg:py-32 px-6 diag">
           <div className="max-w-4xl mx-auto space-y-12">
             <div className="space-y-4 reveal">
               <span className="text-ecideGreen font-bold uppercase tracking-widest text-sm">{s("faqSurtitre") || t("Questions fréquentes")}</span>
               <h2 className="text-4xl lg:text-5xl">{s("faqTitre") || t("Tout savoir sur l'adhésion")}</h2>
             </div>
-            <div className="space-y-4 reveal">
+            <div className="mob-faq space-y-4 reveal">
               {faq.map((f, i) => (
                 <details key={i} className="bg-white text-gray-900 p-6 group">
                   <summary className="flex justify-between items-center gap-4 font-display font-semibold text-xl text-ecideDarkBlue">

@@ -3156,3 +3156,35 @@ body:has(.assistant-fab) .back-to-top {
     padding: 1.25rem 1.25rem 0.75rem !important;
   }
 }
+
+/* Téléphone et tablette : blocs foncés posés sur fond blanc (Adhérer › don, questions fréquentes) :
+   textes clairs et logos blancs passés en couleurs lisibles ; questions séparées par un filet */
+@media (max-width: 1023.98px) {
+  #main .mob-ink .text-blue-100 {
+    color: #4b5563 !important;
+  }
+  #main .mob-ink i.text-white {
+    color: var(--color-ecideBlue) !important;
+  }
+  #main .mob-band.mob-plain {
+    padding: 1.25rem 1rem !important;
+  }
+  #main .mob-faq {
+    border-top: 1px solid #e5e9f0;
+  }
+  #main .mob-faq > * + * {
+    margin-top: 0 !important;
+  }
+  #main .mob-faq > details {
+    background: transparent;
+    padding: 1rem 0;
+    border-bottom: 1px solid #e5e9f0;
+  }
+}
+
+/* Téléphone et tablette : étiquette jaune d'un bloc foncé posé sur fond blanc → or foncé (contraste suffisant) */
+@media (max-width: 1023.98px) {
+  #main .mob-ink .eyebrow {
+    color: #7a5c00 !important;
+  }
+}
