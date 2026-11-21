@@ -3148,3 +3148,11 @@ body:has(.assistant-fab) .back-to-top {
     color: var(--color-ecideBlue) !important;
   }
 }
+
+/* Téléphone et tablette : carte bleu clair sur fond blanc (ex. « En bref » de la biographie) */
+@media (max-width: 1023.98px) {
+  #main .mob-tint {
+    background: var(--color-ecideBlue-50) !important;
+    padding: 1.25rem 1.25rem 0.75rem !important;
+  }
+}
