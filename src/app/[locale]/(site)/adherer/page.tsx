@@ -53,7 +53,8 @@ export default async function AdhererPage({ params }: PageParams) {
             <div className="min-w-0 space-y-2">
               <h2 className="text-2xl lg:text-3xl text-ecideDarkBlue no-bar">{t("Espace membre")}</h2>
               <p className="mob-hide text-gray-600 text-sm">{t("Connectez-vous avec votre téléphone ou votre e-mail, sans mot de passe : un code vous est envoyé. Vous y suivez votre demande d'adhésion et, une fois membre, vous retrouvez :")}</p>
-              <ul className="flex flex-wrap gap-2 pt-1" aria-label={t("Dans votre espace membre")}>
+              {/* Téléphone et tablette : pas de liste des rubriques de l'espace membre, juste le titre et le bouton */}
+              <ul className="mob-hide flex flex-wrap gap-2 pt-1" aria-label={t("Dans votre espace membre")}>
                 {[
                   ["fa-id-card", t("Carte de membre")],
                   ["fa-calendar-days", t("Agenda")],
@@ -84,7 +85,8 @@ export default async function AdhererPage({ params }: PageParams) {
       </section>
 
       {atouts.length > 0 && (
-        <section className="mob-band mob-white bg-ecideBlue-50 py-16 px-6">
+        <section className="mob-hide mob-band mob-white bg-ecideBlue-50 py-16 px-6">
+          {/* Téléphone et tablette : les trois atouts sont masqués (section entière) */}
           <div className="mob-plain max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 cols-rule">
             {atouts.map((a, i) => {
               return (
