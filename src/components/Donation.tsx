@@ -143,7 +143,7 @@ export default function Donation({ config, title, text, warning }: { config: Adh
     const heading = statut === "reussi" ? t("Don reçu, merci !") : statut === "en_attente" ? t("Paiement en attente") : statut === "annule" ? t("Don annulé") : t("Paiement non abouti");
     const montant = `${fmt(don.montant || amountNum)} ${don.devise || c.label}`;
     return (
-      <div id="don" className="panel p-8 lg:p-10 space-y-6 scroll-mt-32">
+      <div id="don" className="panel mob-plain p-8 lg:p-10 space-y-6 scroll-mt-32">
         <div>
           <h2 className="text-4xl text-ecideDarkBlue no-bar">{title}</h2>
           {text && <p className="text-gray-600 mt-2">{text}</p>}
@@ -192,7 +192,7 @@ export default function Donation({ config, title, text, warning }: { config: Adh
           ) : null}
         </div>
         {warning && (
-          <p className="text-xs text-gray-500 flex items-start gap-2">
+          <p className="mob-hide text-xs text-gray-500 flex items-start gap-2">
             <i className="fa-solid fa-lock mt-0.5" aria-hidden="true"></i>
             {warning}
           </p>
@@ -202,7 +202,7 @@ export default function Donation({ config, title, text, warning }: { config: Adh
   }
 
   return (
-    <div id="don" className="panel p-8 lg:p-10 space-y-10 scroll-mt-32">
+    <div id="don" className="panel mob-plain p-8 lg:p-10 space-y-10 scroll-mt-32">
       <div>
         <h2 className="text-4xl text-ecideDarkBlue no-bar">{title}</h2>
         <p className="text-gray-600 mt-2">{text}</p>
@@ -290,7 +290,7 @@ export default function Donation({ config, title, text, warning }: { config: Adh
         {t("Confirmer le Don")}
       </button>
       {warning && (
-        <p className="text-xs text-gray-500 flex items-start gap-2">
+        <p className="mob-hide text-xs text-gray-500 flex items-start gap-2">
           <i className="fa-solid fa-lock mt-0.5" aria-hidden="true"></i>
           {warning}
         </p>

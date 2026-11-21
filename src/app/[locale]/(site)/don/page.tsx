@@ -30,12 +30,14 @@ export default async function DonPage({ params }: PageParams) {
   return (
     <main id="main" className="flex-grow">
       <PageBanner eyebrow={s("donSurtitre") || t("Soutenir")} title={title} text={s("donTexte") || t("Chaque contribution finance la mobilisation, la communication et la défense de la vérité des urnes.")}>
-        <div className="flex flex-wrap gap-3 shrink-0">
+        {/* Téléphone et tablette : pas de lien vers l'adhésion sur la page du don */}
+        <div className="mob-hide flex flex-wrap gap-3 shrink-0">
           <Link href={localePath(locale, "/adherer")} className="btn btn--outline-white">{t("Adhérer au parti")}</Link>
         </div>
       </PageBanner>
 
-      <section className="bg-ecideBlue-50 py-20 lg:py-32 px-6">
+      {/* Téléphone et tablette : formulaire posé directement sur fond blanc, sans carte ni cadre (voir .mob-plain) */}
+      <section className="mob-band mob-white bg-ecideBlue-50 py-20 lg:py-32 px-6">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           <div className="lg:col-span-8 reveal">
             <Suspense fallback={null}>
@@ -55,7 +57,8 @@ export default async function DonPage({ params }: PageParams) {
                 ))}
               </ul>
             </div>
-            <div className="panel panel--dark p-7 space-y-4 reveal">
+            {/* Téléphone et tablette : contact de la Trésorerie masqué (contacts dans le pied de page) */}
+            <div className="mob-hide panel panel--dark p-7 space-y-4 reveal">
               <h2 className="text-2xl no-bar">{s("donAideTitre") || t("Questions sur les dons ?")}</h2>
               <p className="text-blue-100">{s("donAideTexte") || t("Écrivez à la Trésorerie du parti : un reçu peut vous être remis sur demande.")}</p>
               <div className="flex flex-wrap gap-3">
