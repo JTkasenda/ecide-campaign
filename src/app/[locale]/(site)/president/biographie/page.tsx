@@ -45,8 +45,9 @@ export default async function BiographiePage({ params }: PageParams) {
 
       {/* LE TEXTE DE LA BIOGRAPHIE */}
       {(pres.bioTexte || pres.bio2 || pres.bio3 || pres.citation || enBref.length > 0) && (
-        <section id="parcours" className="bg-ecideBlue-50 py-20 lg:py-32 px-6 scroll-mt-32">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-20 items-start">
+        <section id="parcours" className="mob-white bg-ecideBlue-50 py-20 max-lg:py-10 lg:py-32 px-6 scroll-mt-32">
+          {/* Téléphone et tablette : fond blanc ; portrait et « En bref » d'abord, sans cadre, puis le texte */}
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 max-lg:gap-8 lg:gap-20 items-start">
             <div className="lg:col-span-7 space-y-6 reveal">
               <h2 className="text-4xl lg:text-5xl text-ecideDarkBlue leading-none">{pres.bioTitre || t("Biographie")}</h2>
               {pres.bioTexte && <p className="text-xl text-gray-800 leading-relaxed">{pres.bioTexte}</p>}
@@ -63,13 +64,13 @@ export default async function BiographiePage({ params }: PageParams) {
                 <Link href={`${localePath(locale, "/president")}#discours`} className="arrow-link">{t("Discours & vidéos")}</Link>
               </div>
             </div>
-            <div className="lg:col-span-5 space-y-6">
-              <figure className="panel panel--white p-3 reveal">
+            <div className="lg:col-span-5 max-lg:order-first space-y-6">
+              <figure className="mob-plain panel panel--white p-3 reveal">
                 <img src={pres.portrait} alt={`${t("Portrait officiel de")} ${nom}`} className="w-full aspect-[4/3] object-cover object-[50%_20%]" />
                 <figcaption className="eyebrow text-[10px] mt-3 px-1">{t("Portrait officiel")}</figcaption>
               </figure>
               {enBref.length > 0 && (
-                <aside className="panel panel--white p-7 reveal">
+                <aside className="mob-plain panel panel--white p-7 reveal">
                   <h3 className="text-xl text-ecideDarkBlue mb-3">{pres.enBrefTitre || t("En bref")}</h3>
                   <dl className="divide-y divide-gray-200">
                     {enBref.map((b, i) => (

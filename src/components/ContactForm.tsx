@@ -51,7 +51,7 @@ function Form({ destinataires, confirmation, labels, structure }: { destinataire
 
   const input = "w-full p-4 bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-ecideBlue";
   return (
-    <form onSubmit={submit} className="lg:col-span-3 bg-ecideBlue-50 p-8 lg:p-10 space-y-6">
+    <form onSubmit={submit} className="mob-plain lg:col-span-3 bg-ecideBlue-50 p-8 lg:p-10 space-y-6">
       <h2 className="text-4xl text-ecideDarkBlue no-bar">{labels.title}</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>

@@ -3135,3 +3135,16 @@ body:has(.assistant-fab) .back-to-top {
     box-shadow: none !important;
   }
 }
+
+/* Téléphone et tablette : bloc foncé posé sans contenant sur fond blanc (Contact › presse) : texte foncé, pas de bande diagonale */
+@media (max-width: 1023.98px) {
+  #main .mob-plain.diag::before {
+    display: none;
+  }
+  #main .mob-ink {
+    color: var(--color-ecideDarkBlue) !important;
+  }
+  #main .mob-ink .arrow-link--light {
+    color: var(--color-ecideBlue) !important;
+  }
+}
